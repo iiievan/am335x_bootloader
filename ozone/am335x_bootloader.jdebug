@@ -1,0 +1,261 @@
+
+/*********************************************************************
+*
+*       OnProjectLoad
+*
+* Function description
+*   Project load routine. Required.
+*
+**********************************************************************
+*/
+void OnProjectLoad (void) 
+{
+  Project.SetDevice ("AM3359");
+  Project.SetHostIF ("USB", "");
+  Project.SetTargetIF ("JTAG");
+  Project.SetTIFSpeed ("4 MHz");
+  Project.AddSvdFile("Cortex-A8.svd");
+  File.Open("/home/mbokastnev/code/am335x_bootloader/cmake-build-debug/am335x_bootloader.elf");
+}
+
+/*********************************************************************
+*
+*     DisableWatchdog
+*
+* Function description
+*   Helper Function
+*
+**********************************************************************
+*/
+void DisableWatchdog(void) 
+{
+   Util.Log("Disable watchdog");
+   
+   Debug.Halt();
+   Target.WriteU32(0x44E35048, 0x0000AAAA);
+   Target.WriteU32(0x44E35048, 0x00005555);
+}
+
+/*********************************************************************
+*
+*     SetExecModeARM
+*
+* Function description
+*   Helper Function
+*
+**********************************************************************
+*/
+void SetExecModeARM(void) 
+{
+   unsigned int CPSR;
+   
+   CPSR = Target.GetReg("CPSR");
+   if (CPSR != 0xFFFFFFFF) 
+   {
+      if ((CPSR & (1 << 5)) == (1 << 5))
+      {
+         Util.Log("Setting Execution Mode to ARM.");
+         CPSR -= (1 << 5);
+         Target.SetReg("CPSR", CPSR);
+      }
+   }  
+}
+
+/*********************************************************************
+*
+*     SetPCtoBootloaderEntry
+*
+* Function description
+*   Helper Function
+*
+**********************************************************************
+*/
+void SetPCtoBootloaderEntry(void) 
+{
+   Target.SetReg("PC", 0x402F0400); 
+}
+
+/*********************************************************************
+*
+*     SetPCtoMainImageEntry
+*
+* Function description
+*   Helper Function
+*
+**********************************************************************
+*/
+void SetPCtoMainImageEntry(void) 
+{
+   unsigned int PC;
+
+   PC = Elf.GetEntryPointPC();
+   if (PC == 0xFFFFFFFF) 
+   {
+      PC = Elf.GetBaseAddr(); // fall back to vector
+   }
+   Target.SetReg("PC", PC); 
+}
+
+/*********************************************************************
+*                                                                     
+*       TargetDownload                                              
+*                                                                     
+* Function description                                                
+*   Replaces the default download routine.
+*   Loads the bootloader instead of the main image.                             
+*                                                                     
+**********************************************************************
+*/                                                                
+void TargetDownload (void) 
+{
+   Util.Log("TargetDownload");
+   Util.Log("Loading Bootloader application");
+   
+   Edit.SysVar(VAR_RESET_MODE, RM_RESET_AND_RUN); 
+   Exec.Download("../cmake-build-debug/am335x_bootloader.hex");
+}
+
+/*********************************************************************
+*                                                                     
+*       TargetReset                                             
+*                                                                     
+* Function description                                                
+*   Replaces the default reset routine.
+*   Runs the bootloader and then resets to symbol.                             
+*                                                                     
+**********************************************************************
+*/                                                                
+void TargetReset(void) 
+{
+   Util.Log("TargetReset");
+   
+   DisableWatchdog();
+   SetExecModeARM();
+   SetPCtoBootloaderEntry();
+}   
+
+/*********************************************************************
+*                                                                     
+*       AfterTargetReset                                             
+*                                                                     
+* Function description                                                
+*   Event handler                          
+*                                                                     
+**********************************************************************
+*/                                                                
+void AfterTargetReset(void) 
+{
+   Util.Log("AfterTargetReset");
+}
+
+/*********************************************************************
+*
+*      AfterMainImageDownload
+*
+* Function description
+*   Helper Function
+*
+**********************************************************************
+*/
+void AfterMainImageDownload (void)
+{
+   Util.Log("Running to main");
+
+   Debug.SetResetMode(RM_BREAK_AT_SYMBOL);
+   SetPCtoMainImageEntry();
+   Break.SetOnSrc("main");
+   Window.Close("Disassembly"); 
+   Debug.Continue();
+}
+
+/*********************************************************************
+*
+*      AfterBootloaderDownload
+*
+* Function description
+*   Helper Function
+*
+**********************************************************************
+*/
+void AfterBootloaderDownload (void)
+{
+   SetPCtoBootloaderEntry();
+}
+
+/*********************************************************************
+*
+*      AfterTargetDownload
+*
+* Function description
+*   Event handler routine.
+*
+**********************************************************************
+*/
+void AfterTargetDownload (void) 
+{
+   unsigned int PC;
+   unsigned int Inst;
+   
+   Util.Log("AfterTargetDownload");
+   Util.Log("Initializing PC.");
+
+   //
+   // Check if the bootloader was downloaded or the main image and initialize the PC accordingly
+   //
+   PC = Target.GetReg("PC");
+   if ((PC > 0x402F0400) && (PC < 0x4030FFFF))
+   { 
+      Inst = Target.ReadU32(PC);
+      if (Inst == 0xE1200472) //__asm("bkpt 0x42"); 
+      {
+         //
+         // PC is at booloader end, therefore main image was downloaded
+         //
+         AfterMainImageDownload();      
+      }         
+   } 
+   else 
+   {
+      AfterBootloaderDownload();
+   }
+}
+
+/*********************************************************************
+*
+*       AfterTargetHalt
+*
+* Function description
+*   Event handler routine. Optional.
+*
+**********************************************************************
+*/
+void AfterTargetHalt (void)
+{
+   unsigned int PC;
+   unsigned int Inst;
+  
+   Util.Log("AfterTargetHalt");
+
+   //
+   // Check if PC is at the end of the bootloader, "__asm("bkpt 0x42")".
+   // If it is, load the application and run it.
+   //
+   PC = Target.GetReg("PC");
+   if (PC == 0xFFFFFFFF) 
+   {
+      Util.Log("Failed to get PC");
+   } 
+   else if ((PC > 0x402F0400) && (PC < 0x4030FFFF)) // Check bootloader range
+   {
+      Inst = Target.ReadU32(PC);
+      if (Inst == 0xE1200472)  //__asm("bkpt 0x42"); 
+      {
+         Util.Log("Bootloader reached end.");         
+         Util.Log("Loading main image.");
+
+         File.Load("b2test.elf", 0);
+      }         
+   }
+}  
+
+/*** EOF ***/
