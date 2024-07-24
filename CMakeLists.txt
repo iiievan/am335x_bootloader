@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 
 # project settings
-project(am335x_bootloader LANGUAGES ASM C)
+project(am335x_bootloader LANGUAGES ASM C CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)
 
@@ -20,16 +20,13 @@ set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
 set(APP ${PROJECT_NAME})
 
-set(LINKER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/${APP}.ld)
+set(LINKER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/init/${APP}.ld)
 
 set(_TARGET_CFLAGS
+        -mcpu=cortex-a8
         -mtune=cortex-a8
-        -march=armv7-a
-        -mfloat-abi=hard
         -mfpu=neon
 )
-
-
 
 set(_C_FLAGS ${_TARGET_CFLAGS}
         -mlong-calls
@@ -39,10 +36,13 @@ set(_C_FLAGS ${_TARGET_CFLAGS}
         -Wall
 )
 
-set(_CXX_FLAGS ${_C_FLAGS})
+set(_CXX_FLAGS ${_C_FLAGS}
+        -fno-exceptions
+)
 
-set(_ASM_FLAGS
+set(_ASM_FLAGS ${_TARGET_CFLAGS}
         -r
+        -x assembler-with-cpp
 )
 
 set(_EXE_LINKER_FLAGS
@@ -55,6 +55,7 @@ set(_EXE_LINKER_FLAGS
         -T ${LINKER_SCRIPT}
 )
 
+string(REPLACE ";" " " TARGET_C_FLAGS "${_TARGET_CFLAGS}")
 string(REPLACE ";" " " CMAKE_C_FLAGS "${_C_FLAGS}")
 string(REPLACE ";" " " CMAKE_CXX_FLAGS "${_CXX_FLAGS}")
 string(REPLACE ";" " " CMAKE_ASM_FLAGS "${_ASM_FLAGS}")
@@ -64,17 +65,11 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
-add_executable(${APP} src/init.s src/main.c)
+include_directories(${PROJECT_SOURCE_DIR}/init)
 
-# ------------------------------------------------------------------------------
-# post build steps
-# ------------------------------------------------------------------------------
+file(GLOB_RECURSE INIT_SRC
+        ${PROJECT_SOURCE_DIR}/init/*.*
+)
 
-#set(HEX_FILE ${APP}.hex)
-#set(BIN_FILE ${APP}.bin)
-#add_custom_command(TARGET ${APP}.elf POST_BUILD
-#        COMMAND ${CMAKE_OBJCOPY} -Oihex $<TARGET_FILE:${APP}.elf> ${HEX_FILE}
-#        COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${APP}.elf> ${BIN_FILE}
-#        COMMENT "Building ${HEX_FILE}
-#Building ${BIN_FILE}")
+add_subdirectory(app)
 

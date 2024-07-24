@@ -42,7 +42,7 @@
         .global _stack
         .global _bss_start
         .global _bss_end
-        .global start_boot
+        .global main
 
 @************************ Internal Definitions ******************************
 @
@@ -58,6 +58,7 @@
 @
 @ to set the mode bits in CPSR for different modes
 @
+        .set MODE_MSK, 0x1F            @ Bit mask for mode bits in CPSR
         .set  MODE_USR, 0x10
         .set  MODE_FIQ, 0x11
         .set  MODE_IRQ, 0x12
@@ -123,9 +124,20 @@ Entry:
          MOV   sp,r0                           @ write the stack pointer
 
 @
+@ Enable Neon/VFP Co-Processor
+@
+		MRC p15, #0, r1, c1, c0, #2           @ r1 = Access Control Register
+		ORR r1, r1, #(0xf << 20)              @ enable full access for p10,11
+		MCR p15, #0, r1, c1, c0, #2           @ Access Control Register = r1
+		MOV r1, #0
+		MCR p15, #0, r1, c7, c5, #4           @flush prefetch buffer
+		MOV r0,#0x40000000
+		FMXR FPEXC, r0                        @ Set Neon/VFP Enable bit
+
+
+@
 @ Clear the BSS section here
 @
-
 Clear_Bss_Section:
 
          LDR   r0, =_bss_start                 @ Start address of BSS
@@ -137,16 +149,14 @@ Loop:
          BLE   Loop                            @ Clear till BSS end
 
 @
-@ Enter the main function.
+@ Enter the start_boot function. The execution still happens in system mode.
 @
-
-Enter_BootLoader:
-         LDR   r10,=main                   @ Get the address of main
-         MOV   lr,pc                           @ Dummy return
-         BX    r10                             @ Branch to main
+@Enter_main:
+         LDR   r10,=main
+         MOV   lr,pc                           @ Dummy return from start_boot
+         BX    r10                             @ Branch to start_boot
          SUB   pc, pc, #0x08                   @ looping
 
 @ End of the file
-@
          .end
 

@@ -38,6 +38,7 @@
 /*  Includes                                                             */
 /*=======================================================================*/
 #include <stdint.h>
+#include "init.h"
 
 /*=======================================================================*/
 /*  All Structures and Common Constants                                  */
@@ -72,6 +73,8 @@ int main (void)
   float    fa = 1.3f;
   float    fb = 2.7f;
   float    fc = 3.9f;
+
+   init_board();
   
   fa = fa + fd;
   a  = a + d + dd + must_zero_after_startup;
