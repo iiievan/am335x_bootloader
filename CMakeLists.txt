@@ -1,12 +1,6 @@
-cmake_minimum_required(VERSION 3.24)
-
-# project settings
-project(am335x_bootloader LANGUAGES ASM C CXX)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_STANDARD 11)
-
 set(CMAKE_SYSTEM_NAME               Generic)
 set(CMAKE_SYSTEM_PROCESSOR          arm)
+cmake_minimum_required(VERSION 3.24)
 
 # specify cross compilers and tools
 set(CMAKE_C_COMPILER arm-none-eabi-gcc)
@@ -17,6 +11,11 @@ set(CMAKE_OBJCOPY arm-none-eabi-objcopy)
 set(CMAKE_OBJDUMP arm-none-eabi-objdump)
 set(SIZE arm-none-eabi-size)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+
+# project settings
+project(am335x_bootloader LANGUAGES ASM C CXX)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_C_STANDARD 11)
 
 set(APP ${PROJECT_NAME})
 
@@ -45,6 +44,7 @@ set(_ASM_FLAGS ${_TARGET_CFLAGS}
         -x assembler-with-cpp
 )
 
+
 set(_EXE_LINKER_FLAGS
         -e Entry
         -u Entry
@@ -71,5 +71,7 @@ file(GLOB_RECURSE INIT_SRC
         ${PROJECT_SOURCE_DIR}/init/*.*
 )
 
+add_subdirectory(lib)
 add_subdirectory(app)
+
 

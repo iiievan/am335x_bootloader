@@ -15,7 +15,7 @@ void OnProjectLoad (void)
   Project.SetTargetIF ("JTAG");
   Project.SetTIFSpeed ("4 MHz");
   Project.AddSvdFile("Cortex-A8.svd");
-  File.Open("/home/mbokastnev/code/am335x_bootloader/cmake-build-debug/am335x_bootloader.elf");
+  File.Open("/home/mbokastnev/code/am335x_bootloader/cmake-build-debug/app/am335x_bootloader.elf");
 }
 
 /*********************************************************************
@@ -112,7 +112,7 @@ void TargetDownload (void)
    Util.Log("Loading Bootloader application");
    
    Edit.SysVar(VAR_RESET_MODE, RM_RESET_AND_RUN); 
-   Exec.Download("../cmake-build-debug/am335x_bootloader.hex");
+   Exec.Download("../cmake-build-debug/app/am335x_bootloader.elf");
 }
 
 /*********************************************************************

@@ -39,6 +39,7 @@
 /*=======================================================================*/
 #include <stdint.h>
 #include "init.h"
+#include "soc_AM335x.h"
 
 /*=======================================================================*/
 /*  All Structures and Common Constants                                  */
@@ -67,45 +68,47 @@ static uint32_t       must_zero_after_startup;
 /*************************************************************************/
 int main (void)
 {
-  uint32_t a  = 1;
-  uint32_t b  = 2;
-  uint32_t c  = 0;
-  float    fa = 1.3f;
-  float    fb = 2.7f;
-  float    fc = 3.9f;
+    uint32_t a  = 1;
+    uint32_t b  = 2;
+    uint32_t c  = 0;
+    float    fa = 1.3f;
+    float    fb = 2.7f;
+    float    fc = 3.9f;
 
-   init_board();
-  
-  fa = fa + fd;
-  a  = a + d + dd + must_zero_after_startup;
-  
-  /* A must be 16 here */
-  if (a != 16) while (1) {};
-    
-  while (1)
-  {
-    a++;
-    b++;
-    c = a + b;
-    
-    fa = fa + 2.6f;
-    fb = fb + 1.67f;
-    fc = fa + fb;
-  }
+    uint32_t * dmtimer_6_regs= (uint32_t *)SOC_DMTIMER_6_REGS;
 
-  /*
-   * Prevent compiler warnings
-   */
-  (void)fc;
-  (void)c;   
+    init_board();
   
-  /*
-   * This return here make no sense.
-   * But to prevent the compiler warning:
-   * "return type of 'main' is not 'int'
-   * we use an int as return :-)
-   */ 
-  return(0);
-} /* main */
+    fa = fa + fd;
+    a  = a + d + dd + must_zero_after_startup;
+  
+    /* A must be 16 here */
+    if (a != 16) while (1) {};
+    
+    while (1)
+    {
+      a++;
+      b++;
+      c = a + b;
+
+      fa = fa + 2.6f;
+      fb = fb + 1.67f;
+      fc = fa + fb;
+    }
+
+    /*
+     * Prevent compiler warnings
+     */
+    (void)fc;
+    (void)c;
+  
+    /*
+     * This return here make no sense.
+     * But to prevent the compiler warning:
+     * "return type of 'main' is not 'int'
+     * we use an int as return :-)
+     */
+    return(0);
+}
 
 /*** EOF ***/
