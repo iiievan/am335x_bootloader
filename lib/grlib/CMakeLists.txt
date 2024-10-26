@@ -5,8 +5,6 @@ project(grlib
         "AM335x graphics library")
 set(CMAKE_C_STANDARD 11)
 
-set(COMPILER gcc)
-
 file(GLOB_RECURSE FONTS_SRC ${PROJECT_SOURCE_DIR}/grlib/fonts/*.c)
 
 add_library(${PROJECT_NAME} STATIC ${FONTS_SRC}
@@ -30,8 +28,4 @@ add_library(${PROJECT_NAME} STATIC ${FONTS_SRC}
                                     slider.c
                                     string.c
                                     widget.c)
-
-
-add_definitions(-D${COMPILER})
-
 

@@ -5,8 +5,6 @@ project(platform
         "AM335x platform library")
 set(CMAKE_C_STANDARD 11)
 
-set(COMPILER gcc)
-
 add_library(${PROJECT_NAME} STATIC board.c
                                    cpsw.c
                                    ctlregcontext.c
@@ -25,5 +23,7 @@ add_library(${PROJECT_NAME} STATIC board.c
                                    usb.c
                                    watchdog.c)
 
-add_definitions(-Dam335x -Dbeaglebone -D${COMPILER})
+target_link_libraries(${PROJECT_NAME} PRIVATE drivers)
+
+add_definitions(-Dam335x -Dbeaglebone)
 

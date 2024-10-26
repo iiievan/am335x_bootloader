@@ -39,25 +39,31 @@
 /*=======================================================================*/
 #include <stdint.h>
 #include "init.h"
-#include "soc_AM335x.h"
+#include "uartStdio.h"
+#include "bl_copy.h"
+#include "bl_platform.h"
+#include "bl.h"
 
-/*=======================================================================*/
-/*  All Structures and Common Constants                                  */
-/*=======================================================================*/
+/******************************************************************************
+**                    External Variable Declararions
+*******************************************************************************/
 
-/*=======================================================================*/
-/*  Definition of all global Data                                        */
-/*=======================================================================*/
+extern char *deviceType;
 
-/*=======================================================================*/
-/*  Definition of all local Data                                         */
-/*=======================================================================*/
-static const uint32_t d  = 7;
-static const float    fd = 5.3f;
-static uint32_t       dd = 8;
 
-/* Must be 0, BSS must be cleared by the startup */
-static uint32_t       must_zero_after_startup;
+/******************************************************************************
+**                     Local Function Declararion
+*******************************************************************************/
+
+static void (*appEntry)();
+
+
+/******************************************************************************
+**                     Global Variable Definitions
+*******************************************************************************/
+
+unsigned int entryPoint = 0;
+unsigned int DspEntryPoint = 0;
 
 /*=======================================================================*/
 /*  All code exported                                                    */
@@ -68,46 +74,27 @@ static uint32_t       must_zero_after_startup;
 /*************************************************************************/
 int main (void)
 {
-    uint32_t a  = 1;
-    uint32_t b  = 2;
-    uint32_t c  = 0;
-    float    fa = 1.3f;
-    float    fb = 2.7f;
-    float    fc = 3.9f;
-
-    uint32_t * dmtimer_6_regs= (uint32_t *)SOC_DMTIMER_6_REGS;
-
     init_board();
+    // Configures PLL and DDR controller
+    BlPlatformConfig();
   
-    fa = fa + fd;
-    a  = a + d + dd + must_zero_after_startup;
-  
-    /* A must be 16 here */
-    if (a != 16) while (1) {};
-    
-    while (1)
-    {
-      a++;
-      b++;
-      c = a + b;
+    UARTPuts("StarterWare ", -1);
+    UARTPuts(deviceType, -1);
+    UARTPuts(" Boot Loader\n\r", -1);
 
-      fa = fa + 2.6f;
-      fb = fb + 1.67f;
-      fc = fa + fb;
-    }
+    // Copies application from non-volatile flash memory to RAM
+    //ImageCopy();
 
-    /*
-     * Prevent compiler warnings
-     */
-    (void)fc;
-    (void)c;
-  
-    /*
-     * This return here make no sense.
-     * But to prevent the compiler warning:
-     * "return type of 'main' is not 'int'
-     * we use an int as return :-)
-     */
+    UARTPuts("Jumping to StarterWare Application...\r\n\n", -1);
+
+    // Do any post-copy config before leaving bootloader
+    BlPlatformConfigPostBoot();
+
+    /* Giving control to the application */
+    appEntry = (void (*)(void)) entryPoint;
+
+    (*appEntry)( );
+
     return(0);
 }
 

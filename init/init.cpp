@@ -10,7 +10,6 @@ extern "C" void AbortHandler(void);
 extern "C" void IRQHandler(void);
 extern "C" void FIQHandler(void);
 
-
 static uint32_t const vec_tbl[14]=
 {
     0xE59FF018,    /* Opcode for loading PC with the contents of [PC + 0x18] */
@@ -48,6 +47,6 @@ void init_board(void)
     copy_vector_table();
 
     /// ��� ��������� ������ ����� �� ���� ��������� Cortex M3 ��������� �������� ������������ ���������, ��� � MMU.///
-    //InitMem();                          // Initiate MMU and instruction Cache  
+    //InitMem();                        // Initiate MMU and instruction Cache
     CP15BranchPredictionEnable();       // Enable Branch Prediction �������� ������������ ��������� - ����� ��� ��������� ������.    
 }

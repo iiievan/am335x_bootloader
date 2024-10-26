@@ -5,8 +5,6 @@ project(utils
         "AM335x utils library")
 set(CMAKE_C_STANDARD 11)
 
-set(COMPILER gcc)
-
 add_library(${PROJECT_NAME} STATIC ascii.c
                                    board.c
                                    cmdline.c
@@ -17,5 +15,5 @@ add_library(${PROJECT_NAME} STATIC ascii.c
                                    systick.c
                                    uartStdio.c)
 
-add_definitions(-D${COMPILER})
+target_link_libraries(${PROJECT_NAME} PRIVATE platform)
 
