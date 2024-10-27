@@ -83,7 +83,7 @@ int main (void)
     UARTPuts(" Boot Loader\n\r", -1);
 
     // Copies application from non-volatile flash memory to RAM
-    //ImageCopy();
+    ImageCopy();
 
     UARTPuts("Jumping to StarterWare Application...\r\n\n", -1);
 
