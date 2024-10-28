@@ -21,11 +21,11 @@ static uint32_t const vec_tbl[14]=
     0xE59FF010,    /* Opcode for loading PC with the contents of [PC + 0x10] */
     0xE59FF010,    /* Opcode for loading PC with the contents of [PC + 0x10] */
     (uint32_t)Entry,
-    //(uint32_t)UndefInstHandler,
-    //(uint32_t)SVC_Handler,
-    //(uint32_t)AbortHandler,
-    //(uint32_t)IRQHandler,
-    //(uint32_t)FIQHandler
+    (uint32_t)UndefInstHandler,
+    (uint32_t)SVC_Handler,
+    (uint32_t)AbortHandler,
+    (uint32_t)IRQHandler,
+    (uint32_t)FIQHandler
 };
 
 static void copy_vector_table(void)

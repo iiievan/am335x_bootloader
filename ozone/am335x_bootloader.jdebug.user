@@ -1,18 +1,26 @@
 
 
+
+Breakpoint=/home/mbokastnev/code/am335x_bootloader/app/src/bl_platform.c:913, State=BP_STATE_ON
+OpenDocument="exceptionhandler.s", FilePath="/home/mbokastnev/code/am335x_bootloader/lib/system/exceptionhandler.s", Line=152
+OpenDocument="init.cpp", FilePath="/home/mbokastnev/code/am335x_bootloader/init/init.cpp", Line=0
+OpenDocument="hsi2c.c", FilePath="/home/mbokastnev/code/am335x_bootloader/lib/drivers/hsi2c.c", Line=1041
+OpenDocument="bl_platform.c", FilePath="/home/mbokastnev/code/am335x_bootloader/app/src/bl_platform.c", Line=897
 OpenDocument="am335x_bootloader.jdebug", FilePath="/home/mbokastnev/code/am335x_bootloader/ozone/am335x_bootloader.jdebug", Line=0
-OpenDocument="main.cpp", FilePath="/home/mbokastnev/code/am335x_bootloader/app/main.cpp", Line=48
+OpenDocument="main.cpp", FilePath="/home/mbokastnev/code/am335x_bootloader/app/main.cpp", Line=40
 OpenToolbar="Debug", Floating=0, x=0, y=0
-OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=2, w=610, h=364, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
-OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=610, h=254, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Watched Data 1", DockArea=RIGHT, x=0, y=1, w=610, h=347, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=2, w=610, h=285, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
+OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=610, h=375, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Watched Data 1", DockArea=RIGHT, x=0, y=1, w=610, h=305, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Functions", DockArea=LEFT, x=0, y=0, w=300, h=977, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Terminal", DockArea=BOTTOM, x=0, y=0, w=1069, h=318, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Console", DockArea=BOTTOM, x=1, y=0, w=1419, h=318, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 SmartViewPlugin="", Page="", Toolbar="Hidden", Window="SmartView 1"
-TableHeader="Functions", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Address";"Size";"#Insts";"Class";"Source"], ColWidths=[147;100;100;100;100;126]
+TableHeader="Functions", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Address";"Size";"#Insts";"Class";"Source"], ColWidths=[147;100;100;100;100;497]
 TableHeader="Power Sampling", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Ch 0"], ColWidths=[100;100;100]
-TableHeader="Registers 1", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Auto";"Name";"Value";"Description"], ColWidths=[100;199;105;315]
 TableHeader="Watched Data 1", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Location";"Refresh";"Access"], ColWidths=[100;100;100;310;100]
 TableHeader="RegisterSelectionDialog", SortCol="None", SortOrder="ASCENDING", VisibleCols=[], ColWidths=[]
-TableHeader="TargetExceptionDialog", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Address";"Description"], ColWidths=[27;27;27;27]
+TableHeader="TargetExceptionDialog", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Address";"Description"], ColWidths=[27;27;27;26]
+TableHeader="Registers 1", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Auto";"Name";"Value";"Description"], ColWidths=[100;199;105;206]
+WatchedExpression="rData", Window=Watched Data 1
+WatchedExpression="dataFromSlave", Window=Watched Data 1

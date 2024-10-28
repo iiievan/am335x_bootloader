@@ -37,9 +37,9 @@ add_custom_command(TARGET ${APP}.elf POST_BUILD
         COMMAND gcc ${PROJECT_SOURCE_DIR}/ti_image/tiimage.c -o tiimage.out
         COMMAND ./tiimage.out 0x402F0400 MMCSD ${BIN_FILE} MLO
         COMMAND rm -rf ${CMAKE_CURRENT_BINARY_DIR}/tiimage.out;
-        COMMAND mkdir mlo
-        COMMAND cp MLO ./mlo
-        COMMAND cp ${PROJECT_SOURCE_DIR}/ti_image/create-sdcard.sh .
+        #COMMAND mkdir mlo
+        #COMMAND cp MLO ./mlo
+        #COMMAND cp ${PROJECT_SOURCE_DIR}/ti_image/create-sdcard.sh .
         COMMENT "Building ${HEX_FILE}
         Building ${BIN_FILE}")
 
