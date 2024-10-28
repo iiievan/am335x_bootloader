@@ -42,8 +42,8 @@ SECTIONS
         {
             . = ALIGN(4);
             _bss_start = .;
-            *(.bss*)
-            *(COMMON)
+            *(.bss)
+            *(.bss.*)
             _bss_end = .;
         } >IRAM_MEM
 

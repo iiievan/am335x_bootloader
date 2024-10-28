@@ -343,7 +343,7 @@ char *deviceType = "AM335x";
 volatile unsigned char dataFromSlave[2];
 volatile unsigned char dataToSlave[3];
 volatile unsigned int tCount;
-volatile unsigned int rCount;
+volatile unsigned int rCount = 0;
 volatile unsigned int flag = 1;
 volatile unsigned int numOfBytes;
 volatile unsigned int oppMaxIdx;
@@ -906,6 +906,7 @@ void SetupReception(unsigned int dcount)
     while(I2CMasterBusBusy(SOC_I2C_0_REGS) == 0);
 
     /* Read the data from slave of dcount */
+    rCount = 0;
     while((dcount--))
     {
         while(0 == (I2CMasterIntRawStatus(SOC_I2C_0_REGS) & I2C_INT_RECV_READY));
