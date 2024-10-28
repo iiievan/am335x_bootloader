@@ -177,10 +177,14 @@ extern "C" {
 /* 
 **Setting the DDR2 frequency to 266MHz
 */
-#define DDRPLL_M_DDR2                     (266)
-#define DDRPLL_M_DDR3                     (303)
-#define DDRPLL_N		           23
-#define DDRPLL_M2		           1
+#define DDRPLL_M_DDR2                 (266)
+#if defined(beaglebone)								/*Used for beaglebone black only*/
+#define DDRPLL_M_DDR3                 (400)
+#else												/*Used for evmAM335X and evmskAM335X*/
+#define DDRPLL_M_DDR3                 (303)
+#endif
+#define DDRPLL_N		               23
+#define DDRPLL_M2		               1
 
 /*
 ** MACROS to configure SEL bit filed in VDD1_OP_REG of PMIC.
@@ -193,6 +197,7 @@ extern "C" {
 #define     PMIC_VOLT_SEL_1200MV      DCDC_VOLT_SEL_1200MV
 #define     PMIC_VOLT_SEL_1260MV      DCDC_VOLT_SEL_1275MV
 #define     PMIC_VOLT_SEL_1325MV      (0x11u)
+#define     DCDC_VOLT_SEL_1500MV      (0x18u) 		/*DDR3 voltage requirement*/
 
 #elif defined (evmAM335x) || defined (evmskAM335x)
 

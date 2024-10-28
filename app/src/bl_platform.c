@@ -63,6 +63,7 @@
     #include "hw_tps65910.h"
 #elif  (defined beaglebone)
     #include "hw_tps65217.h"
+    #include "pin_mux.h"  	/*This is required by the DDRVTT function,which is a necessary setting for DDR3 */
 #elif  (defined evmskAM335x)
     #include "hw_tps65910.h"
     #include "pin_mux.h"
@@ -151,8 +152,8 @@
 
 
 /* DDR3 init values */
-#ifdef evmAM335x
 
+#if  defined (evmAM335x)
 #define DDR3_CMD0_SLAVE_RATIO_0            (0x80)
 #define DDR3_CMD0_INVERT_CLKOUT_0          (0x0)
 #define DDR3_CMD1_SLAVE_RATIO_0            (0x80)
@@ -209,6 +210,65 @@
 ** PAGESIZE = 2 (10 column bits)
 */
 #define DDR3_EMIF_SDRAM_CONFIG             (0x61C04BB2)
+
+#elif defined (beaglebone)
+
+#define DDR3_CMD0_SLAVE_RATIO_0            (0x80)
+#define DDR3_CMD0_INVERT_CLKOUT_0          (0x0)
+#define DDR3_CMD1_SLAVE_RATIO_0            (0x80)
+#define DDR3_CMD1_INVERT_CLKOUT_0          (0x0)
+#define DDR3_CMD2_SLAVE_RATIO_0            (0x80)
+#define DDR3_CMD2_INVERT_CLKOUT_0          (0x0)
+
+#define DDR3_DATA0_RD_DQS_SLAVE_RATIO_0    (0x38)
+#define DDR3_DATA0_WR_DQS_SLAVE_RATIO_0    (0x44)
+#define DDR3_DATA0_FIFO_WE_SLAVE_RATIO_0   (0x94)
+#define DDR3_DATA0_WR_DATA_SLAVE_RATIO_0   (0x7d)
+
+#define DDR3_DATA0_RD_DQS_SLAVE_RATIO_1    (0x38)
+#define DDR3_DATA0_WR_DQS_SLAVE_RATIO_1    (0x44)
+#define DDR3_DATA0_FIFO_WE_SLAVE_RATIO_1   (0x94)
+#define DDR3_DATA0_WR_DATA_SLAVE_RATIO_1   (0x7d)
+
+#define DDR3_CONTROL_DDR_CMD_IOCTRL_0      (0x18B)
+#define DDR3_CONTROL_DDR_CMD_IOCTRL_1      (0x18B)
+#define DDR3_CONTROL_DDR_CMD_IOCTRL_2      (0x18B)
+
+#define DDR3_CONTROL_DDR_DATA_IOCTRL_0      (0x18B)
+#define DDR3_CONTROL_DDR_DATA_IOCTRL_1      (0x18B)
+
+#define DDR3_CONTROL_DDR_IO_CTRL           (0xefffffff)
+
+#define DDR3_EMIF_DDR_PHY_CTRL_1           (0x07)
+#define DDR3_EMIF_DDR_PHY_CTRL_1_DY_PWRDN         (0x00100000)
+#define DDR3_EMIF_DDR_PHY_CTRL_1_SHDW      (0x07)
+#define DDR3_EMIF_DDR_PHY_CTRL_1_SHDW_DY_PWRDN    (0x00100000)
+#define DDR3_EMIF_DDR_PHY_CTRL_2           (0x07)
+
+#define DDR3_EMIF_SDRAM_TIM_1              (0x0AAAD4DB)
+#define DDR3_EMIF_SDRAM_TIM_1_SHDW         (0x0AAAD4DB)
+
+#define DDR3_EMIF_SDRAM_TIM_2              (0x266B7FDA)
+#define DDR3_EMIF_SDRAM_TIM_2_SHDW         (0x266B7FDA)
+
+#define DDR3_EMIF_SDRAM_TIM_3              (0x501F867F)
+#define DDR3_EMIF_SDRAM_TIM_3_SHDM         (0x501F867F)
+
+#define DDR3_EMIF_SDRAM_REF_CTRL_VAL1      (0x00000C30)
+#define DDR3_EMIF_SDRAM_REF_CTRL_SHDW_VAL1 (0x00000C30)
+
+#define DDR3_EMIF_ZQ_CONFIG_VAL            (0x50074BE4)
+
+/*
+** termination = 1 (RZQ/4)
+** dynamic ODT = 2 (RZQ/2)
+** SDRAM drive = 0 (RZQ/6)
+** CWL = 0 (CAS write latency = 5)
+** CL = 2 (CAS latency = 5)
+** ROWSIZE = 7 (16 row bits)
+** PAGESIZE = 2 (10 column bits)
+*/
+#define DDR3_EMIF_SDRAM_CONFIG             (0x61C05332)
 
 #else
 
@@ -329,9 +389,7 @@
 **                     Local function Declarations
 *******************************************************************************/
 
-#ifdef evmskAM335x
 static void DDRVTTEnable(void);
-#endif
 extern void SPIConfigure(void);
 extern void I2C1ModuleClkConfig(void);
 
@@ -349,6 +407,7 @@ volatile unsigned int numOfBytes;
 volatile unsigned int oppMaxIdx;
 volatile unsigned int deviceVersion;
 volatile unsigned int freqMultDDR;
+unsigned         char isBBB = 0;
 
 /*
 ** OPP table for mpu multiplier and pmic voltage select.
@@ -389,17 +448,17 @@ unsigned int BootMaxOppGet(void)
     unsigned int oppIdx;
     unsigned int oppSupport = SysConfigOppDataGet();
 
-    if(DEVICE_VERSION_1_0 == deviceVersion)
+    if(DEVICE_VERSION_1_0 == deviceVersion) 		/*frequency setting related to device version 1.0*/
     {
         oppIdx = EFUSE_OPPTB_720;
     }
-    else if(DEVICE_VERSION_2_0 == deviceVersion)
+    else if((DEVICE_VERSION_2_0 == deviceVersion) || (DEVICE_VERSION_2_1 == deviceVersion)) /*frequency setting related to device version 2.x*/
     {
-        oppIdx = EFUSE_OPPTB_800;
-    }
-    else if(DEVICE_VERSION_2_1 == deviceVersion)
-    {
-        if(!(oppSupport & EFUSE_OPPNT_1000_MASK))
+        if(oppSupport == 0)							/*possible for experimental devices whose part number starting with X*/
+        {
+            oppIdx = EFUSE_OPPTB_800;
+        }
+        else if(!(oppSupport & EFUSE_OPPNT_1000_MASK))
         {
             oppIdx = EFUSE_OPPNT_1000;
         }
@@ -419,7 +478,7 @@ unsigned int BootMaxOppGet(void)
         {
             oppIdx = EFUSE_OPP100_300;
         }
-        else
+        else										/*possible if fuses are not blown for experimental devices whose part number starting with X*/
         {
             oppIdx = EFUSE_OPP50_300;
         }
@@ -1311,12 +1370,24 @@ void ConfigVddOpVoltage(void)
     TPS65217RegWrite(PROT_LEVEL_NONE, POWER_PATH, USB_INPUT_CUR_LIMIT_1300MA,
                        USB_INPUT_CUR_LIMIT_MASK);
 
+    /* Set DCDC1 (DDR3) voltage to 1.5V */
+    if(isBBB)
+    {
+        TPS65217VoltageUpdate(DEFDCDC1, DCDC_VOLT_SEL_1500MV);
+    }
+
     /* Set DCDC2 (MPU) voltage to 1.275V */
     TPS65217VoltageUpdate(DEFDCDC2, DCDC_VOLT_SEL_1275MV);
 
-    /* Set LDO3, LDO4 output voltage to 3.3V */
-    TPS65217RegWrite(PROT_LEVEL_2, DEFLS1, LDO_VOLTAGE_OUT_3_3, LDO_MASK);
-
+    /* Set LDO3, LDO4 output voltages according to the board */
+    if(isBBB)
+    {
+        TPS65217RegWrite(PROT_LEVEL_2, DEFLS1, LDO_VOLTAGE_OUT_1_8, LDO_MASK);
+    }
+    else
+    {
+        TPS65217RegWrite(PROT_LEVEL_2, DEFLS1, LDO_VOLTAGE_OUT_3_3, LDO_MASK);
+    }
 
     TPS65217RegWrite(PROT_LEVEL_2, DEFLS2, LDO_VOLTAGE_OUT_3_3, LDO_MASK);
 
@@ -1839,6 +1910,12 @@ void UARTSetup(void)
 void BlPlatformConfig(void)
 {
     BoardInfoInit();
+#ifdef beaglebone
+    if(!strcmp(boardName,BNL_BOARD_NAME))
+    {
+        isBBB = TRUE;
+    }
+#endif
     deviceVersion = DeviceVersionGet();
     ConfigVddOpVoltage();
 
@@ -1865,7 +1942,14 @@ void BlPlatformConfig(void)
         freqMultDDR = DDRPLL_M_DDR2;
     }
 #else
-    freqMultDDR = DDRPLL_M_DDR2;
+    if(isBBB)
+    {
+        freqMultDDR = DDRPLL_M_DDR3;
+    }
+    else
+    {
+        freqMultDDR = DDRPLL_M_DDR2;
+    }
 #endif
 
     /* Set the PLL0 to generate 300MHz for ARM */
@@ -1894,10 +1978,16 @@ void BlPlatformConfig(void)
         DDR2Init();
     }
 #else
-    DDR2Init();
+    if(isBBB)
+    {
+        DDRVTTEnable();
+        DDR3Init();
+    }
+    else
+    {
+        DDR2Init();
+    }
 #endif
-
-
 
     /* UART Initialization */
     UARTSetup();
@@ -1907,7 +1997,7 @@ void BlPlatformConfig(void)
 ** Enable DDR_VTT.
 **
 */
-#ifdef evmskAM335x
+
 static void DDRVTTEnable(void)
 {
     GPIO0ModuleClkConfig();
@@ -1929,7 +2019,6 @@ static void DDRVTTEnable(void)
                  GPIO_PIN_HIGH);
 
 }
-#endif
 
 /*
  * \brief This function does any post boot setup/init
