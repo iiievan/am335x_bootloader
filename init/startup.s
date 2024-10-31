@@ -36,7 +36,7 @@
 @  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @
 @******************************************************************************
-
+.section .startup
 @****************************** Global Symbols*******************************
         .global Entry
         .global _stack
@@ -76,7 +76,7 @@
 @ This code is assembled for ARM instructions
 @
         .code 32
-
+        .func Entry
 @******************************************************************************
 @
 @******************************************************************************

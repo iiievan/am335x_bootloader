@@ -10,6 +10,9 @@
 */
 void OnProjectLoad (void) 
 {
+  Debug.SetResetMode (RM_BREAK_AT_SYMBOL);
+  Edit.SysVar (VAR_BREAK_AT_THIS_SYMBOL, "__my_startup");
+  Edit.SysVar (VAR_STARTUP_COMPLETION_POINT, "__my_startup");
   Project.SetDevice ("AM3359");
   Project.SetHostIF ("USB", "");
   Project.SetTargetIF ("JTAG");
@@ -111,7 +114,7 @@ void TargetDownload (void)
    Util.Log("TargetDownload");
    Util.Log("Loading Bootloader application");
    
-   Edit.SysVar(VAR_RESET_MODE, RM_RESET_AND_RUN); 
+   Edit.SysVar(VAR_RESET_MODE, RM_BREAK_AT_SYMBOL); 
    Exec.Download("../cmake-build-debug/app/am335x_bootloader.elf");
 }
 

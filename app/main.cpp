@@ -38,7 +38,6 @@
 /*  Includes                                                             */
 /*=======================================================================*/
 #include <stdint.h>
-#include "init.h"
 #include "uartStdio.h"
 #include "bl_copy.h"
 #include "bl_platform.h"
@@ -74,7 +73,6 @@ unsigned int DspEntryPoint = 0;
 /*************************************************************************/
 int main (void)
 {
-    init_board();
     // Configures PLL and DDR controller
     BlPlatformConfig();
   

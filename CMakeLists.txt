@@ -19,7 +19,7 @@ set(CMAKE_C_STANDARD 11)
 
 set(APP ${PROJECT_NAME})
 
-set(LINKER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/init/${APP}.ld)
+set(LINKER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/startup/am335x.ld)
 
 set(_TARGET_CFLAGS
         -mcpu=cortex-a8
@@ -46,8 +46,6 @@ set(_ASM_FLAGS ${_TARGET_CFLAGS}
 
 
 set(_EXE_LINKER_FLAGS
-        -e Entry
-        -u Entry
         -u __aeabi_uidiv
         -u __aeabi_idiv
         -Wl,-gc-sections,--print-memory-usage
@@ -74,5 +72,6 @@ file(GLOB_RECURSE INIT_SRC
 add_subdirectory(lib)
 add_subdirectory(app)
 add_subdirectory(third-party)
+#add_subdirectory(startup)
 
 

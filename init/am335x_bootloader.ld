@@ -9,20 +9,26 @@
 
 MEMORY
 {
-    IRAM_MEM :   o = 0x402F0400,  l = 0x1FBFF      /* 127k internal Memory */
+    IRAM_MEM :   ORIGIN = 0x402F0400,  LENGTH = 0x1FBFF      /* 127k internal Memory */
 }
 
 OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
 OUTPUT_ARCH(arm)
 ENTRY(Entry)
 
+_iram_begin = 0x402F0400;
+
 SECTIONS
 {
+        . = _iram_begin;
+        . = ALIGN(4);
 
-        .rsthand :
+        /* Startup: This is where the program starts. */
+        .startup :
         {
             . = ALIGN(4);
-            *init.o      (.text)
+            *(.startup)
+            KEEP(*(.startup))
         } >IRAM_MEM
 
         .text :
@@ -38,12 +44,16 @@ SECTIONS
             *(.data*)
         } >IRAM_MEM
 
+        /* The uninitialized (zero-cleared) data section */
         .bss :
         {
-            . = ALIGN(4);
             _bss_start = .;
             *(.bss)
-            *(.bss.*)
+            . = ALIGN(4);
+            KEEP (*(.bss))
+            *(.bss*)
+            . = ALIGN(4);
+            KEEP (*(.bss*))
             _bss_end = .;
         } >IRAM_MEM
 

@@ -3,8 +3,12 @@ set(BOOT_SRC ${PROJECT_SOURCE_DIR}/app/src/bl_copy.c
              ${PROJECT_SOURCE_DIR}/app/src/bl_hsmmcsd.c
              ${PROJECT_SOURCE_DIR}/app/src/fat_mmcsd.c)
 
-add_executable(${APP}.elf main.cpp ${INIT_SRC}
-                                   ${BOOT_SRC})
+set(STARTUP_SRC ${PROJECT_SOURCE_DIR}/startup/crt0.cpp
+                ${PROJECT_SOURCE_DIR}/startup/crt0_init_ram.cpp
+                ${PROJECT_SOURCE_DIR}/startup/crt1.cpp
+                ${PROJECT_SOURCE_DIR}/startup/int_vect.cpp)
+
+add_executable(${APP}.elf main.cpp ${BOOT_SRC} ${STARTUP_SRC})
 
 target_link_libraries(${APP}.elf
         PRIVATE
@@ -39,7 +43,7 @@ add_custom_command(TARGET ${APP}.elf POST_BUILD
         COMMAND rm -rf ${CMAKE_CURRENT_BINARY_DIR}/tiimage.out;
         #COMMAND mkdir mlo
         #COMMAND cp MLO ./mlo
-        #COMMAND cp ${PROJECT_SOURCE_DIR}/ti_image/create-sdcard.sh .
+        COMMAND cp ${PROJECT_SOURCE_DIR}/ti_image/create-sdcard.sh .
         COMMENT "Building ${HEX_FILE}
         Building ${BIN_FILE}")
 

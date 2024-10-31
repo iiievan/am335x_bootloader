@@ -965,7 +965,7 @@ void SetupReception(unsigned int dcount)
     while(I2CMasterBusBusy(SOC_I2C_0_REGS) == 0);
 
     /* Read the data from slave of dcount */
-    rCount = 0;
+    //rCount = 0;
     while((dcount--))
     {
         while(0 == (I2CMasterIntRawStatus(SOC_I2C_0_REGS) & I2C_INT_RECV_READY));
