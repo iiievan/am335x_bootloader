@@ -2,6 +2,7 @@
 #define __DMTIMER_H
 
 #include <stdint.h>
+#include "utils.h"
 
 namespace REGS
 { 

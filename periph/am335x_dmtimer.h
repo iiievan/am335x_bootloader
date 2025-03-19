@@ -28,7 +28,7 @@ public:
                  * @brief   This API will start the timer. 
                  * @note    The timer must be configured before it is started/enabled.
                  **/
-		        void  enable();
+		void  enable();
 
                 /**
                  * @brief   This API will stop the timer. 

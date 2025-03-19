@@ -118,13 +118,28 @@ Entry:
          msr     cpsr_c,r0                     ; Change the mode
          ldr     sp,=SFE(CSTACK)               ; End of CSTACK
 
-        ; Invalidate and Enable Branch Prediction
-         MOV     r0, #0
+         ; Invalidate Branch Prediction
+         MOV     r0, #0                    
          MCR     p15, #0, r0, c7, c5, #6
          ISB
-         MRC     p15, #0, r0, c1, c0, #0
-         ORR     r0, r0, #0x00000800
-         MCR     p15, #0, r0, c1, c0, #0                                                         ; Write Domain Access Control Register
+         
+         ; Enable branch predictor
+         ;MRC     p15, #0, r0, c1, c0, #0
+         ;ORR     r0, r0, #0x00000800
+         ;MCR     p15, #0, r0, c1, c0, #0
+     
+         ;MOV     r0, #0x0
+         ;MCR     p15, 0, r0, c8, c7, 0        ; Invalidate TLB
+     
+         MOV     r0, #0
+         MCR     p15, 0, r0, c7, c5, 0         ; Invalidate instruction cache
+         
+         BL      BSP_DCacheInvalidateAll
+         
+         ; Set domain access
+         MRC     p15, 0, r0, c3, c0, 0         ; Read Domain Access Control Register
+         LDR     r0, =0x55555555               ; Set all Domains to Client
+         MCR     p15, 0, r0, c3, c0, 0         ; Write Domain Access Control Register 
      
      
          ; Turn on core features assumed to be enabled.
@@ -142,8 +157,25 @@ loop_zi_copy:
          CMP   r0, r1
          BLE   loop_zi_copy                    ; Clear till BSS end
 
-        ; Continue to ?main for more IAR specific system startup
-        B       __cmain
+         ; Continue to ?main for more IAR specific system startup
+         B       __cmain
+        
+BSP_DCacheInvalidateAll:
+        ; Invalidate L1 data cache
+        MOV32     r0, #0x1FF            ; Load set index
+BSP_DCacheInvalidateAll_loop_1:
+        MOV     r1, #0x00000003         ; Load number of ways
+BSP_DCacheInvalidateAll_loop_2:
+        MOV     r2, r1, LSL #30
+        ADD     r2, r2, r0, LSL #5
+        MCR     p15, 0, r2, c7, c6, 2
+        SUBS    r1, r1, #1
+        BGE     BSP_DCacheInvalidateAll_loop_2
+        SUBS    r0, r0, #1
+        BGE     BSP_DCacheInvalidateAll_loop_1
+        DSB
+
+        BX      lr
         
          END    
     

@@ -214,7 +214,7 @@
                 <debug>1</debug>
                 <option>
                     <name>CCDefines</name>
-                    <state></state>
+                    <state>am335x</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>
@@ -2122,6 +2122,15 @@
     <group>
         <name>app</name>
         <file>
+            <name>$PROJ_DIR$\app\board.hpp</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\app\init.cpp</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\app\init.h</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\app\main.cpp</name>
         </file>
     </group>
@@ -2143,10 +2152,25 @@
             </file>
         </group>
         <file>
+            <name>$PROJ_DIR$\periph\am335x_dmtimer.cpp</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\periph\am335x_dmtimer.h</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\periph\am335x_gpio.cpp</name>
         </file>
         <file>
             <name>$PROJ_DIR$\periph\am335x_gpio.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\periph\am335x_intc.cpp</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\periph\am335x_intc.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\periph\sys_timer.h</name>
         </file>
     </group>
     <group>
@@ -2156,6 +2180,12 @@
         </file>
         <file>
             <name>$PROJ_DIR$\regs\CONTROL_MODULE.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\regs\DMTIMER.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\regs\DMTIMER1MS.h</name>
         </file>
         <file>
             <name>$PROJ_DIR$\regs\GPIO.h</name>
@@ -2172,6 +2202,15 @@
     </group>
     <group>
         <name>startup</name>
+        <file>
+            <name>$PROJ_DIR$\startup\cp15.S</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\startup\cpu.S</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\startup\exceptionhandler.S</name>
+        </file>
         <file>
             <name>$PROJ_DIR$\startup\init.S</name>
         </file>
