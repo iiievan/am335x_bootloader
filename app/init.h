@@ -10,5 +10,8 @@ void per_pll_init(void);
 void ddr_pll_init(void);
 void interface_clocks_init(void);
 
+void ddr_init(void);
+uint8_t ddr_check(void);
+
 #endif  //__INIT_H
 

@@ -12,6 +12,8 @@
 #include "DMTIMER1MS.h"
 #include "prcm_.h"
 #include "uart.h"
+#include "control.h"
+#include "emif.h"
 
 extern "C" void Entry(void);
 extern "C" void UndefInstHandler(void);
@@ -102,7 +104,31 @@ void init_board(void)
     uart_hexdump(0x89ABCDEF);
     uart_puts((char *)"\n\r");
     
-    intc.master_IRQ_enable();    
+     // initialize DDR3L, values hardcoded for D2516EC4BXGGB 
+    ddr_init();
+  
+    if (REG(EMIF0_STATUS) & 0x4) 
+    {
+        uart_puts((char *)"DDR3L initialized\n\r");
+    } 
+    else 
+    {
+        uart_puts((char *)"DDR3L initialization failed...\n\r");
+        return;
+    }
+    
+    intc.master_IRQ_enable();
+    
+    // check reading and writing to external DRAM before continuing */
+    if (!ddr_check()) 
+    {
+        uart_puts((char *)"DDR3L read/write check passed\n\r");
+    } 
+    else 
+    {
+        uart_puts((char *)"DDR3L read/write check failed...\n\r");
+        return;
+    }        
 }
 
 
@@ -269,6 +295,98 @@ void interface_clocks_init(void)
   
   // L3 interconnect force wakeup 
   REG(CM_PER_L3_CLKSTCTRL) = 0x2;
+}
+
+void ddr_init(void) 
+{
+  // enable functional clock PD_PER_EMIF_GCLK 
+  REG(CM_PER_EMIF_CLKCTRL) = 0x2;
+  REG(CM_PER_EMIF_FW_CLKCTRL) = 0x2;
+
+  // wait for clocks to be enabled 
+  while (!((REG(CM_PER_L3_CLKSTCTRL) & 0x4) && (REG(CM_PER_L3_CLKSTCTRL) & 0x8))) {}
+
+  // Note beaglebone black does not have VTT termination 
+  // initialize virtual temperature process compensation 
+  REG(CONTROL_MODULE_VTP_CTRL) |= 0x40;
+  REG(CONTROL_MODULE_VTP_CTRL) &= ~0x1;
+  REG(CONTROL_MODULE_VTP_CTRL) |= 0x1;
+
+  while (!(REG(CONTROL_MODULE_VTP_CTRL) & 0x20)) {}
+
+  // PHY CONFIG CMD 
+  REG(CMD0_REG_PHY_CTRL_SLAVE_RATIO_0) = DDR3_CMD_SLAVE_RATIO;
+  REG(CMD0_REG_PHY_INVERT_CLKOUT_0) = DDR3_CMD_INVERT_CLKOUT;
+
+  REG(CMD1_REG_PHY_CTRL_SLAVE_RATIO_0) = DDR3_CMD_SLAVE_RATIO;
+  REG(CMD1_REG_PHY_INVERT_CLKOUT_0) = DDR3_CMD_INVERT_CLKOUT;
+
+  REG(CMD2_REG_PHY_CTRL_SLAVE_RATIO_0) = DDR3_CMD_SLAVE_RATIO;
+  REG(CMD2_REG_PHY_INVERT_CLKOUT_0) = DDR3_CMD_INVERT_CLKOUT;
+  
+  // PHY CONFIG DATA 
+  REG(DATA0_REG_PHY_RD_DQS_SLAVE_RATIO_0) = DDR3_DATA0_RD_DQS_SLAVE_RATIO;
+  REG(DATA0_REG_PHY_WR_DQS_SLAVE_RATIO_0) = DDR3_DATA0_WR_DQS_SLAVE_RATIO;
+  REG(DATA0_REG_PHY_FIFO_WE_SLAVE_RATIO_0) = DDR3_DATA0_FIFO_WE_SLAVE_RATIO;
+  REG(DATA0_REG_PHY_WR_DATA_SLAVE_RATIO_0) = DDR3_DATA0_WR_DATA_SLAVE_RATIO;
+
+  REG(DATA1_REG_PHY_RD_DQS_SLAVE_RATIO_0) = DDR3_DATA0_RD_DQS_SLAVE_RATIO;
+  REG(DATA1_REG_PHY_WR_DQS_SLAVE_RATIO_0) = DDR3_DATA0_WR_DQS_SLAVE_RATIO;
+  REG(DATA1_REG_PHY_FIFO_WE_SLAVE_RATIO_0) = DDR3_DATA0_FIFO_WE_SLAVE_RATIO;
+  REG(DATA1_REG_PHY_WR_DATA_SLAVE_RATIO_0) = DDR3_DATA0_WR_DATA_SLAVE_RATIO;
+
+  // IO CONTROL REGISTERS 
+  REG(CONTROL_MODULE_DDR_CMD0_IOCTRL) = DDR3_IOCTRL_VALUE;
+  REG(CONTROL_MODULE_DDR_CMD1_IOCTRL) = DDR3_IOCTRL_VALUE;
+  REG(CONTROL_MODULE_DDR_CMD2_IOCTRL) = DDR3_IOCTRL_VALUE;
+  REG(CONTROL_MODULE_DDR_DATA0_IOCTRL) = DDR3_IOCTRL_VALUE;
+  REG(CONTROL_MODULE_DDR_DATA1_IOCTRL) = DDR3_IOCTRL_VALUE;
+
+  // IO to work for DDR3 
+  REG(CONTROL_MODULE_DDR_IO_CTRL) &= ~0x10000000;
+  REG(CONTROL_MODULE_DDR_CKE_CTRL) |= 0x1;
+
+  // EMIF TIMING CONFIG 
+  REG(EMIF0_DDR_PHY_CTRL_1) = DDR3_READ_LATENCY;
+  REG(EMIF0_DDR_PHY_CTRL_1_SHDW) = DDR3_READ_LATENCY;
+  REG(EMIF0_DDR_PHY_CTRL_2) = DDR3_READ_LATENCY;
+
+  REG(EMIF0_SDRAM_TIM_1) = DDR3_SDRAM_TIMING1;
+  REG(EMIF0_SDRAM_TIM_1_SHDW) = DDR3_SDRAM_TIMING1;
+
+  REG(EMIF0_SDRAM_TIM_2) = DDR3_SDRAM_TIMING2;
+  REG(EMIF0_SDRAM_TIM_2_SHDW) = DDR3_SDRAM_TIMING2;
+
+  REG(EMIF0_SDRAM_TIM_3) = DDR3_SDRAM_TIMING3;
+  REG(EMIF0_SDRAM_TIM_3_SHDW) = DDR3_SDRAM_TIMING3;
+
+  REG(EMIF0_SDRAM_REF_CTRL) = DDR3_REF_CTRL;
+  REG(EMIF0_SDRAM_REF_CTRL_SHDW) = DDR3_REF_CTRL;
+  REG(EMIF0_ZQ_CONFIG) = DDR3_ZQ_CONFIG;
+  REG(EMIF0_SDRAM_CONFIG) = DDR3_SDRAM_CONFIG;
+}
+
+// read and write to some addresses in DDR, returns 0 on sucess 
+uint8_t ddr_check(void) 
+{
+    uint32_t i;
+    
+    // write to a bunch of addresses 
+    for (i = 0; i < 0x20000000; i += 0x2000) 
+    {
+        REG(DDR_START + i) = i;
+    }
+    
+    // read from the same addresses and compare with expected value
+    for (i = 0; i < 0x20000000; i += 0x2000) 
+    {
+      if (REG(DDR_START + i) != i) 
+      {
+        return 1;
+      }
+    }
+    
+    return 0;
 }
 
 
