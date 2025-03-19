@@ -10,6 +10,8 @@
 #include "sys_timer.h"
 #include "PRCM.h"
 #include "DMTIMER1MS.h"
+#include "prcm_.h"
+#include "uart.h"
 
 extern "C" void Entry(void);
 extern "C" void UndefInstHandler(void);
@@ -57,9 +59,21 @@ static void copy_vector_table(void)
     }
 }
 
+void input_callback(char c) 
+{
+  // echo input back out
+  uart_putc(c);
+}
+
 void init_board(void)
 { 
     copy_vector_table();
+    
+    mpu_pll_init();
+    core_pll_init();
+    per_pll_init();
+    ddr_pll_init();
+    interface_clocks_init();
            
     intc.init();                       //Initializing the ARM Interrupt Controller.
     
@@ -76,6 +90,186 @@ void init_board(void)
     USR_LED_3.sel_pinmode(PINS::e_GPMC_A8::gpio1_24);
     USR_LED_3.dir_set(REGS::GPIO::GPIO_OUTPUT);
     
+    uart_init(input_callback);
+    
+    USR_LED_0.set();
+    
+    uart_puts((char *)"bootloader started \r\n");
+    uart_puts((char *)"UART initialized \r\n");
+    
+    uart_hexdump(0x01234567);
+    uart_puts((char *)"\n\r");
+    uart_hexdump(0x89ABCDEF);
+    uart_puts((char *)"\n\r");
+    
     intc.master_IRQ_enable();    
 }
+
+
+// MPU PLL Configuration based on AM335x TRM 8.1.6.9.1 
+// 1GHz clock based on AM335x datasheet table 3.1 AM3358BZCZ100 
+void mpu_pll_init(void) 
+{
+  uint32_t x;
+  
+  // Switch PLL to bypass mode
+  x = REG(CM_CLKMODE_DPLL_MPU);
+  x &= ~0x7;
+  x |= 0x4;
+  REG(CM_CLKMODE_DPLL_MPU) = x;
+  
+  // wait for bypass status 
+  while (!(REG(CM_IDLEST_DPLL_MPU) & 0x100)) {}
+
+  // configure divider and multipler 
+  // DPLL_MULT = 1000, DPLL_DIV = 23 (actual division factor is N+1) 
+  // 24MHz*1000/24 = 1GHz 
+  REG(CM_CLKSEL_DPLL_MPU) = (1000 << 8) | (23);
+
+  // Set M2 Divider 
+  REG(CM_DIV_M2_DPLL_MPU) &= ~0x1F;
+  REG(CM_DIV_M2_DPLL_MPU) |= 1;
+
+  // Enable, locking PLL 
+  x = REG(CM_CLKMODE_DPLL_MPU);
+  x |= 0x7;
+  REG(CM_CLKMODE_DPLL_MPU) = x;
+  
+  // wait for locking to finish 
+  while (!(REG(CM_IDLEST_DPLL_MPU) & 0x1)) {}
+}
+
+// Core PLL Configuration based on AM335x TRM 8.1.6.7.1 
+// All values based on AM335x TRM Table 8-22 Core PLL Typical Frequencies OPP100 
+// clock source is 24MHz crystal on OSC0-IN (BBB schematic page 3) 
+void core_pll_init(void) 
+{
+  uint32_t x;
+  
+  // Switch PLL to bypass mode 
+  x = REG(CM_CLKMODE_DPLL_CORE);
+  x &= ~0x7;
+  x |= 0x4;
+  REG(CM_CLKMODE_DPLL_CORE) = x;
+  
+  // wait for bypass status 
+  while (!(REG(CM_IDLEST_DPLL_CORE) & 0x100)) {}
+
+  // configure divider and multipler 
+  // DPLL_MULT = 1000, DPLL_DIV = 23 (actual division factor is N+1) 
+  // 24MHz*1000/24 = 1GHz 
+  REG(CM_CLKSEL_DPLL_CORE) = (500 << 8) | (23);
+
+  // Set M4 Divider 
+  REG(CM_DIV_M4_DPLL_CORE) &= ~0x1F;
+  REG(CM_DIV_M4_DPLL_CORE) |= 10;
+
+  // Set the M5 Divider 
+  REG(CM_DIV_M5_DPLL_CORE) &= ~0x1F;
+  REG(CM_DIV_M5_DPLL_CORE) |= 8;
+
+  // Set the M6 Divider 
+  REG(CM_DIV_M6_DPLL_CORE) &= ~0x1F;
+  REG(CM_DIV_M6_DPLL_CORE) |= 4;
+
+  // Enable, locking PLL 
+  x = REG(CM_CLKMODE_DPLL_CORE);
+  x |= 0x7;
+  REG(CM_CLKMODE_DPLL_CORE) = x;
+  
+  // wait for locking to finish 
+  while (!(REG(CM_IDLEST_DPLL_CORE) & 0x1)) {}
+}
+
+// PER PLL Configuration based on AM335x TRM 8.1.6.8.1 
+// All values based on AM335x TRM Table 8-24 PER PLL Typical Frequencies OPP100 
+// clock source is 24MHz crystal on OSC0-IN (BBB schematic page 3) 
+void per_pll_init(void) 
+{
+  uint32_t x;
+  
+  // Switch PLL to bypass mode 
+  x = REG(CM_CLKMODE_DPLL_PER);
+  x &= ~0x7;
+  x |= 0x4;
+  REG(CM_CLKMODE_DPLL_PER) = x;
+  
+  // wait for bypass status 
+  while (!(REG(CM_IDLEST_DPLL_PER) & 0x100)) {}
+
+  // configure divider and multipler 
+  // DPLL_MULT = 960, DPLL_DIV = 23 (actual division factor is N+1) 
+  // 24MHz*960/24 = 960MHz 
+  REG(CM_CLKSEL_DPLL_PER) = (960 << 8) | (23);
+
+  // Set M2 Divider 
+  REG(CM_DIV_M2_DPLL_PER) &= ~0x7F;
+  REG(CM_DIV_M2_DPLL_PER) |= 5;
+
+  // Enable, locking PLL 
+  x = REG(CM_CLKMODE_DPLL_PER);
+  x |= 0x7;
+  REG(CM_CLKMODE_DPLL_PER) = x;
+  
+  // wait for locking to finish 
+  while (!(REG(CM_IDLEST_DPLL_PER) & 0x1)) {}
+}
+
+// DDR PLL Configuration based on AM335x TRM 8.1.6.11.1 
+// 400MHz based on Table 5-5 of AM335x datasheet DDR3L max frequency 
+// clock source is 24MHz crystal on OSC0-IN (BBB schematic page 3) 
+void ddr_pll_init(void) 
+{
+  uint32_t x;
+  
+  // Switch PLL to bypass mode 
+  x = REG(CM_CLKMODE_DPLL_DDR);
+  x &= ~0x7;
+  x |= 0x4;
+  REG(CM_CLKMODE_DPLL_DDR) = x;
+  
+  // wait for bypass status 
+  while (!(REG(CM_IDLEST_DPLL_DDR) & 0x100)) {}
+
+  // configure divider and multipler 
+  // DPLL_MULT = 400, DPLL_DIV = 23 (actual division factor is N+1) 
+  // 24MHz*400/24 = 400MHz 
+  REG(CM_CLKSEL_DPLL_DDR) = (400 << 8) | (23);
+
+  // Set M2 Divider 
+  REG(CM_DIV_M2_DPLL_DDR) &= ~0x1F;
+  REG(CM_DIV_M2_DPLL_DDR) |= 1;
+
+  // Enable, locking PLL 
+  x = REG(CM_CLKMODE_DPLL_DDR);
+  x |= 0x7;
+  REG(CM_CLKMODE_DPLL_DDR) = x;
+  
+  // wait for locking to finish 
+  while (!(REG(CM_IDLEST_DPLL_DDR) & 0x1)) {}
+}
+
+// initialize all the interface clocks and prcm domains we will be using 
+void interface_clocks_init(void) 
+{
+  // WKUP domain enable 
+  REG(CM_WKUP_CONTROL_CLKCTRL) = 0x2;
+  
+  // PER domain enable 
+  REG(CM_PER_L4LS_CLKCTRL) = 0x2;
+  
+  // L3 interconnect clocks enable 
+  REG(CM_PER_L3_CLKCTRL) = 0x2;
+
+  // WKUP domain force wakeup 
+  REG(CM_WKUP_CLKSTCTRL) = 0x2;
+  
+  // PER domain force wakeup 
+  REG(CM_PER_L4LS_CLKSTCTRL) = 0x2;
+  
+  // L3 interconnect force wakeup 
+  REG(CM_PER_L3_CLKSTCTRL) = 0x2;
+}
+
+
 

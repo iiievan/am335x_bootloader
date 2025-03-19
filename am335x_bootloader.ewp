@@ -336,6 +336,7 @@
                 <option>
                     <name>CCIncludePath2</name>
                     <state>$PROJ_DIR$\app</state>
+                    <state>$PROJ_DIR$\app\include</state>
                     <state>$PROJ_DIR$\startup</state>
                     <state>$PROJ_DIR$\utils</state>
                     <state>$PROJ_DIR$\regs</state>
@@ -2131,7 +2132,13 @@
             <name>$PROJ_DIR$\app\init.h</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\app\interrupt_.c</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\app\main.cpp</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\app\uart.c</name>
         </file>
     </group>
     <group>
