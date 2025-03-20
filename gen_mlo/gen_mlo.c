@@ -10,6 +10,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/* 1.To compile with MSVC and avoid safety warnings about fopen function
+ *   go to project settings->C/C++->preprocessor in field preprocessor definitions
+ *   add _CRT_SECURE_NO_WARNINGS;
+ * 2. to use the resulting gen_mlo.exe in IAR postbuild actions go to 
+ *   project settings->Build Actions. Add in field Post-build command line:
+ *   "$PROJ_DIR$\ti_image\gen_mlo.exe"  "$TARGET_BPATH$.bin" "$TARGET_DIR$\MLO"
+ * 3. To use standalone from cmd put compiled binary am335x_bootloader.bin from output IAR folder
+ *    to folder where gen_mlo.exe is and run from cmd .\gen_mlo.exe am335x_bootloader.bin MLO
+ * 4. For normal operation of the secondary bootloader it is necessary to format the card in FAT32 
+ *    file system with sector size 512 in windows explorer and place MLO file on it.
+ *    It is also very important that SYSTEMSTART section and Entry symbol in it is located at 
+ *    address 0x402f0400. To do this you need to write in the .icf file:
+ *
+ *    place at address mem:__ICFEDIT_region_RAM_start__
+ *                       { readonly section SYSTEMSTART };
+ *
+ *     and check .map file after compilation:
+ *      ...
+ *      CSTACK$$Limit           0x402f'4010          --   Gb  - Linker created -
+ *      Entry                   0x402f'0400         Code  Gb  init.o [5]
+ *      FIQHandler              0x402f'2748         Code  Gb  exceptionhandler.o [5]
+ *      ...
+ */
+
 int main(int argc, char** argv) {
 
   if (argc != 3) {

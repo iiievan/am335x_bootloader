@@ -666,7 +666,7 @@
             <data>
                 <extensions></extensions>
                 <cmdline></cmdline>
-                <hasPrio>1</hasPrio>
+                <hasPrio>96</hasPrio>
                 <buildSequence>inputOutputBased</buildSequence>
             </data>
         </settings>
@@ -675,7 +675,7 @@
             <archiveVersion>1</archiveVersion>
             <data>
                 <prebuild></prebuild>
-                <postbuild>"$PROJ_DIR$\ti_image\gen_mlo.exe"  "$TARGET_BPATH$.bin" "$TARGET_DIR$\MLO"</postbuild>
+                <postbuild>"$PROJ_DIR$\gen_mlo\gen_mlo.exe"  "$TARGET_BPATH$.bin" "$TARGET_DIR$\MLO"</postbuild>
             </data>
         </settings>
         <settings>
