@@ -1,6 +1,7 @@
-/.idea
-/cmake-*
-tests/cmake-*
-/Debug
-/Release
-/build
+Debug/
+Release/
+settings/
+.metadata/
+*.ewt
+*.dep
+*.html
