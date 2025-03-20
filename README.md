@@ -13,7 +13,8 @@ After few seconds, if initialization is successful, the bootloader will output t
 > 0x01234567  
 > 0x89ABCDEF    
 > DDR3L initialized  
-> DDR3L read/write check passed   
+> DDR3L read/write check passed
+
 and light up user led 0, user led 3 will blink periodically forever.
 
 That's it, you can load any application via debugger directly into ddr and debug it. 
