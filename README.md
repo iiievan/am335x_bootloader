@@ -1,23 +1,25 @@
-# am335x baremetal SPL
+# AM335x baremetal SPL
 
 This is a bootloader project for the **beaglebone black rev. C** board for barematal applications.
 It eventually generates a secondary bootloader (MLO file) which should be placed on the SD card. It initializes the D2516EC4BXGGB(look on the board) DDR3L to further load the baremetal application via JLINK or TIXDSv2 debugger. Therefore, no more .gel or .mac files is needed.
 This project succesfully tested on IAR EW for ARM 9.20.1. On other versions not testing.
 
-## using
+## Using
+Format BOOT sector of SD-card trough standart windows explorer context menu with default 512byte size of sector.
 Connect usb-ttl converter to UART0, start the terminal you are comfortable with, press reset and power up the beaglebone black.
-After few seconds,if initialization is successful, the bootloader will output the following lines to UART0 on the board:
+After few seconds, if initialization is successful, the bootloader will output the following lines to UART0 on the board:
 > bootloader started  
 > UART initialized   
 > 0x01234567  
 > 0x89ABCDEF    
 > DDR3L initialized  
 > DDR3L read/write check passed 
-and light up user led 0, user led 3 will blink periodically.
+and light up user led 0, user led 3 will blink periodically forever.
+
 That's it, you can load any application via debugger directly into ddr and debug it. 
 ![connections](./pictures/connections.jpg)
 
-## SPL file generation
+## SPL file generation in Windows
 To generate the image of the secondary bootloader it is necessary to compile the file in folder gen_mlo into an executable program. In this example this is done using msvc and visual studio, but you can do it in a linux environment using gcc.
 1. open visual studio and create simple console application c++ solution:
 ![console_app](./pictures/VS_console_app.jpg)
@@ -70,22 +72,23 @@ int main(int argc, char** argv)
 ![VS_settings](./pictures/VS_settings.jpg)
 4. Build poject.
 5. To use standalone generation from cmd put compiled binary am335x_bootloader.bin from output IAR folder
-   to folder where gen_mlo.exe is and run from cmd 
+   to folder where gen_mlo.exe is and run from cmd:
 ```
 .\gen_mlo.exe am335x_bootloader.bin MLO
 ```
 6. To use the resulting gen_mlo.exe in IAR postbuild actions go to 
  **project settings->Build Actions**. Add in field Post-build command line:
  ```
- "$PROJ_DIR$\ti_image\gen_mlo.exe"  "$TARGET_BPATH$.bin" "$TARGET_DIR$\MLO"
+ "$PROJ_DIR$\gen_mlo\gen_mlo.exe"  "$TARGET_BPATH$.bin" "$TARGET_DIR$\MLO"
  ```
 ![IAR_settings](./pictures/IAR_settings.jpg)
 
+> **WARNING**
 > For normal operation of the secondary bootloader it is necessary to format   
 > section (usually 128M) of SD card in FAT32 file system with sector size 512 in windows explorer   
 > and place MLO file on it.   
-> It is also very important that **SYSTEMSTAR** section and **Entry** symbol in it is located at    
-> address **0x402f0400**. To do this you need to write in the .icf file: 
+> It is also very important that **SYSTEMSTART** section and **Entry** symbol in it is located at    
+> address **0x402f0400**. To do this you need to write in the **.icf** file: 
 ```
 place at address mem:__ICFEDIT_region_RAM_start__
                       { readonly section SYSTEMSTART }; 
