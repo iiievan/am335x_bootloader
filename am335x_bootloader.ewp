@@ -675,7 +675,7 @@
             <archiveVersion>1</archiveVersion>
             <data>
                 <prebuild></prebuild>
-                <postbuild></postbuild>
+                <postbuild>"$PROJ_DIR$\ti_image\gen_mlo.exe"  "$TARGET_BPATH$.bin" "$TARGET_DIR$\MLO"</postbuild>
             </data>
         </settings>
         <settings>
