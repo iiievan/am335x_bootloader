@@ -1,7 +1,10 @@
 # am335x baremetal SPL
-This is a bootloader project for the beaglebone black rev. C board for barematal applications.
-It eventually generates a secondary bootloader (MLO file) which should be placed on the SD card. It initializes the D2516EC4BXGGB(look on the board) DDR3L to further load the baremetal application via JLINK or TIXDSv2 debugger. Therefore, no more .gel or .mac files is needed.
 
+This is a bootloader project for the **beaglebone black rev. C** board for barematal applications.
+It eventually generates a secondary bootloader (MLO file) which should be placed on the SD card. It initializes the D2516EC4BXGGB(look on the board) DDR3L to further load the baremetal application via JLINK or TIXDSv2 debugger. Therefore, no more .gel or .mac files is needed.
+This project succesfully tested on IAR EW for ARM 9.20.1. On other versions not testing.
+
+## using
 Connect usb-ttl converter to UART0, start the terminal you are comfortable with, press reset and power up the beaglebone black.
 After few seconds,if initialization is successful, the bootloader will output the following lines to UART0 on the board:
 > bootloader started  
