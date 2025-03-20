@@ -1,6 +1,6 @@
 # AM335x baremetal SPL
 
-This is a bootloader project for the **beaglebone black rev. C** board for barematal applications.
+This is C++ secondary bootloader project for the **beaglebone black rev. C** board for barematal applications.
 It eventually generates a secondary bootloader (MLO file) which should be placed on the SD card. It initializes the D2516EC4BXGGB(look on the board) DDR3L to further load the baremetal application via JLINK or TIXDSv2 debugger. Therefore, no more .gel or .mac files is needed.
 This project succesfully tested on IAR EW for ARM 9.20.1. On other versions not testing.
 
@@ -13,7 +13,7 @@ After few seconds, if initialization is successful, the bootloader will output t
 > 0x01234567  
 > 0x89ABCDEF    
 > DDR3L initialized  
-> DDR3L read/write check passed 
+> DDR3L read/write check passed   
 and light up user led 0, user led 3 will blink periodically forever.
 
 That's it, you can load any application via debugger directly into ddr and debug it. 
