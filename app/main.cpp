@@ -4,7 +4,7 @@
 #include "utils.h"
 
 int main()
-{   
+{     
     init_board();
     
     for ever

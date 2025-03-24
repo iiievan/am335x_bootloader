@@ -666,7 +666,7 @@
             <data>
                 <extensions></extensions>
                 <cmdline></cmdline>
-                <hasPrio>96</hasPrio>
+                <hasPrio>1</hasPrio>
                 <buildSequence>inputOutputBased</buildSequence>
             </data>
         </settings>
@@ -2193,6 +2193,9 @@
         </file>
         <file>
             <name>$PROJ_DIR$\regs\DMTIMER1MS.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\regs\EMIF.hpp</name>
         </file>
         <file>
             <name>$PROJ_DIR$\regs\GPIO.h</name>

@@ -14,6 +14,7 @@
 #include "uart.h"
 #include "control.h"
 #include "emif.h"
+#include "EMIF.hpp"
 
 extern "C" void Entry(void);
 extern "C" void UndefInstHandler(void);

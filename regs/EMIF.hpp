@@ -10,7 +10,7 @@ namespace REGS
     { 
     /*******************************************************************************************************************************************************************************/  
     
-    /*************************************************************************** AM335x_EMIF_Type Registers **********************************************************************/ 
+    /*************************************************************************** AM335x_DDR23mPHY_Type Registers **********************************************************************/ 
     
     /*******************************************************************************************************************************************************************************/      
         
@@ -215,11 +215,557 @@ namespace REGS
                 uint32_t                    :28;    // bit: 4..31 (R)  Reserved             
             } b;                                    // Structure used for bit access 
             uint32_t  reg;                          // Type used for register access 
-        } DLL_LOCK_DIFF_reg_t;        
+        } DLL_LOCK_DIFF_reg_t; 
 
-        struct AM335x_EMIF_Type
+    /*******************************************************************************************************************************************************************************/  
+    
+    /*************************************************************************** AM335x_EMIF4D_Type Registers **********************************************************************/ 
+    
+    /*******************************************************************************************************************************************************************************/      
+        
+        /* [reset state = 0x40443403] [offset = 0x0]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    MINOR   :6;     // bit: 0..6    (R) Minor Revision.
+                uint32_t            :2;     // bit: 7,6     (R) Reserved.
+                uint32_t    MAJOR   :3;     // bit: 8..10   (R) Major Revision.
+                uint32_t    RTL     :5;     // bit: 11..15  (R) RTL Version.
+                uint32_t    ID      :12;    // bit: 16..27  (R) EMIF module ID.
+                uint32_t            :2;     // bit: 28,29   (R) Reserved.
+                uint32_t    SCHEME  :2;     // bit: 30,31   (R) Used to distinguish between old and current schemes.           
+            } b;                            // Structure used for bit access 
+            uint32_t  reg;                  // Type used for register access 
+        } EMIF_MOD_ID_REV_reg_t;
+
+        /* [reset state = 0x40000000] [offset = 0x4]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t                    :2;     // bit: 0,1     (R) Reserved  
+                uint32_t    PHY_DLL_READY   :1;     // bit: 2       (R) DDR PHY Ready.
+                                                    //                  Reflects the value on the phy_ready port (active high) that defines
+                                                    //                  whether the DDR PHY is ready for normal operation.
+                uint32_t                    :26;    // bit: 3..28   (R) Reserved 
+                uint32_t    FAST_INIT       :1;     // bit: 29      (R) Fast Init.
+                                                    //                  Reflects the value on the config_fast_init port that defines whether
+                                                    //                  the EMIF fast initialization mode has been enabled.
+                                                    //                  [ 0x0 = Fast init disabled.
+                                                    //                    0x1 = Fast init enabled. ]
+                uint32_t    DUAL_CLK_MODE   :1;     // bit: 30      (R) Dual Clock mode.
+                                                    //                  Reflects the value on the config_dual_clk_mode port that defines
+                                                    //                  whether the ocp_clk and m_clk are asynchronous.
+                                                    //                  [ 0x0 = ocp_clk = m_clk.
+                                                    //                    0x1 = Asynchronous ocp_clk and m_clk. ] 
+                uint32_t    BE              :1;     // bit: 31      (R) Big Endian.
+                                                    //                  Reflects the value on the config_big_endian port that defines
+                                                    //                  whether the EMIF is in big or little endian mode.
+                                                    //                  [0x0 = Little endian; 
+                                                    //                   0x1 = Big endian]            
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } STATUS_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } SDRAM_CONFIG_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t       :2;     // bit: 0,1  (R)  Reserved  
+                uint32_t    PHY_DLL_READY   :1;     // bit: 0..3  (W) 
+                uint32_t       :26;     // bit: 0..3  (W) 
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } SDRAM_CONFIG_2_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } SDRAM_REF_CTRL_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } SDRAM_REF_CTRL_SHDW_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } SDRAM_TIM_1_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } SDRAM_TIM_1_SHDW_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } SDRAM_TIM_2_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } SDRAM_TIM_2_SHDW_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } SDRAM_TIM_3_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } SDRAM_TIM_3_SHDW_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } PWR_MGMT_CTRL_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } PWR_MGMT_CTRL_SHDW_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } OCP_CONFIG_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } OCP_CFG_VAL_1_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } OCP_CFG_VAL_2_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } PERF_CNT_1_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } PERF_CNT_2_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } PERF_CNT_CFG_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } PERF_CNT_SEL_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } PERF_CNT_TIM_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } READ_IDLE_CTRL_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } READ_IDLE_CTRL_SHDW_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } IRQSTATUS_RAW_SYS_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } IRQSTATUS_SYS_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } IRQENABLE_SET_SYS_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } IRQENABLE_CLR_SYS_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } ZQ_CONFIG_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } RW_LEV_RMP_WINDOW_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } RW_LEV_RMP_CTRL_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } RW_LEV_CTRL_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } DDR_PHY_CTRL_1_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } DDR_PHY_CTRL_1_SHDW_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } PCSM_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } CIDCS1MAPPING_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } CIDCS2MAPPING_reg_t;
+
+        /* [reset state = 0x] [offset = 0x]*/
+        typedef union 
+        {                                 /* 
+                                           */
+            struct 
+            {                                         
+                uint32_t    R   :1;     // bit: 0..3  (W) 
+                uint32_t                    :31;    // bit: 4..31 (R)  Reserved             
+            } b;                                    // Structure used for bit access 
+            uint32_t  reg;                          // Type used for register access 
+        } RW_EXEC_THRS_reg_t;
+
+
+        struct AM335x_EMIF4D_Type
+        {                                                                                      
+            __   EMIF_MOD_ID_REV_reg_t          EMIF_MOD_ID_REV;        // (0x0) 
+            __   STATUS_reg_t                   STATUS;                 // (0x4)
+            __   SDRAM_CONFIG_reg_t             SDRAM_CONFIG;           // (0x8)
+            __   SDRAM_CONFIG_2_reg_t           SDRAM_CONFIG_2;         // (0xC)
+            __   SDRAM_REF_CTRL_reg_t           SDRAM_REF_CTRL;         // (0x10)
+            __   SDRAM_REF_CTRL_SHDW_reg_t      SDRAM_REF_CTRL_SHDW;    // (0x14)
+            __   SDRAM_TIM_1_reg_t              SDRAM_TIM_1;            // (0x18)
+            __   SDRAM_TIM_1_SHDW_reg_t         SDRAM_TIM_1_SHDW;       // (0x1C)
+            __   SDRAM_TIM_2_reg_t              SDRAM_TIM_2;            // (0x20)
+            __   SDRAM_TIM_2_SHDW_reg_t         SDRAM_TIM_2_SHDW;       // (0x24)  
+            __   SDRAM_TIM_3_reg_t              SDRAM_TIM_3;            // (0x28) 
+            __   SDRAM_TIM_3_SHDW_reg_t         SDRAM_TIM_3_SHDW;       // (0x2C)
+            __R   uint32_t                      RESERVED1[2];
+            __   PWR_MGMT_CTRL_reg_t            PWR_MGMT_CTRL;          // (0x38)
+            __   PWR_MGMT_CTRL_SHDW_reg_t       PWR_MGMT_CTRL_SHDW;     // (0x3C)
+            __R   uint32_t                      RESERVED2[5];
+            __   OCP_CONFIG_reg_t               OCP_CONFIG;             // (0x54)
+            __   OCP_CFG_VAL_1_reg_t            OCP_CFG_VAL_1;          // (0x58)
+            __   OCP_CFG_VAL_2_reg_t            OCP_CFG_VAL_2;          // (0x5C)
+            __R   uint32_t                      RESERVED3[8];
+            __   PERF_CNT_1_reg_t               PERF_CNT_1;             // (0x80)
+            __   PERF_CNT_2_reg_t               PERF_CNT_2;             // (0x84)
+            __   PERF_CNT_CFG_reg_t             PERF_CNT_CFG;           // (0x88)
+            __   PERF_CNT_SEL_reg_t             PERF_CNT_SEL;           // (0x8C) 
+            __   PERF_CNT_TIM_reg_t             PERF_CNT_TIM;           // (0x90)
+            __R   uint32_t                      RESERVED4[1];
+            __   READ_IDLE_CTRL_reg_t           READ_IDLE_CTRL;         // (0x98)
+            __   READ_IDLE_CTRL_SHDW_reg_t      READ_IDLE_CTRL_SHDW;    // (0x9C)
+            __R   uint32_t                      RESERVED5[1];
+            __   IRQSTATUS_RAW_SYS_reg_t        IRQSTATUS_RAW_SYS;      // (0xA4)
+            __R   uint32_t                      RESERVED6[1];
+            __   IRQSTATUS_SYS_reg_t            IRQSTATUS_SYS;          // (0xAC)
+            __R   uint32_t                      RESERVED7[1];
+            __   IRQENABLE_SET_SYS_reg_t        IRQENABLE_SET_SYS;      // (0xB4)
+            __R   uint32_t                      RESERVED8[1];
+            __   IRQENABLE_CLR_SYS_reg_t        IRQENABLE_CLR_SYS;      // (0xBC)
+            __R   uint32_t                      RESERVED9[2];
+            __   ZQ_CONFIG_reg_t                ZQ_CONFIG;              // (0xC8)
+            __R   uint32_t                      RESERVED10[1];
+            __   RW_LEV_RMP_WINDOW_reg_t        RW_LEV_RMP_WINDOW;      // (0xD4) 
+            __   RW_LEV_RMP_CTRL_reg_t          RW_LEV_RMP_CTRL;        // (0xD8) 
+            __   RW_LEV_CTRL_reg_t              RW_LEV_CTRL;            // (0xDC)
+            __R   uint32_t                      RESERVED11[1];
+            __   DDR_PHY_CTRL_1_reg_t           DDR_PHY_CTRL_1;         // (0xE4)
+            __   DDR_PHY_CTRL_1_SHDW_reg_t      DDR_PHY_CTRL_1_SHDW;    // (0xE8)
+            __R   uint32_t                      RESERVED12[5];
+            __   PCSM_reg_t                     PCSM;                   // (0x100)
+            __   CIDCS1MAPPING_reg_t            CIDCS1MAPPING;          // (0x104)
+            __   CIDCS2MAPPING_reg_t            CIDCS2MAPPING;          // (0x108)
+            __R   uint32_t                      RESERVED13[5]; 
+            __   RW_EXEC_THRS_reg_t             RW_EXEC_THRS;           // (0x120)        
+        };
+
+        struct AM335x_DDR23mPHY_Type
         {     
-            __R   uint32_t              RESERVED[6];                                                                                 
+            __R   uint32_t              RESERVED[7];                                                                                 
             __W   CSR0_reg_t            CMD0_CTRL_SLAVE_RATIO_0;          // (0x01C)  DDR PHY Command 0 Address/Command Slave Ratio Register
             __R   uint32_t              RESERVED1[2];
             __W   DLD0_reg_t            CMD0_DLL_LOCK_DIFF_0;             // (0x028)  DDR PHY Command 0 Address/Command DLL Lock Difference Register
@@ -238,7 +784,7 @@ namespace REGS
             __W   RDQSSR0_reg_t         DATA0_RD_DQS_SLAVE_RATIO_0;       // (0x0C8)  DDR PHY Data Macro 0 Read DQS Slave Ratio Register
             __R   uint32_t              RESERVED7[4];
             __W   WDQSSR0_reg_t         DATA0_WR_DQS_SLAVE_RATIO_0;       // (0x0DC)  DDR PHY Data Macro 0 Write DQS Slave Ratio Register
-            __R   uint32_t              RESERVED8[];
+            __R   uint32_t              RESERVED8[4];
             __W   MWRLVLINI_RATIO_reg_t DATA0_WRLVL_INIT_RATIO_0;         // (0x0F0)  DDR PHY Data Macro 0 Write Leveling Init Ratio Register
             __R   uint32_t              RESERVED9[1];
             __W   MWRLVLINI_MODE_reg_t  DATA0_WRLVL_INIT_MODE_0;          // (0x0F8)  DDR PHY Data Macro 0 Write Leveling Init Mode Ratio Selection Register
@@ -272,9 +818,11 @@ namespace REGS
             __W   DLL_LOCK_DIFF_reg_t   DATA1_DLL_LOCK_DIFF_0;            // (0x1DC)  DDR PHY Data Macro 1 DLL Lock Difference Register
         };
 
-        constexpr uint32_t AM335x_EMIF_BASE = 0x44E1_2000; 
+        constexpr uint32_t AM335x_DDR23mPHY_BASE = 0x44E12000; 
+        constexpr uint32_t AM335x_EMIF0_BASE     = 0x4C000000;
 
-        constexpr AM335x_EMIF_Type  *AM335x_EMIF = ((AM335x_EMIF_Type *) AM335x_EMIF_BASE); 
+        constexpr AM335x_DDR23mPHY_Type  *AM335x_DDR23mPHY = reinterpret_cast<AM335x_DDR23mPHY_Type *>(AM335x_DDR23mPHY_BASE); 
+        constexpr AM335x_EMIF4D_Type     *AM335x_EMIF0     = reinterpret_cast<AM335x_EMIF4D_Type *>(AM335x_EMIF0_BASE); 
         
 
     } // namespace EMIF
