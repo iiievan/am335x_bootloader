@@ -244,18 +244,18 @@ namespace REGS
         /* (offset = 0x4) [reset = 0x40000000] */
         typedef union 
         {
-                                                  /* STATUS
-                                                   */
+                                                      /* STATUS
+                                                       */
             struct 
             {                                      
-                uint32_t                 : 2;      // bits 0..1   (R) Reserved
-                uint32_t    PHY_DLL_READY: 1;      // bit  2      (R) DDR PHY Ready [0x0 = not ready; 0x1 = ready]
-                uint32_t                 :26;      // bits 3..28  (R) Reserved
-                uint32_t    FAST_INIT    : 1;      // bit  29     (R) Fast Init enabled [0x0 = disabled; 0x1 = enabled]
-                uint32_t    DUAL_CLK_MODE: 1;      // bit  30     (R) Dual Clock mode [0x0 = synchronous; 0x1 = asynchronous]
-                uint32_t    BE           : 1;      // bit  31     (R) Big Endian mode [0x0 = little endian; 0x1 = big endian]
-            } b;                                   // bit access
-            uint32_t reg;                          // raw register
+                uint32_t                    : 2;      // bits 0..1   (R) Reserved
+                uint32_t    PHY_DLL_READY   : 1;      // bit  2      (R) DDR PHY Ready [0x0 = ready; 0x1 = not ready]
+                uint32_t                    :26;      // bits 3..28  (R) Reserved
+                uint32_t    FAST_INIT       : 1;      // bit  29     (R) Fast Init enabled [0x0 = disabled; 0x1 = enabled]
+                uint32_t    DUAL_CLK_MODE   : 1;      // bit  30     (R) Dual Clock mode [0x0 = synchronous; 0x1 = asynchronous]
+                uint32_t    BE              : 1;      // bit  31     (R) Big Endian mode [0x0 = little endian; 0x1 = big endian]
+            } b;                                      // bit access
+            uint32_t reg;                             // raw register
         } STATUS_reg_t;
         
         /* (offset = 0x8) [reset = 0x4104BAB2] */
@@ -265,44 +265,47 @@ namespace REGS
                                                    */
             struct 
             {                                      
-                uint32_t    PAGESIZE     : 3;      // bits 0..2   (RW) Page Size [see e_PAGESIZE]
-                uint32_t    EBANK        : 1;      // bit  3      (RW) External chip select [0x0 = CS0 only; 0x1 = CS0 and CS1]
-                uint32_t    IBANK        : 3;      // bits 4..6   (RW) Internal Bank setup [see e_IBANK]
-                uint32_t    ROWSIZE      : 3;      // bits 7..9   (RW) Row Size [see e_ROWSIZE]
-                uint32_t    CL           : 4;      // bits 10..13 (RW) CAS Latency [see e_CL]
-                uint32_t    NARROW_MODE  : 2;      // bits 14..15 (RW) Data bus width [0x0 = 32-bit; 0x1 = 16-bit]
-                uint32_t    CWL          : 2;      // bits 16..17 (RW) CAS Write latency [see e_CWL]
-                uint32_t    SDRAM_DRIVE  : 2;      // bits 18..19 (RW) Drive strength [see e_SDRAM_DRIVE]
-                uint32_t    DDR_DISABLE_DLL:1;     // bit  20     (RW) Disable DLL select [0x0 = enabled; 0x1 = disabled]
-                uint32_t    DYN_ODT      : 2;      // bits 21..22 (RW) Dynamic ODT [see e_DYN_ODT]
-                uint32_t    DDR2_DDQS    : 1;      // bit  23     (RW) DDR2 diff DQS enable [0x0 = single ended; 0x1 = differential]
-                uint32_t    DDR_TERM     : 3;      // bits 24..26 (RW) Termination resistor [see e_DDR_TERM]
-                uint32_t    IBANK_POS    : 2;      // bits 27..28 (RW) Internal bank position [see e_IBANK_POS]
-                uint32_t    SDRAM_TYPE   : 3;      // bits 29..31 (RW) SDRAM Type selection [see e_SDRAM_TYPE]
-            } b;                                   // bit access
-            uint32_t reg;                          // raw register
+                uint32_t    PAGESIZE        : 3;      // bits 0..2   (RW) Page Size [see e_PAGESIZE]
+                uint32_t    EBANK           : 1;      // bit  3      (RW) External chip select [0x0 = CS0 only; 0x1 = CS0 and CS1]
+                uint32_t    IBANK           : 3;      // bits 4..6   (RW) Internal Bank setup [see e_IBANK]
+                uint32_t    ROWSIZE         : 3;      // bits 7..9   (RW) Row Size [see e_ROWSIZE]
+                uint32_t    CL              : 4;      // bits 10..13 (RW) CAS Latency [see e_CL]
+                uint32_t    NARROW_MODE     : 2;      // bits 14..15 (RW) Data bus width [0x0 = 32-bit; 0x1 = 16-bit]
+                uint32_t    CWL             : 2;      // bits 16..17 (RW) DDR3 CAS Write latency [see e_CWL]
+                uint32_t    SDRAM_DRIVE     : 2;      // bits 18..19 (RW) Drive strength [see e_SDRAM_DRIVE]
+                uint32_t    DDR_DISABLE_DLL : 1;      // bit  20     (RW) Disable DLL select [0x0 = enabled; 0x1 = disabled]
+                uint32_t    DYN_ODT         : 2;      // bits 21..22 (RW) DDR3 Dynamic ODT [see e_DYN_ODT]
+                uint32_t    DDR2_DDQS       : 1;      // bit  23     (RW) DDR2 diff DQS enable [0x0 = single ended; 0x1 = differential]
+                uint32_t    DDR_TERM        : 3;      // bits 24..26 (RW) Termination resistor [see e_DDR_TERM]
+                uint32_t    IBANK_POS       : 2;      // bits 27..28 (RW) Internal bank position [see e_IBANK_POS]
+                uint32_t    SDRAM_TYPE      : 3;      // bits 29..31 (RW) SDRAM Type selection [see e_SDRAM_TYPE]
+            } b;                                      // bit access
+            uint32_t reg;                             // raw register
         } SDRAM_CONFIG_reg_t;
         
         /* Enums for multi-value fields */
         enum e_PAGESIZE : uint32_t 
         {
-            PAGE_256_WORDS = 0x0,
-            PAGE_512_WORDS = 0x1,
-            PAGE_1024_WORDS = 0x2,
-            PAGE_2048_WORDS = 0x3
+            PAGE_256_WORDS  = 0x0,  // 8 column bits
+            PAGE_512_WORDS  = 0x1,  // 9 column bits
+            PAGE_1024_WORDS = 0x2,  // 10 column bits
+            PAGE_2048_WORDS = 0x3   // 11 column bits
         };
         
         enum e_IBANK : uint32_t 
         {
-            BANK_1 = 0x0,
-            BANK_2 = 0x1,
-            BANK_4 = 0x2,
-            BANK_8 = 0x3
+            BANK_1 = 0x0,       // one bank
+            BANK_2 = 0x1,       // two bank
+            BANK_4 = 0x2,       // four banks
+            BANK_8 = 0x3        // eight banks
         };
         
         enum e_ROWSIZE : uint32_t 
         {
-            ROW_9_BITS = 0x0,
+            // This field is only used when reg_ibank_pos field in SDRAM Config
+            // register is set to 1, 2, or 3, or reg_ebank_pos field in SDRAM
+            // Config_2 register is set to 1.
+            ROW_9_BITS  = 0x0,
             ROW_10_BITS = 0x1,
             ROW_11_BITS = 0x2,
             ROW_12_BITS = 0x3,
@@ -314,6 +317,14 @@ namespace REGS
         
         enum e_CL : uint32_t 
         {
+            /*  The value of this field defines the CAS latency to be used when
+             *  accessing connected SDRAM devices.
+             *  Value of 2, 3, 5, and 6 (CAS latency of 2, 3, 1.5, and 2.5) are supported for DDR1.
+             *  Value of 2, 3, 4, and 5 (CAS latency of 2, 3, 4, and 5) are supported for DDR2.
+             *  Value of 2, 4, 6, 8, 10, 12, and 14 (CAS latency of 5, 6, 7, 8, 9, 10, and 11) are supported for DDR3.
+             *  Value of 2 and 3 (CAS latency of 2 and 3) are supported for LPDDR1.
+             *  All other values are reserved.
+             */
             CL_2 = 0x2,
             CL_3 = 0x3,
             CL_4 = 0x4,
@@ -327,6 +338,11 @@ namespace REGS
         
         enum e_CWL : uint32_t 
         {
+            /* 
+             * Value of 0, 1, 2, and 3 (CAS write latency of 5, 6, 7, and 8) are supported.
+             * Use the lowest value supported for best performance.
+             * All other values are reserved.
+             */
             CWL_5 = 0x0,
             CWL_6 = 0x1,
             CWL_7 = 0x2,
@@ -335,39 +351,48 @@ namespace REGS
         
         enum e_SDRAM_DRIVE : uint32_t 
         {
-            DRIVE_NORMAL = 0x0,
-            DRIVE_WEAK = 0x1,
-            DRIVE_RZQ6 = 0x0,
-            DRIVE_RZQ7 = 0x1,
-            DRIVE_FULL = 0x0,
-            DRIVE_HALF = 0x1,
-            DRIVE_QUARTER = 0x2,
-            DRIVE_EIGHTH = 0x3
+            DRIVE_NORMAL  = 0x0,    // DDR1/DDR2
+            DRIVE_WEAK    = 0x1,    // DDR1/DDR2
+            DRIVE_RZQ6    = 0x0,    // DDR3
+            DRIVE_RZQ7    = 0x1,    // DDR3
+            DRIVE_FULL    = 0x0,    // LPDDR1
+            DRIVE_HALF    = 0x1,    // LPDDR1
+            DRIVE_QUARTER = 0x2,    // LPDDR1
+            DRIVE_EIGHTH  = 0x3     // LPDDR1
         };
         
         enum e_DYN_ODT : uint32_t 
         {
-            ODT_OFF = 0x0,
-            ODT_RZQ4 = 0x1,
-            ODT_RZQ2 = 0x2
+            DYN_ODT_OFF  = 0x0,
+            DYN_ODT_RZQ4 = 0x1,
+            DYN_ODT_RZQ2 = 0x2
         };
         
         enum e_DDR_TERM : uint32_t 
         {
-            TERM_DISABLED = 0x0,
-            TERM_75_OHM = 0x1,
-            TERM_150_OHM = 0x2,
-            TERM_50_OHM = 0x3,
-            TERM_RZQ4 = 0x1,
-            TERM_RZQ2 = 0x2,
-            TERM_RZQ6 = 0x3,
-            TERM_RZQ12 = 0x4,
-            TERM_RZQ8 = 0x5
+            TERM_DISABLED = 0x0,    // DDR2
+            TERM_75_OHM   = 0x1,    // DDR2
+            TERM_150_OHM  = 0x2,    // DDR2
+            TERM_50_OHM   = 0x3,    // DDR2
+            TERM_RZQ4     = 0x1,    // DDR3
+            TERM_RZQ2     = 0x2,    // DDR3
+            TERM_RZQ6     = 0x3,    // DDR3
+            TERM_RZQ12    = 0x4,    // DDR3
+            TERM_RZQ8     = 0x5     // DDR3
         };
         
         enum e_IBANK_POS : uint32_t 
         {
-            IBANK_LOWER = 0x0,
+
+            /*
+             * Set to 0 to assign internal bank address bits from lower OCP
+             * address bits, as shown in the tables for OCP Address to
+             * DDR2/3/mDDR Address Mapping.
+             * Set to 1, 2, or 3 to assign internal bank address bits from higher
+             * OCP address, as shown in the tables for OCP Address to
+             * DDR2/3/mDDR Address Mapping.
+             */
+            IBANK_LOWER   = 0x0,
             IBANK_HIGHER1 = 0x1,
             IBANK_HIGHER2 = 0x2,
             IBANK_HIGHER3 = 0x3
@@ -375,10 +400,10 @@ namespace REGS
         
         enum e_SDRAM_TYPE : uint32_t 
         {
-            DDR1 = 0x0,
+            DDR1   = 0x0,
             LPDDR1 = 0x1,
-            DDR2 = 0x2,
-            DDR3 = 0x3
+            DDR2   = 0x2,
+            DDR3   = 0x3
         };
         
         /* (offset = 0xC) [reset = 0x0] */
@@ -387,13 +412,10 @@ namespace REGS
                                                   /* SDRAM_CONFIG_2
                                                    */
             struct 
-            {                                      
-                uint32_t                 : 5;      // bits 0..4   (R) Reserved
-                uint32_t                 : 2;      // bits 5..6   (RW) Reserved
-                uint32_t                 : 1;      // bit  7      (R) Reserved
-                uint32_t                 :19;      // bits 8..26  (R) Reserved
+            {
+                uint32_t                 :27;      // bits 0..26  (R)  Reserved
                 uint32_t    EBANK_POS    : 1;      // bit  27     (RW) External bank position [0x0 = lower OCP address; 0x1 = higher OCP address]
-                uint32_t                 : 4;      // bits 28..31 (R) Reserved
+                uint32_t                 : 4;      // bits 28..31 (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } SDRAM_CONFIG_2_reg_t;
@@ -406,14 +428,13 @@ namespace REGS
             struct 
             {                                      
                 uint32_t    REFRESH_RATE :16;      // bits 0..15  (RW) Refresh Rate
-                uint32_t                 : 7;      // bits 16..22 (R) Reserved
-                uint32_t    PASR         : 3;      // bits 23..25 (RW) Partial Array Self Refresh [see e_PASR]
-                uint32_t                 : 1;      // bit  26     (R) Reserved
-                uint32_t    ASR          : 1;      // bit  27     (RW) Auto Self Refresh [0x0 = manual; 0x1 = auto]
-                uint32_t    STR          : 1;      // bit  28     (RW) Self-refresh temp range [0x0 = normal; 0x1 = extended]
-                uint32_t                 : 1;      // bit  29     (R) Reserved
-                uint32_t    INITREF_DIS  : 1;      // bit  30     (RW) Init/Refresh disable [0x0 = enabled; 0x1 = disabled]
-                uint32_t                 : 1;      // bit  31     (R) Reserved
+                uint32_t                 : 8;      // bits 16..23 (R)  Reserved
+                uint32_t    PASR         : 3;      // bits 24..26 (RW) Partial Array Self Refresh [see e_PASR]
+                uint32_t                 : 1;      // bit  27     (R)  Reserved
+                uint32_t    ASR          : 1;      // bit  28     (RW) Auto Self Refresh [0x0 = manual; 0x1 = auto]
+                uint32_t    SRT          : 1;      // bit  29     (RW) Self-refresh temp range [0x0 = normal; 0x1 = extended]
+                uint32_t                 : 1;      // bit  30     (R)  Reserved
+                uint32_t    INITREF_DIS  : 1;      // bit  31     (RW) Init/Refresh disable [0x0 = enabled; 0x1 = disabled]
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } SDRAM_REF_CTRL_reg_t;
@@ -436,10 +457,10 @@ namespace REGS
                                                    */
             struct 
             {                                      
-                uint32_t    REFRESH_RATE_SHADOW:16;// bits 0..15  (RW) Shadow refresh rate
-                uint32_t                 :16;      // bits 16..31 (R) Reserved
-            } b;                                   // bit access
-            uint32_t reg;                          // raw register
+                uint32_t    REFRESH_RATE_SHADOW :16;    // bits 0..15  (RW) Shadow refresh rate
+                uint32_t                        :16;    // bits 16..31 (R) Reserved
+            } b;                                        // bit access
+            uint32_t reg;                               // raw register
         } SDRAM_REF_CTRL_SHDW_reg_t;
         
         /* (offset = 0x18) [reset = 0x08891599] */
@@ -456,7 +477,7 @@ namespace REGS
                 uint32_t    WR           : 4;      // bits 17..20 (RW) Write to Pre-charge
                 uint32_t    RCD          : 4;      // bits 21..24 (RW) Activate to Read/Write
                 uint32_t    RP           : 4;      // bits 25..28 (RW) Precharge to Activate
-                uint32_t                 : 3;      // bits 29..31 (R) Reserved
+                uint32_t                 : 3;      // bits 29..31 (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } SDRAM_TIM_1_reg_t;
@@ -475,7 +496,7 @@ namespace REGS
                 uint32_t    WR_SHADOW    : 4;      // bits 17..20 (RW) Shadow WR
                 uint32_t    RCD_SHADOW   : 4;      // bits 21..24 (RW) Shadow RCD
                 uint32_t    RP_SHADOW    : 4;      // bits 25..28 (RW) Shadow RP
-                uint32_t                 : 3;      // bits 29..31 (R) Reserved
+                uint32_t                 : 3;      // bits 29..31 (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } SDRAM_TIM_1_SHDW_reg_t;
@@ -493,7 +514,7 @@ namespace REGS
                 uint32_t    XSNR         : 9;      // bits 16..24 (RW) Self-Refresh exit delay
                 uint32_t                 : 3;      // bits 25..27 (RW) Reserved
                 uint32_t    XP           : 3;      // bits 28..30 (RW) Powerdown exit delay
-                uint32_t                 : 1;      // bit  31     (R) Reserved
+                uint32_t                 : 1;      // bit  31     (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } SDRAM_TIM_2_reg_t;
@@ -511,7 +532,7 @@ namespace REGS
                 uint32_t    XSNR_SHADOW  : 9;      // bits 16..24 (RW) Shadow XSNR
                 uint32_t                 : 3;      // bits 25..27 (RW) Reserved
                 uint32_t    XP_SHADOW    : 3;      // bits 28..30 (RW) Shadow XP
-                uint32_t                 : 1;      // bit  31     (R) Reserved
+                uint32_t                 : 1;      // bit  31     (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } SDRAM_TIM_2_SHDW_reg_t;
@@ -527,32 +548,30 @@ namespace REGS
                 uint32_t    RFC          : 9;      // bits 4..12  (RW) Refresh/Activate delay
                 uint32_t                 : 2;      // bits 13..14 (RW) Reserved
                 uint32_t    ZQ_ZQCS      : 6;      // bits 15..20 (RW) ZQCS command cycles
-                uint32_t                 : 3;      // bits 21..23 (RW) Reserved
-                uint32_t                 : 4;      // bits 24..27 (R) Reserved
+                uint32_t                 : 7;      // bits 24..27 (R)  Reserved
                 uint32_t    PDLL_UL      : 4;      // bits 28..31 (RW) PHY DLL unlock cycles
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } SDRAM_TIM_3_reg_t;
         
-        /* (offset = 0x2C) [reset = 0x00FFE82F] */
+        /* (offset = 0x2C) [reset = 0x00FFE82F 00000000 00000000] */
         typedef union 
         {
-                                                  /* SDRAM_TIM_3_SHDW
-                                                   */
+                                                     /* SDRAM_TIM_3_SHDW
+                                                      */
             struct 
             {                                      
-                uint32_t    RAS_MAX_SHADOW:4;      // bits 0..3   (RW) Shadow RAS_MAX
-                uint32_t    RFC_SHADOW   : 9;      // bits 4..12  (RW) Shadow RFC
-                uint32_t                 : 2;      // bits 13..14 (RW) Reserved
-                uint32_t    ZQ_ZQCS_SHADOW:6;     // bits 15..20 (RW) Shadow ZQ_ZQCS
-                uint32_t                 : 3;      // bits 21..23 (RW) Reserved
-                uint32_t                 : 4;      // bits 24..27 (R) Reserved
-                uint32_t    PDLL_UL_SHADOW:4;     // bits 28..31 (RW) Shadow PDLL_UL
-            } b;                                   // bit access
-            uint32_t reg;                          // raw register
+                uint32_t    RAS_MAX_SHADOW  : 4;     // bits 0..3   (RW) Shadow RAS_MAX
+                uint32_t    RFC_SHADOW      : 9;     // bits 4..12  (RW) Shadow RFC
+                uint32_t                    : 2;     // bits 13..14 (RW) Reserved
+                uint32_t    ZQ_ZQCS_SHADOW  : 6;     // bits 15..20 (RW) Shadow ZQ_ZQCS
+                uint32_t                    : 7;     // bits 24..27 (R) Reserved
+                uint32_t    PDLL_UL_SHADOW  : 4;     // bits 28..31 (RW) Shadow PDLL_UL
+            } b;                                     // bit access
+            uint32_t reg;                            // raw register
         } SDRAM_TIM_3_SHDW_reg_t;
         
-        /* (offset = 0x38) [reset = 0x00000000] */
+        /* (offset = 0x38) [reset = 0x0] */
         typedef union 
         {
                                                   /* PWR_MGMT_CTRL
@@ -598,20 +617,19 @@ namespace REGS
             LP_POWER_DOWN = 0x4
         };
         
-        /* (offset = 0x3C) [reset = 0x00000000] */
+        /* (offset = 0x3C) [reset = 0x0] */
         typedef union 
         {
-                                                  /* PWR_MGMT_CTRL_SHDW
-                                                   */
+                                                      /* PWR_MGMT_CTRL_SHDW
+                                                       */
             struct 
             {                                      
-                uint32_t    CS_TIM_SHADOW:4;       // bits 0..3   (RW) Shadow CS_TIM [see e_PWR_TIMER]
-                uint32_t    SR_TIM_SHADOW:4;       // bits 4..7   (RW) Shadow SR_TIM [see e_PWR_TIMER]
-                uint32_t                 : 4;      // bits 8..11  (R) Reserved
-                uint32_t    PD_TIM_SHADOW:4;       // bits 12..15 (RW) Shadow PD_TIM [see e_PWR_TIMER]
-                uint32_t                 :16;      // bits 16..31 (R) Reserved
-            } b;                                   // bit access
-            uint32_t reg;                          // raw register
+                uint32_t    CS_TIM_SHADOW   : 4;       // bits 0..3   (RW) Shadow CS_TIM [see e_PWR_TIMER]
+                uint32_t    SR_TIM_SHADOW   : 4;       // bits 4..7   (RW) Shadow SR_TIM [see e_PWR_TIMER]
+                uint32_t    PD_TIM_SHADOW   : 4;       // bits 8..11  (RW) Shadow PD_TIM [see e_PWR_TIMER]
+                uint32_t                    :20;       // bits 12..31 (R)  Reserved
+            } b;                                       // bit access
+            uint32_t reg;                              // raw register
         } PWR_MGMT_CTRL_SHDW_reg_t;
         
         /* (offset = 0x54) [reset = 0x00FFFFFF] */
@@ -624,7 +642,7 @@ namespace REGS
                 uint32_t    PR_OLD_COUNT : 8;      // bits 0..7   (RW) Priority Raise Old Counter
                 uint32_t    COS_COUNT_2  : 8;      // bits 8..15  (RW) Priority Counter COS 2
                 uint32_t    COS_COUNT_1  : 8;      // bits 16..23 (RW) Priority Counter COS 1
-                uint32_t                 : 8;      // bits 24..31 (R) Reserved
+                uint32_t                 : 8;      // bits 24..31 (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } OCP_CONFIG_reg_t;
@@ -632,16 +650,16 @@ namespace REGS
         /* (offset = 0x58) [reset = 0x8000140A] */
         typedef union 
         {
-                                                  /* OCP_CFG_VAL_1
-                                                   */
+                                                    /* OCP_CFG_VAL_1
+                                                     */
             struct 
             {                                      
-                uint32_t    CMD_FIFO_DEPTH:8;     // bits 0..7   (R) Command FIFO depth
-                uint32_t    WR_FIFO_DEPTH:8;      // bits 8..15  (R) Write Data FIFO depth
-                uint32_t                 :14;      // bits 16..29 (R) Reserved
-                uint32_t    SYS_BUS_WIDTH:2;      // bits 30..31 (R) L3 OCP data bus width [see e_SYS_BUS_WIDTH]
-            } b;                                   // bit access
-            uint32_t reg;                          // raw register
+                uint32_t    CMD_FIFO_DEPTH  : 8;     // bits 0..7    (R) Command FIFO depth
+                uint32_t    WR_FIFO_DEPTH   : 8;      // bits 8..15  (R) Write Data FIFO depth
+                uint32_t                    :14;      // bits 16..29 (R) Reserved
+                uint32_t    SYS_BUS_WIDTH   : 2;      // bits 30..31 (R) L3 OCP data bus width [see e_SYS_BUS_WIDTH]
+            } b;                                      // bit access
+            uint32_t reg;                             // raw register
         } OCP_CFG_VAL_1_reg_t;
         
         /* Enums for multi-value fields */
@@ -653,19 +671,19 @@ namespace REGS
             BUS_WIDTH_256 = 0x3
         };
         
-        /* (offset = 0x5C) [reset = 0x00021616] */
+        /* (offset = 0x5C) [reset = 0x00021616 00002011 00000000 00000000 00000000] */
         typedef union 
         {
                                                   /* OCP_CFG_VAL_2
                                                    */
             struct 
             {                                      
-                uint32_t    RCMD_FIFO_DEPTH:8;    // bits 0..7   (R) Read Command FIFO depth
-                uint32_t    RSD_FIFO_DEPTH:8;     // bits 8..15  (R) SDRAM Read Data FIFO depth
-                uint32_t    RREG_FIFO_DEPTH:8;    // bits 16..23 (R) Register Read FIFO depth
-                uint32_t                 : 8;      // bits 24..31 (R) Reserved
-            } b;                                   // bit access
-            uint32_t reg;                          // raw register
+                uint32_t    RCMD_FIFO_DEPTH     : 8;    // bits 0..7   (R) Read Command FIFO depth
+                uint32_t    RSD_FIFO_DEPTH      : 8;    // bits 8..15  (R) SDRAM Read Data FIFO depth
+                uint32_t    RREG_FIFO_DEPTH     : 8;    // bits 16..23 (R) Register Read FIFO depth
+                uint32_t                        : 8;    // bits 24..31 (R) Reserved
+            } b;                                        // bit access
+            uint32_t reg;                               // raw register
         } OCP_CFG_VAL_2_reg_t;
         
         /* (offset = 0x80) [reset = 0x00592A49] */
@@ -680,7 +698,7 @@ namespace REGS
             uint32_t reg;                          // raw register
         } PERF_CNT_1_reg_t;
         
-        /* (offset = 0x84) [reset = 0x0001FEB9] */
+        /* (offset = 0x84) [reset = 0x1FEB9] */
         typedef union 
         {
                                                   /* PERF_CNT_2
@@ -692,24 +710,23 @@ namespace REGS
             uint32_t reg;                          // raw register
         } PERF_CNT_2_reg_t;
         
-        /* (offset = 0x88) [reset = 0x00010000] */
+        /* (offset = 0x88) [reset = 0x10000] */
         typedef union 
         {
                                                   /* PERF_CNT_CFG
                                                    */
             struct 
             {                                      
-                uint32_t    CNTR1_CFG    : 4;      // bits 0..3   (RW) Counter 1 config
-                uint32_t                 :10;      // bits 4..13  (R) Reserved
-                uint32_t    CNTR1_REGION_EN:1;     // bit  14     (RW) Counter 1 region enable [0x0 = disabled; 0x1 = enabled]
-                uint32_t    CNTR1_MCONNID_EN:1;    // bit  15     (RW) Counter 1 MConnID enable [0x0 = disabled; 0x1 = enabled]
-                uint32_t    CNTR2_CFG    : 4;      // bits 16..19 (RW) Counter 2 config
-                uint32_t                 : 6;      // bits 20..25 (R) Reserved
-                uint32_t    CNTR2_REGION_EN:1;     // bit  26     (RW) Counter 2 region enable [0x0 = disabled; 0x1 = enabled]
-                uint32_t    CNTR2_MCONNID_EN:1;    // bit  27     (RW) Counter 2 MConnID enable [0x0 = disabled; 0x1 = enabled]
-                uint32_t                 : 4;      // bits 28..31 (R) Reserved
-            } b;                                   // bit access
-            uint32_t reg;                          // raw register
+                uint32_t    CNTR1_CFG        : 4;   // bits 0..3   (RW) Counter 1 config
+                uint32_t                     :10;   // bits 4..13  (R)  Reserved
+                uint32_t    CNTR1_REGION_EN  : 1;   // bit  14     (RW) Counter 1 region enable [0x0 = disabled; 0x1 = enabled]
+                uint32_t    CNTR1_MCONNID_EN : 1;   // bit  15     (RW) Counter 1 MConnID enable [0x0 = disabled; 0x1 = enabled]
+                uint32_t    CNTR2_CFG        : 4;   // bits 16..19 (RW) Counter 2 config
+                uint32_t                     : 10;  // bits 20..29 (R)  Reserved
+                uint32_t    CNTR2_REGION_EN  : 1;   // bit  30     (RW) Counter 2 region enable [0x0 = disabled; 0x1 = enabled]
+                uint32_t    CNTR2_MCONNID_EN : 1;   // bit  31     (RW) Counter 2 MConnID enable [0x0 = disabled; 0x1 = enabled]
+            } b;                                    // bit access
+            uint32_t reg;                           // raw register
         } PERF_CNT_CFG_reg_t;
         
         /* (offset = 0x8C) [reset = 0x0] */
@@ -720,16 +737,16 @@ namespace REGS
             struct 
             {                                      
                 uint32_t    REGION_SEL1  : 2;      // bits 0..1   (RW) MMddrSpace for Counter 1
-                uint32_t                 : 6;      // bits 2..7   (R) Reserved
+                uint32_t                 : 6;      // bits 2..7   (R)  Reserved
                 uint32_t    MCONNID1     : 8;      // bits 8..15  (RW) MConnID for Counter 1
                 uint32_t    REGION_SEL2  : 2;      // bits 16..17 (RW) MMddrSpace for Counter 2
-                uint32_t                 : 6;      // bits 18..23 (R) Reserved
+                uint32_t                 : 6;      // bits 18..23 (R)  Reserved
                 uint32_t    MCONNID2     : 8;      // bits 24..31 (RW) MConnID for Counter 2
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } PERF_CNT_SEL_reg_t;
         
-        /* (offset = 0x90) [reset = 0xA484D432] */
+        /* (offset = 0x90) [reset = 0xA484D432 00000000] */
         typedef union 
         {
                                                   /* PERF_CNT_TIM
@@ -741,34 +758,34 @@ namespace REGS
             uint32_t reg;                          // raw register
         } PERF_CNT_TIM_reg_t;
         
-        /* (offset = 0x98) [reset = 0x00050000] */
+        /* (offset = 0x98) [reset = 0x50000] */
         typedef union 
         {
                                                   /* READ_IDLE_CTRL
                                                    */
             struct 
             {                                      
-                uint32_t    READ_IDLE_INTERVAL:9;  // bits 0..8   (RW) Read idle interval
-                uint32_t                 : 7;      // bits 9..15  (R) Reserved
-                uint32_t    READ_IDLE_LEN:4;       // bits 16..19 (RW) Read idle length
-                uint32_t                 :12;      // bits 20..31 (R) Reserved
-            } b;                                   // bit access
-            uint32_t reg;                          // raw register
+                uint32_t    READ_IDLE_INTERVAL  :9;     // bits 0..8    (RW) Read idle interval
+                uint32_t                        :7;      // bits 9..15  (R)  Reserved
+                uint32_t    READ_IDLE_LEN       :4;      // bits 16..19 (RW) Read idle length
+                uint32_t                        :12;     // bits 20..31 (R)  Reserved
+            } b;                                         // bit access
+            uint32_t reg;                                // raw register
         } READ_IDLE_CTRL_reg_t;
         
-        /* (offset = 0x9C) [reset = 0x00050000] */
+        /* (offset = 0x9C) [reset = 0x0050000 00000000] */
         typedef union 
         {
-                                                  /* READ_IDLE_CTRL_SHDW
-                                                   */
+                                                                  /* READ_IDLE_CTRL_SHDW
+                                                                   */
             struct 
             {                                      
-                uint32_t    READ_IDLE_INTERVAL_SHADOW:9;// bits 0..8 (RW) Shadow interval
-                uint32_t                 : 7;      // bits 9..15  (R) Reserved
-                uint32_t    READ_IDLE_LEN_SHADOW:4;// bits 16..19 (RW) Shadow length
-                uint32_t                 :12;      // bits 20..31 (R) Reserved
-            } b;                                   // bit access
-            uint32_t reg;                          // raw register
+                uint32_t    READ_IDLE_INTERVAL_SHADOW   : 9;        // bits 0..8   (RW) Shadow interval
+                uint32_t                                : 7;        // bits 9..15  (R)  Reserved
+                uint32_t    READ_IDLE_LEN_SHADOW        : 4;        // bits 16..19 (RW) Shadow length
+                uint32_t                                :12;        // bits 20..31 (R)  Reserved
+            } b;                                                    // bit access
+            uint32_t reg;                                           // raw register
         } READ_IDLE_CTRL_SHDW_reg_t;
         
         /* (offset = 0xA4) [reset = 0x0] */
@@ -780,7 +797,7 @@ namespace REGS
             {                                      
                 uint32_t    ERR_SYS      : 1;      // bit  0      (RW) System error raw status [0x0 = no error; 0x1 = error]
                 uint32_t    TA_SYS       : 1;      // bit  1      (RW) System TA raw status [0x0 = no error; 0x1 = error]
-                uint32_t                 :30;      // bits 2..31  (R) Reserved
+                uint32_t                 :30;      // bits 2..31  (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } IRQSTATUS_RAW_SYS_reg_t;
@@ -794,7 +811,7 @@ namespace REGS
             {                                      
                 uint32_t    ERR_SYS      : 1;      // bit  0      (RW) System error status [0x0 = no error; 0x1 = error]
                 uint32_t    TA_SYS       : 1;      // bit  1      (RW) System TA status [0x0 = no error; 0x1 = error]
-                uint32_t                 :30;      // bits 2..31  (R) Reserved
+                uint32_t                 :30;      // bits 2..31  (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } IRQSTATUS_SYS_reg_t;
@@ -808,12 +825,12 @@ namespace REGS
             {                                      
                 uint32_t    EN_ERR_SYS   : 1;      // bit  0      (RW) System error enable set [0x0 = disabled; 0x1 = enabled]
                 uint32_t    EN_TA_SYS    : 1;      // bit  1      (RW) System TA enable set [0x0 = disabled; 0x1 = enabled]
-                uint32_t                 :30;      // bits 2..31  (R) Reserved
+                uint32_t                 :30;      // bits 2..31  (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } IRQENABLE_SET_SYS_reg_t;
         
-        /* IRQENABLE_CLR_SYS (offset = 0xBC) [reset = 0x0] */
+        /* (offset = 0xBC) [reset = 0x0] */
         typedef union 
         {
                                                   /* IRQENABLE_CLR_SYS
@@ -822,7 +839,7 @@ namespace REGS
             {                                      
                 uint32_t    EN_ERR_SYS   : 1;      // bit  0      (RW) System error enable clear [0x0 = no effect; 0x1 = disable]
                 uint32_t    EN_TA_SYS    : 1;      // bit  1      (RW) System TA enable clear [0x0 = no effect; 0x1 = disable]
-                uint32_t                 :30;      // bits 2..31  (R) Reserved
+                uint32_t                 :30;      // bits 2..31  (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } IRQENABLE_CLR_SYS_reg_t;
@@ -837,7 +854,7 @@ namespace REGS
                 uint32_t    REFINTERVAL  :16;      // bits 0..15  (RW) Refresh periods between ZQCS
                 uint32_t    ZQCL_MULT    : 2;      // bits 16..17 (RW) ZQCL multiplier [see e_ZQ_MULT]
                 uint32_t    ZQINIT_MULT  : 2;      // bits 18..19 (RW) ZQINIT multiplier [see e_ZQ_MULT]
-                uint32_t                 : 8;      // bits 20..27 (R) Reserved
+                uint32_t                 : 8;      // bits 20..27 (R)  Reserved
                 uint32_t    SFEXITEN     : 1;      // bit  28     (RW) ZQCL on power-down exit [0x0 = disabled; 0x1 = enabled]
                 uint32_t    DUALCALEN    : 1;      // bit  29     (RW) Dual Calibration enable [0x0 = disabled; 0x1 = enabled]
                 uint32_t    CS0EN        : 1;      // bit  30     (RW) ZQ cal for CS0 enable [0x0 = disabled; 0x1 = enabled]
@@ -855,7 +872,7 @@ namespace REGS
             ZQ_MULT_4 = 0x3
         };
 
-        /* (offset = 0xD4) [reset = 0x00000000] */ 
+        /* (offset = 0xD4) [reset = 0x0] */ 
         typedef union 
         {                                             /* ReadWriteLevelingRampWindow
                                                        */
@@ -865,65 +882,65 @@ namespace REGS
                 uint32_t                    :19;    // bits 13..31 (R)  Reserved 
             } b;                                    // bit access
             uint32_t reg;                           // raw register
-        } EMIF_RDWRLVL_RAMP_WIN_reg_t;
+        } RDWRLVL_RAMP_WIN_reg_t;
         
-        /*  (offset = 0xD8) [reset = 0x00000000] */ 
+        /*  (offset = 0xD8) [reset = 0x0] */ 
         typedef union 
         {                                             /* ReadWriteLevelingRampControl
                                                        */
             struct 
             {                                      
-                uint32_t WRLVLINC_RMP_INT   :8;     // bits 0..7   (RW) Incremental write leveling interval during ramp window [0x0 = disabled]
-                uint32_t RDLVLGATEINC_RMP_INT:8;    // bits 8..15  (RW) Incremental read DQS gate training interval during ramp window [0x0 = disabled]
-                uint32_t RDLVLINC_RMP_INT   :8;     // bits 16..23 (RW) Incremental read data eye training interval during ramp window [0x0 = disabled]
-                uint32_t RDWRLVLINC_RMP_PRE :7;     // bits 24..30 (RW) Incremental leveling pre-scalar in refresh periods (value = programmed -1)
-                uint32_t RDWRLVL_EN        :1;      // bit  31     (RW) Read-Write Leveling enable [0x0 = disable; 0x1 = enable]
-            } b;                                    // bit access
-            uint32_t reg;                           // raw register
-        } EMIF_RDWRLVL_RAMP_CTRL_reg_t;
+                uint32_t WRLVLINC_RMP_INT       : 8;     // bits 0..7   (RW) Incremental write leveling interval during ramp window [0x0 = disabled]
+                uint32_t RDLVLGATEINC_RMP_INT   : 8;     // bits 8..15  (RW) Incremental read DQS gate training interval during ramp window [0x0 = disabled]
+                uint32_t RDLVLINC_RMP_INT       : 8;     // bits 16..23 (RW) Incremental read data eye training interval during ramp window [0x0 = disabled]
+                uint32_t RDWRLVLINC_RMP_PRE     : 7;     // bits 24..30 (RW) Incremental leveling pre-scalar in refresh periods (value = programmed -1)
+                uint32_t RDWRLVL_EN             : 1;     // bit  31     (RW) Read-Write Leveling enable [0x0 = disable; 0x1 = enable]
+            } b;                                         // bit access
+            uint32_t reg;                                // raw register
+        } RDWRLVL_RAMP_CTRL_reg_t;
 
-        /* (offset = 0xDC) [reset = 0x00000000] */ 
+        /* (offset = 0xDC) [reset = 0x0] */ 
         typedef union 
         {                                             /* ReadWriteLevelingControl
                                                        */
             struct 
             {                                      
-                uint32_t WRLVLINC_INT      :8;        // bits 0..7   (RW) Incremental write leveling interval [0x0 = disabled]
-                uint32_t RDLVLGATEINC_INT  :8;        // bits 8..15  (RW) Incremental read DQS gate training interval [0x0 = disabled]
-                uint32_t RDLVLINC_INT      :8;        // bits 16..23 (RW) Incremental read data eye training interval [0x0 = disabled]
-                uint32_t RDWRLVLINC_PRE    :7;        // bits 24..30 (RW) Incremental leveling pre-scalar in refresh periods (value = programmed -1)
-                uint32_t RDWRLVLFULL_START :1;        // bit  31     (RW) Full leveling trigger [0x1 = trigger (self-clearing)]
-            } b;                                   // bit access
-            uint32_t reg;                          // raw register
-        } EMIF_RDWRLVL_CTRL_reg_t;
+                uint32_t WRLVLINC_INT      : 8;        // bits 0..7   (RW) Incremental write leveling interval [0x0 = disabled]
+                uint32_t RDLVLGATEINC_INT  : 8;        // bits 8..15  (RW) Incremental read DQS gate training interval [0x0 = disabled]
+                uint32_t RDLVLINC_INT      : 8;        // bits 16..23 (RW) Incremental read data eye training interval [0x0 = disabled]
+                uint32_t RDWRLVLINC_PRE    : 7;        // bits 24..30 (RW) Incremental leveling pre-scalar in refresh periods (value = programmed -1)
+                uint32_t RDWRLVLFULL_START : 1;        // bit  31     (RW) Full leveling trigger [0x1 = trigger (self-clearing)]
+            } b;                                       // bit access
+            uint32_t reg;                              // raw register
+        } RDWRLVL_CTRL_reg_t;
         
         /* (offset = 0xE4) [reset = 0x0] */
         typedef union 
         {
-                                                  /* DDR_PHY_CTRL_1
-                                                   */
+                                                             /* DDR_PHY_CTRL_1
+                                                              */
             struct 
             {                                      
-                uint32_t    READ_LATENCY : 5;      // bits 0..4   (RW) Read data latency
-                uint32_t                 : 3;      // bits 5..7   (R) Reserved
-                uint32_t    RD_LOCAL_ODT : 2;      // bits 8..9   (RW) Read local ODT value [see e_LOCAL_ODT]
-                uint32_t    WR_LOCAL_ODT : 2;      // bits 10..11 (RW) Write local ODT value [see e_LOCAL_ODT]
-                uint32_t    IDLE_LOCAL_ODT:2;      // bits 12..13 (RW) Idle local ODT value [see e_LOCAL_ODT]
-                uint32_t                 : 1;      // bit  14     (R) Reserved
-                uint32_t    PHY_RST_N    : 1;      // bit  15     (RW) PHY reset control [0x0 = reset; 0x1 = normal]
-                uint32_t                 : 4;      // bits 16..19 (R) Reserved
-                uint32_t    ENABLE_DYNAMIC_PWRDN:1;// bit  20     (RW) Dynamic IO power down [0x0 = always on; 0x1 = dynamic]
-                uint32_t                 :11;      // bits 21..31 (R) Reserved
-            } b;                                   // bit access
-            uint32_t reg;                          // raw register
+                uint32_t    READ_LATENCY            : 5;      // bits 0..4   (RW) Read data latency
+                uint32_t                            : 3;      // bits 5..7   (R)  Reserved
+                uint32_t    RD_LOCAL_ODT            : 2;      // bits 8..9   (RW) Read local ODT value [see e_LOCAL_ODT]
+                uint32_t    WR_LOCAL_ODT            : 2;      // bits 10..11 (RW) Write local ODT value [see e_LOCAL_ODT]
+                uint32_t    IDLE_LOCAL_ODT          : 2;      // bits 12..13 (RW) Idle local ODT value [see e_LOCAL_ODT]
+                uint32_t                            : 1;      // bit  14     (R)  Reserved
+                uint32_t    PHY_RST_N               : 1;      // bit  15     (RW) PHY reset control [0x0 = reset; 0x1 = normal]
+                uint32_t                            : 4;      // bits 16..19 (R)  Reserved
+                uint32_t    ENABLE_DYNAMIC_PWRDN    : 1;      // bit  20     (RW) Dynamic IO power down [0x0 = always on; 0x1 = dynamic]
+                uint32_t                            :11;      // bits 21..31 (R)  Reserved
+            } b;                                              // bit access
+            uint32_t reg;                                     // raw register
         } DDR_PHY_CTRL_1_reg_t;
         
         /* Enums for multi-value fields */
         enum e_LOCAL_ODT : uint32_t 
         {
-            ODT_OFF = 0x0,
-            ODT_FULL = 0x2,
-            ODT_HALF = 0x3
+            LOCAL_ODT_OFF  = 0x0,
+            LOCAL_ODT_FULL = 0x2,
+            LOCAL_ODT_HALF = 0x3
         };
         
         /* (offset = 0xE8) [reset = 0x0] */
@@ -933,16 +950,18 @@ namespace REGS
                                                    */
             struct 
             {                                      
-                uint32_t    READ_LATENCY_SHADOW:5; // bits 0..4   (RW) Shadow read latency
-                uint32_t                 : 3;      // bits 5..7   (R) Reserved
-                uint32_t    RD_LOCAL_ODT_SHADOW:2; // bits 8..9   (RW) Shadow read ODT [see e_LOCAL_ODT]
-                uint32_t    WR_LOCAL_ODT_SHADOW:2; // bits 10..11 (RW) Shadow write ODT [see e_LOCAL_ODT]
-                uint32_t    IDLE_LOCAL_ODT_SHADOW:2;// bits 12..13 (RW) Shadow idle ODT [see e_LOCAL_ODT]
-                uint32_t                 : 1;      // bit  14     (R) Reserved
-                uint32_t    PHY_RST_N_SHADOW:1;    // bit  15     (RW) Shadow PHY reset [0x0 = reset; 0x1 = normal]
-                uint32_t                 :16;      // bits 16..31 (R) Reserved
-            } b;                                   // bit access
-            uint32_t reg;                          // raw register
+                uint32_t    READ_LATENCY_SHADOW         : 5;    // bits 0..4   (RW) Shadow read latency
+                uint32_t                                : 3;    // bits 5..7   (R)  Reserved
+                uint32_t    RD_LOCAL_ODT_SHADOW         : 2;    // bits 8..9   (RW) Shadow read ODT [see e_LOCAL_ODT]
+                uint32_t    WR_LOCAL_ODT_SHADOW         : 2;    // bits 10..11 (RW) Shadow write ODT [see e_LOCAL_ODT]
+                uint32_t    IDLE_LOCAL_ODT_SHADOW       : 2;    // bits 12..13 (RW) Shadow idle ODT [see e_LOCAL_ODT]
+                uint32_t                                : 1;    // bit  14     (R)  Reserved
+                uint32_t    PHY_RST_N_SHADOW            : 1;    // bit  15     (RW) Shadow PHY reset [0x0 = reset; 0x1 = normal]
+                uint32_t                                : 4;    // bits 16..19 (R)  Reserved
+                uint32_t    ENABLE_DYNAMIC_PWRDN_SHADOW : 1;     // bit  20     (RW) Shadow Dynamic IO power down [0x0 = always on; 0x1 = dynamic]
+                uint32_t                                :11;    // bits 16..31 (R)  Reserved
+            } b;                                                // bit access
+            uint32_t reg;                                       // raw register
         } DDR_PHY_CTRL_1_SHDW_reg_t;
         
         /* (offset = 0x100) [reset = 0x0] */
@@ -952,16 +971,16 @@ namespace REGS
                                                    */
             struct 
             {                                      
-                uint32_t    PRI_0_COS    : 2;      // bits 0..1   (RW) Priority 0 COS mapping [see e_COS_MAPPING]
-                uint32_t    PRI_1_COS    : 2;      // bits 2..3   (RW) Priority 1 COS mapping [see e_COS_MAPPING]
-                uint32_t    PRI_2_COS    : 2;      // bits 4..5   (RW) Priority 2 COS mapping [see e_COS_MAPPING]
-                uint32_t    PRI_3_COS    : 2;      // bits 6..7   (RW) Priority 3 COS mapping [see e_COS_MAPPING]
-                uint32_t    PRI_4_COS    : 2;      // bits 8..9   (RW) Priority 4 COS mapping [see e_COS_MAPPING]
-                uint32_t    PRI_5_COS    : 2;      // bits 10..11 (RW) Priority 5 COS mapping [see e_COS_MAPPING]
-                uint32_t    PRI_6_COS    : 2;      // bits 12..13 (RW) Priority 6 COS mapping [see e_COS_MAPPING]
-                uint32_t    PRI_7_COS    : 2;      // bits 14..15 (RW) Priority 7 COS mapping [see e_COS_MAPPING]
-                uint32_t                 :15;      // bits 16..30 (R) Reserved
-                uint32_t    PRI_COS_MAP_EN:1;      // bit  31     (RW) Priority mapping enable [0x0 = disabled; 0x1 = enabled]
+                uint32_t    PRI_0_COS       : 2;      // bits 0..1   (RW) Priority 0 COS mapping [see e_COS_MAPPING]
+                uint32_t    PRI_1_COS       : 2;      // bits 2..3   (RW) Priority 1 COS mapping [see e_COS_MAPPING]
+                uint32_t    PRI_2_COS       : 2;      // bits 4..5   (RW) Priority 2 COS mapping [see e_COS_MAPPING]
+                uint32_t    PRI_3_COS       : 2;      // bits 6..7   (RW) Priority 3 COS mapping [see e_COS_MAPPING]
+                uint32_t    PRI_4_COS       : 2;      // bits 8..9   (RW) Priority 4 COS mapping [see e_COS_MAPPING]
+                uint32_t    PRI_5_COS       : 2;      // bits 10..11 (RW) Priority 5 COS mapping [see e_COS_MAPPING]
+                uint32_t    PRI_6_COS       : 2;      // bits 12..13 (RW) Priority 6 COS mapping [see e_COS_MAPPING]
+                uint32_t    PRI_7_COS       : 2;      // bits 14..15 (RW) Priority 7 COS mapping [see e_COS_MAPPING]
+                uint32_t                    :15;      // bits 16..30 (R)  Reserved
+                uint32_t    PRI_COS_MAP_EN  : 1;      // bit  31     (RW) Priority mapping enable [0x0 = disabled; 0x1 = enabled]
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } PRIORITY_TO_COS_MAPPING_reg_t;
@@ -982,15 +1001,15 @@ namespace REGS
                                                    */
             struct 
             {                                      
-                uint32_t    MSK_3_COS_1  : 2;      // bits 0..1   (RW) Mask for ConnID 3 COS 1 [see e_CONNID_MASK]
-                uint32_t    CONNID_3_COS_1:8;      // bits 2..9   (RW) ConnID value 3 COS 1
-                uint32_t    MSK_2_COS_1  : 2;      // bits 10..11 (RW) Mask for ConnID 2 COS 1 [see e_CONNID_MASK]
-                uint32_t    CONNID_2_COS_1:8;      // bits 12..19 (RW) ConnID value 2 COS 1
-                uint32_t    MSK_1_COS_1  : 3;      // bits 20..22 (RW) Mask for ConnID 1 COS 1 [see e_CONNID_MASK_EXT]
-                uint32_t    CONNID_1_COS_1:8;      // bits 23..30 (RW) ConnID value 1 COS 1
-                uint32_t    CONNID_COS_1_MAP_EN:1; // bit  31     (RW) ConnID mapping enable [0x0 = disabled; 0x1 = enabled]
-            } b;                                   // bit access
-            uint32_t reg;                          // raw register
+                uint32_t    MSK_3_COS_1         : 2;      // bits 0..1   (RW) Mask for ConnID 3 COS 1 [see e_CONNID_MASK]
+                uint32_t    CONNID_3_COS_1      : 8;      // bits 2..9   (RW) ConnID value 3 COS 1
+                uint32_t    MSK_2_COS_1         : 2;      // bits 10..11 (RW) Mask for ConnID 2 COS 1 [see e_CONNID_MASK]
+                uint32_t    CONNID_2_COS_1      : 8;      // bits 12..19 (RW) ConnID value 2 COS 1
+                uint32_t    MSK_1_COS_1         : 3;      // bits 20..22 (RW) Mask for ConnID 1 COS 1 [see e_CONNID_MASK_EXT]
+                uint32_t    CONNID_1_COS_1      : 8;      // bits 23..30 (RW) ConnID value 1 COS 1
+                uint32_t    CONNID_COS_1_MAP_EN : 1;      // bit  31     (RW) ConnID mapping enable [0x0 = disabled; 0x1 = enabled]
+            } b;                                          // bit access
+            uint32_t reg;                                 // raw register
         } CONNID_TO_COS_1_MAPPING_reg_t;
         
         /* Enums for multi-value fields */
@@ -1021,15 +1040,15 @@ namespace REGS
                                                    */
             struct 
             {                                      
-                uint32_t    MSK_3_COS_2  : 2;      // bits 0..1   (RW) Mask for ConnID 3 COS 2 [see e_CONNID_MASK]
-                uint32_t    CONNID_3_COS_2:8;      // bits 2..9   (RW) ConnID value 3 COS 2
-                uint32_t    MSK_2_COS_2  : 2;      // bits 10..11 (RW) Mask for ConnID 2 COS 2 [see e_CONNID_MASK]
-                uint32_t    CONNID_2_COS_2:8;      // bits 12..19 (RW) ConnID value 2 COS 2
-                uint32_t    MSK_1_COS_2  : 3;      // bits 20..22 (RW) Mask for ConnID 1 COS 2 [see e_CONNID_MASK_EXT]
-                uint32_t    CONNID_1_COS_2:8;      // bits 23..30 (RW) ConnID value 1 COS 2
-                uint32_t    CONNID_COS_2_MAP_EN:1; // bit  31     (RW) ConnID mapping enable [0x0 = disabled; 0x1 = enabled]
-            } b;                                   // bit access
-            uint32_t reg;                          // raw register
+                uint32_t    MSK_3_COS_2         : 2;      // bits 0..1   (RW) Mask for ConnID 3 COS 2 [see e_CONNID_MASK]
+                uint32_t    CONNID_3_COS_2      : 8;      // bits 2..9   (RW) ConnID value 3 COS 2
+                uint32_t    MSK_2_COS_2         : 2;      // bits 10..11 (RW) Mask for ConnID 2 COS 2 [see e_CONNID_MASK]
+                uint32_t    CONNID_2_COS_2      : 8;      // bits 12..19 (RW) ConnID value 2 COS 2
+                uint32_t    MSK_1_COS_2         : 3;      // bits 20..22 (RW) Mask for ConnID 1 COS 2 [see e_CONNID_MASK_EXT]
+                uint32_t    CONNID_1_COS_2      : 8;      // bits 23..30 (RW) ConnID value 1 COS 2
+                uint32_t    CONNID_COS_2_MAP_EN : 1;      // bit  31     (RW) ConnID mapping enable [0x0 = disabled; 0x1 = enabled]
+            } b;                                          // bit access
+            uint32_t reg;                                 // raw register
         } CONNID_TO_COS_2_MAPPING_reg_t;
 
         /* (offset = 0x120) [reset = 0x00000305] */
@@ -1040,66 +1059,72 @@ namespace REGS
             struct 
             {                                      
                 uint32_t    RD_THRSH     : 5;      // bits 0..4   (RW) Read threshold
-                uint32_t                 : 3;      // bits 5..7   (R) Reserved
+                uint32_t                 : 3;      // bits 5..7   (R)  Reserved
                 uint32_t    WR_THRSH     : 5;      // bits 8..12  (RW) Write threshold
-                uint32_t                 :19;      // bits 13..31 (R) Reserved
+                uint32_t                 :19;      // bits 13..31 (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } READ_WRITE_EXEC_THRESHOLD_reg_t;
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////         ALL EMIF MODULE MEMORY MAP    //////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         struct AM335x_EMIF4D_Type
         {                                                                                      
-            __   EMIF_MOD_ID_REV_reg_t          EMIF_MOD_ID_REV;        // (0x0) 
-            __   STATUS_reg_t                   STATUS;                 // (0x4)
-            __   SDRAM_CONFIG_reg_t             SDRAM_CONFIG;           // (0x8)
-            __   SDRAM_CONFIG_2_reg_t           SDRAM_CONFIG_2;         // (0xC)
-            __   SDRAM_REF_CTRL_reg_t           SDRAM_REF_CTRL;         // (0x10)
-            __   SDRAM_REF_CTRL_SHDW_reg_t      SDRAM_REF_CTRL_SHDW;    // (0x14)
-            __   SDRAM_TIM_1_reg_t              SDRAM_TIM_1;            // (0x18)
-            __   SDRAM_TIM_1_SHDW_reg_t         SDRAM_TIM_1_SHDW;       // (0x1C)
-            __   SDRAM_TIM_2_reg_t              SDRAM_TIM_2;            // (0x20)
-            __   SDRAM_TIM_2_SHDW_reg_t         SDRAM_TIM_2_SHDW;       // (0x24)  
-            __   SDRAM_TIM_3_reg_t              SDRAM_TIM_3;            // (0x28) 
-            __   SDRAM_TIM_3_SHDW_reg_t         SDRAM_TIM_3_SHDW;       // (0x2C)
-            __R   uint32_t                      RESERVED1[2];
-            __   PWR_MGMT_CTRL_reg_t            PWR_MGMT_CTRL;          // (0x38)
-            __   PWR_MGMT_CTRL_SHDW_reg_t       PWR_MGMT_CTRL_SHDW;     // (0x3C)
-            __R   uint32_t                      RESERVED2[5];
-            __   OCP_CONFIG_reg_t               OCP_CONFIG;             // (0x54)
-            __   OCP_CFG_VAL_1_reg_t            OCP_CFG_VAL_1;          // (0x58)
-            __   OCP_CFG_VAL_2_reg_t            OCP_CFG_VAL_2;          // (0x5C)
-            __R   uint32_t                      RESERVED3[8];
-            __   PERF_CNT_1_reg_t               PERF_CNT_1;             // (0x80)
-            __   PERF_CNT_2_reg_t               PERF_CNT_2;             // (0x84)
-            __   PERF_CNT_CFG_reg_t             PERF_CNT_CFG;           // (0x88)
-            __   PERF_CNT_SEL_reg_t             PERF_CNT_SEL;           // (0x8C) 
-            __   PERF_CNT_TIM_reg_t             PERF_CNT_TIM;           // (0x90)
-            __R   uint32_t                      RESERVED4[1];
-            __   READ_IDLE_CTRL_reg_t           READ_IDLE_CTRL;         // (0x98)
-            __   READ_IDLE_CTRL_SHDW_reg_t      READ_IDLE_CTRL_SHDW;    // (0x9C)
-            __R   uint32_t                      RESERVED5[1];
-            __   IRQSTATUS_RAW_SYS_reg_t        IRQSTATUS_RAW_SYS;      // (0xA4)
-            __R   uint32_t                      RESERVED6[1];
-            __   IRQSTATUS_SYS_reg_t            IRQSTATUS_SYS;          // (0xAC)
-            __R   uint32_t                      RESERVED7[1];
-            __   IRQENABLE_SET_SYS_reg_t        IRQENABLE_SET_SYS;      // (0xB4)
-            __R   uint32_t                      RESERVED8[1];
-            __   IRQENABLE_CLR_SYS_reg_t        IRQENABLE_CLR_SYS;      // (0xBC)
-            __R   uint32_t                      RESERVED9[2];
-            __   ZQ_CONFIG_reg_t                ZQ_CONFIG;              // (0xC8)
-            __R   uint32_t                      RESERVED10[1];
-            __   RW_LEV_RMP_WINDOW_reg_t        RW_LEV_RMP_WINDOW;      // (0xD4) 
-            __   RW_LEV_RMP_CTRL_reg_t          RW_LEV_RMP_CTRL;        // (0xD8) 
-            __   RW_LEV_CTRL_reg_t              RW_LEV_CTRL;            // (0xDC)
-            __R   uint32_t                      RESERVED11[1];
-            __   DDR_PHY_CTRL_1_reg_t           DDR_PHY_CTRL_1;         // (0xE4)
-            __   DDR_PHY_CTRL_1_SHDW_reg_t      DDR_PHY_CTRL_1_SHDW;    // (0xE8)
-            __R   uint32_t                      RESERVED12[5];
-            __   PCSM_reg_t                     PCSM;                   // (0x100)
-            __   CIDCS1MAPPING_reg_t            CIDCS1MAPPING;          // (0x104)
-            __   CIDCS2MAPPING_reg_t            CIDCS2MAPPING;          // (0x108)
-            __R   uint32_t                      RESERVED13[5]; 
-            __   RW_EXEC_THRS_reg_t             RW_EXEC_THRS;           // (0x120)        
+            __R   EMIF_MOD_ID_REV_reg_t               EMIF_MOD_ID_REV;            // (0x0) 
+            __R   STATUS_reg_t                        STATUS;                     // (0x4)
+            __RW   SDRAM_CONFIG_reg_t                 SDRAM_CONFIG;               // (0x8)
+            __RW   SDRAM_CONFIG_2_reg_t               SDRAM_CONFIG_2;             // (0xC)
+            __RW   SDRAM_REF_CTRL_reg_t               SDRAM_REF_CTRL;             // (0x10)
+            __RW   SDRAM_REF_CTRL_SHDW_reg_t          SDRAM_REF_CTRL_SHDW;        // (0x14)
+            __RW   SDRAM_TIM_1_reg_t                  SDRAM_TIM_1;                // (0x18)
+            __RW   SDRAM_TIM_1_SHDW_reg_t             SDRAM_TIM_1_SHDW;           // (0x1C)
+            __RW   SDRAM_TIM_2_reg_t                  SDRAM_TIM_2;                // (0x20)
+            __RW   SDRAM_TIM_2_SHDW_reg_t             SDRAM_TIM_2_SHDW;           // (0x24)  
+            __RW   SDRAM_TIM_3_reg_t                  SDRAM_TIM_3;                // (0x28) 
+            __RW   SDRAM_TIM_3_SHDW_reg_t             SDRAM_TIM_3_SHDW;           // (0x2C)
+            __R    uint32_t                           RESERVED1[2];
+            __RW   PWR_MGMT_CTRL_reg_t                PWR_MGMT_CTRL;              // (0x38)
+            __RW   PWR_MGMT_CTRL_SHDW_reg_t           PWR_MGMT_CTRL_SHDW;         // (0x3C)
+            __R    uint32_t                           RESERVED2[5];
+            __RW   OCP_CONFIG_reg_t                   OCP_CONFIG;                 // (0x54)
+            __R    OCP_CFG_VAL_1_reg_t                OCP_CFG_VAL_1;              // (0x58)
+            __R    OCP_CFG_VAL_2_reg_t                OCP_CFG_VAL_2;              // (0x5C)
+            __R    uint32_t                           RESERVED3[8];
+            __R    PERF_CNT_1_reg_t                   PERF_CNT_1;                 // (0x80)
+            __R    PERF_CNT_2_reg_t                   PERF_CNT_2;                 // (0x84)
+            __RW   PERF_CNT_CFG_reg_t                 PERF_CNT_CFG;               // (0x88)
+            __RW   PERF_CNT_SEL_reg_t                 PERF_CNT_SEL;               // (0x8C) 
+            __R    PERF_CNT_TIM_reg_t                 PERF_CNT_TIM;               // (0x90)
+            __R    uint32_t                           RESERVED4[1];
+            __RW   READ_IDLE_CTRL_reg_t               READ_IDLE_CTRL;             // (0x98)
+            __RW   READ_IDLE_CTRL_SHDW_reg_t          READ_IDLE_CTRL_SHDW;        // (0x9C)
+            __R    uint32_t                           RESERVED5[1];
+            __RW   IRQSTATUS_RAW_SYS_reg_t            IRQSTATUS_RAW_SYS;          // (0xA4)
+            __R    uint32_t                           RESERVED6[1];
+            __RW   IRQSTATUS_SYS_reg_t                IRQSTATUS_SYS;              // (0xAC)
+            __R    uint32_t                           RESERVED7[1];
+            __RW   IRQENABLE_SET_SYS_reg_t            IRQENABLE_SET_SYS;          // (0xB4)
+            __R    uint32_t                           RESERVED8[1];
+            __RW   IRQENABLE_CLR_SYS_reg_t            IRQENABLE_CLR_SYS;          // (0xBC)
+            __R    uint32_t                           RESERVED9[2];
+            __RW   ZQ_CONFIG_reg_t                    ZQ_CONFIG;                  // (0xC8)
+            __R    uint32_t                           RESERVED10[1];
+            __R    RDWRLVL_RAMP_WIN_reg_t             RDWRLVL_RAMP_WIN;           // (0xD4) 
+            __RW   RDWRLVL_RAMP_CTRL_reg_t            RDWRLVL_RAMP_CTRL;          // (0xD8) 
+            __RW   RDWRLVL_CTRL_reg_t                 RDWRLVL_CTRL;               // (0xDC)
+            __R    uint32_t                           RESERVED11[1];
+            __RW   DDR_PHY_CTRL_1_reg_t               DDR_PHY_CTRL_1;             // (0xE4)
+            __RW   DDR_PHY_CTRL_1_SHDW_reg_t          DDR_PHY_CTRL_1_SHDW;        // (0xE8)
+            __R    uint32_t                           RESERVED12[5];
+            __RW   PRIORITY_TO_COS_MAPPING_reg_t      PRIORITY_TO_COS_MAPPING;    // (0x100)
+            __RW   CONNID_TO_COS_1_MAPPING_reg_t      CONNID_TO_COS_1_MAPPING;    // (0x104)
+            __RW   CONNID_TO_COS_2_MAPPING_reg_t      CONNID_TO_COS_2_MAPPING;    // (0x108)
+            __R    uint32_t                           RESERVED13[5]; 
+            __RW   READ_WRITE_EXEC_THRESHOLD_reg_t    READ_WRITE_EXEC_THRESHOL;   // (0x120)        
         };
 
         struct AM335x_DDR23mPHY_Type
