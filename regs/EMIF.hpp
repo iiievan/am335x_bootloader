@@ -429,14 +429,24 @@ namespace REGS
             {                                      
                 uint32_t    REFRESH_RATE :16;      // bits 0..15  (RW) Refresh Rate
                                                    //                  Value defines rate at which connected SDRAM devices will be refreshed
-                                                   //                  SDRAM refresh rate = EMIF rate / reg_refresh_rate
+                                                   //                  SDRAM refresh rate = EMIF rate / reg_refresh_rate where EMIF rate
+                                                   //                  is equal to DDR clock rate
+                                                   //                  If reg_refresh_rate < (8*reg_t_rfc)+reg_t_rp+reg_t_rcd+20 then it will
+                                                   //                  be loaded with (8*reg_t_rfc)+reg_t_rp+reg_t_rcd+20.
+                                                   //                  This is done to avoid lock-up situations when illegal values are
+                                                   //                  programmed.
                 uint32_t                 : 8;      // bits 16..23 (R)  Reserved
                 uint32_t    PASR         : 3;      // bits 24..26 (RW) Partial Array Self Refresh [see e_PASR]
                 uint32_t                 : 1;      // bit  27     (R)  Reserved
                 uint32_t    ASR          : 1;      // bit  28     (RW) Auto Self Refresh enable
+                                                   //                  A write to this field will cause the EMIF to start the SDRAM
+                                                   //                  initialization sequence.
                                                    //                  [ 0x0 = manual Self Refresh;
                                                    //                    0x1 = auto Self Refresh ]
                 uint32_t    SRT          : 1;      // bit  29     (RW) Self-refresh temperature range
+                                                   //                  For DDR3, this bit must be set to 0 if the ASR field is set to 1.
+                                                   //                  A write to this field will cause the EMIF to start the SDRAM
+                                                   //                  initialization sequence.
                                                    //                  [ 0x0 = normal operating temperature range;
                                                    //                    0x1 = extended operating temperature range ]
                 uint32_t                 : 1;      // bit  30     (R)  Reserved
@@ -452,14 +462,14 @@ namespace REGS
         {
             /* Partial Array Self Refresh configuration for LPDDR1/DDR3
              * For LPDDR1: 0 = full array, 1 = 1/2 array, 2 = 1/4 array, 5 = 1/8 array, 6 = 1/16 array
-             * For DDR3: 0 = full array, 1/5 = 1/2 array, 2/6 = 1/4 array, 3/7 = 1/8 array, 4 = 3/4 array
+             * For DDR3: 0 = full array, 1 or 5 = 1/2 array, 2 or 6 = 1/4 array, 3 or 7 = 1/8 array, 4 = 3/4 array
              */
-            PASR_FULL = 0x0,
-            PASR_HALF = 0x1,
-            PASR_QUARTER = 0x2,
-            PASR_EIGHTH = 0x5,
-            PASR_SIXTEENTH = 0x6,
-            PASR_3QUARTERS = 0x4
+            PASR_FULL       = 0x0,
+            PASR_HALF       = 0x1,
+            PASR_QUARTER    = 0x2,
+            PASR_EIGHTH     = 0x5,
+            PASR_SIXTEENTH  = 0x6,
+            PASR_3QUARTERS  = 0x4
         };
         
         /* (offset = 0x14) [reset = 0x00001388] */ 
@@ -471,6 +481,7 @@ namespace REGS
             {                                      
                 uint32_t    REFRESH_RATE_SHADOW :16;    // bits 0..15  (RW) Shadow field for reg_refresh_rate
                                                         //              Loaded into reg_refresh_rate when SlideAck is asserted
+                                                        //              This register is not auto corrected when the value is invalid.
                 uint32_t                        :16;    // bits 16..31 (R) Reserved
             } b;                                        // bit access
             uint32_t reg;                               // raw register
@@ -487,12 +498,19 @@ namespace REGS
                                                    //                  Minimum DDR clock cycles from last Write to Read, minus one
                 uint32_t    RRD          : 3;      // bits 3..5   (RW) Activate to Activate delay for different bank
                                                    //                  Minimum DDR clock cycles between activates to different banks, minus one
+                                                   //                  For an 8-bank DDR2 or DDR3, this field must be equal to
+                                                   //                  ((tFAW/(4*tCK))-1). For 4-bank DDR2 or LPDDR1, the field must be
+                                                   //                  equal to (tRRD/tCK)-1. 
                 uint32_t    RC           : 6;      // bits 6..11  (RW) Activate to Activate
                                                    //                  Minimum DDR clock cycles between activate commands, minus one
                 uint32_t    RAS          : 5;      // bits 12..16 (RW) Activate to Pre-charge
                                                    //                  Minimum DDR clock cycles from Activate to Pre-charge, minus one
+                                                   //                  reg_t_ras >= reg_t_rcd.
                 uint32_t    WR           : 4;      // bits 17..20 (RW) Write to Pre-charge
                                                    //                  Minimum DDR clock cycles from last Write to Pre-charge, minus one
+                                                   //                  The SDRAM initialization sequence will be started when the value of
+                                                   //                  this field is changed from the previous value and the EMIF is in
+                                                   //                  DDR2 mode.
                 uint32_t    RCD          : 4;      // bits 21..24 (RW) Activate to Read/Write
                                                    //                  Minimum DDR clock cycles from Activate to Read/Write, minus one
                 uint32_t    RP           : 4;      // bits 25..28 (RW) Precharge to Activate
@@ -510,19 +528,21 @@ namespace REGS
             struct 
             {                                      
                 uint32_t    WTR_SHADOW   : 3;      // bits 0..2   (RW) Shadow field for WTR
-                                                   //                  Loaded into WTR when SlideAck is asserted
+                                                   //                  Loaded into WTR SDRAM_TIM_1_reg_t when SlideAck is asserted
                 uint32_t    RRD_SHADOW   : 3;      // bits 3..5   (RW) Shadow field for RRD
-                                                   //                  Loaded into RRD when SlideAck is asserted
+                                                   //                  Loaded into RRD SDRAM_TIM_1_reg_t when SlideAck is asserted
                 uint32_t    RC_SHADOW    : 6;      // bits 6..11  (RW) Shadow field for RC
-                                                   //                  Loaded into RC when SlideAck is asserted
+                                                   //                  Loaded into RC SDRAM_TIM_1_reg_t when SlideAck is asserted
                 uint32_t    RAS_SHADOW   : 5;      // bits 12..16 (RW) Shadow field for RAS
-                                                   //                  Loaded into RAS when SlideAck is asserted
+                                                   //                  Loaded into RAS SDRAM_TIM_1_reg_t when SlideAck is asserted
                 uint32_t    WR_SHADOW    : 4;      // bits 17..20 (RW) Shadow field for WR
-                                                   //                  Loaded into WR when SlideAck is asserted
+                                                   //                  Loaded into WR SDRAM_TIM_1_reg_t when SlideAck is asserted
+                                                   //                  initialization sequence will be started when the value of this field is
+                                                   //                  changed from the previous value and the EMIF is in DDR2 mode.
                 uint32_t    RCD_SHADOW   : 4;      // bits 21..24 (RW) Shadow field for RCD
-                                                   //                  Loaded into RCD when SlideAck is asserted
+                                                   //                  Loaded into RCD SDRAM_TIM_1_reg_t when SlideAck is asserted
                 uint32_t    RP_SHADOW    : 4;      // bits 25..28 (RW) Shadow field for RP
-                                                   //                  Loaded into RP when SlideAck is asserted
+                                                   //                  Loaded into RP SDRAM_TIM_1_reg_ts when SlideAck is asserted
                 uint32_t                 : 3;      // bits 29..31 (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
@@ -538,7 +558,7 @@ namespace REGS
                 uint32_t    CKE          : 3;      // bits 0..2   (RW) CKE changes delay
                                                    //                  Minimum DDR clock cycles between pad_cke_o changes, minus one
                 uint32_t    RTP          : 3;      // bits 3..5   (RW) Read to Precharge
-                                                   //                  Minimum DDR clock cycles from last Read to Precharge, minus one
+                                                   //                  Minimum DDR clock cycles from last Read to Precharge for DDR2 and DDR3, minus one
                 uint32_t    XSRD         :10;      // bits 6..15  (RW) Self-Refresh exit to Read
                                                    //                  Minimum DDR clock cycles from Self-Refresh exit to Read, minus one
                 uint32_t    XSNR         : 9;      // bits 16..24 (RW) Self-Refresh exit delay
@@ -546,6 +566,7 @@ namespace REGS
                 uint32_t                 : 3;      // bits 25..27 (RW) Reserved
                 uint32_t    XP           : 3;      // bits 28..30 (RW) Powerdown exit delay
                                                    //                  Minimum DDR clock cycles from Powerdown exit to any command, minus one
+                                                   //                  For DDR2 and LPDDR1, this field must satisfy greater of tXP or tCKE.
                 uint32_t                 : 1;      // bit  31     (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
@@ -559,16 +580,16 @@ namespace REGS
             struct 
             {                                      
                 uint32_t    CKE_SHADOW   : 3;      // bits 0..2   (RW) Shadow field for CKE
-                                                   //                  Loaded into CKE when SlideAck is asserted
+                                                   //                  Loaded into CKE for SDRAM_TIM_2_reg_t when SlideAck is asserted
                 uint32_t    RTP_SHADOW   : 3;      // bits 3..5   (RW) Shadow field for RTP
-                                                   //                  Loaded into RTP when SlideAck is asserted
+                                                   //                  Loaded into RTP for SDRAM_TIM_2_reg_t when SlideAck is asserted
                 uint32_t    XSRD_SHADOW  :10;      // bits 6..15  (RW) Shadow field for XSRD
-                                                   //                  Loaded into XSRD when SlideAck is asserted
+                                                   //                  Loaded into XSRD for SDRAM_TIM_2_reg_t when SlideAck is asserted
                 uint32_t    XSNR_SHADOW  : 9;      // bits 16..24 (RW) Shadow field for XSNR
-                                                   //                  Loaded into XSNR when SlideAck is asserted
+                                                   //                  Loaded into XSNR for SDRAM_TIM_2_reg_t when SlideAck is asserted
                 uint32_t                 : 3;      // bits 25..27 (RW) Reserved
                 uint32_t    XP_SHADOW    : 3;      // bits 28..30 (RW) Shadow field for XP
-                                                   //                  Loaded into XP when SlideAck is asserted
+                                                   //                  Loaded into XP for SDRAM_TIM_2_reg_t when SlideAck is asserted
                 uint32_t                 : 1;      // bit  31     (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
@@ -583,6 +604,10 @@ namespace REGS
             {                                      
                 uint32_t    RAS_MAX      : 4;      // bits 0..3   (RW) Max Activate to Precharge
                                                    //                  Maximum number of refresh_rate intervals from Activate to Precharge
+                                                   //                  This field must be equal to ((tRASmax / tREFI)-1) rounded down to
+                                                   //                  the next lower integer.
+                                                   //                  This field is only applicable for mDDR.
+                                                   //                  This field must be programmed to 0xF for other SDRAM types.
                 uint32_t    RFC          : 9;      // bits 4..12  (RW) Refresh/Activate delay
                                                    //                  Minimum DDR clock cycles from Refresh/Activate to Refresh/Activate, minus one
                 uint32_t                 : 2;      // bits 13..14 (RW) Reserved
@@ -590,7 +615,8 @@ namespace REGS
                                                    //                  Number of DDR clock cycles for ZQCS command, minus one
                 uint32_t                 : 7;      // bits 24..27 (R)  Reserved
                 uint32_t    PDLL_UL      : 4;      // bits 28..31 (RW) PHY DLL unlock cycles
-                                                   //                  Minimum DDR clock cycles for PHY DLL to unlock (N x 128 clocks)
+                                                   //                  Minimum DDR clock cycles for PHY DLL to unlock 
+                                                   //                  A value of N will be equal to N x 128 clocks.
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } SDRAM_TIM_3_reg_t;
@@ -603,15 +629,15 @@ namespace REGS
             struct 
             {                                      
                 uint32_t    RAS_MAX_SHADOW  : 4;     // bits 0..3   (RW) Shadow field for RAS_MAX
-                                                     //                  Loaded into RAS_MAX when SlideAck is asserted
+                                                     //                  Loaded into RAS_MAX of SDRAM_TIM_3_reg_t when SlideAck is asserted
                 uint32_t    RFC_SHADOW      : 9;     // bits 4..12  (RW) Shadow field for RFC
-                                                     //                  Loaded into RFC when SlideAck is asserted
+                                                     //                  Loaded into RFC of SDRAM_TIM_3_reg_t when SlideAck is asserted
                 uint32_t                    : 2;     // bits 13..14 (RW) Reserved
                 uint32_t    ZQ_ZQCS_SHADOW  : 6;     // bits 15..20 (RW) Shadow field for ZQ_ZQCS
-                                                     //                  Loaded into ZQ_ZQCS when SlideAck is asserted
+                                                     //                  Loaded into ZQ_ZQCS of SDRAM_TIM_3_reg_t when SlideAck is asserted
                 uint32_t                    : 7;     // bits 24..27 (R)  Reserved
                 uint32_t    PDLL_UL_SHADOW  : 4;     // bits 28..31 (RW) Shadow field for PDLL_UL
-                                                     //                  Loaded into PDLL_UL when SlideAck is asserted
+                                                     //                  Loaded into PDLL_UL of SDRAM_TIM_3_reg_t when SlideAck is asserted
             } b;                                     // bit access
             uint32_t reg;                            // raw register
         } SDRAM_TIM_3_SHDW_reg_t;
@@ -627,6 +653,7 @@ namespace REGS
                 uint32_t    SR_TIM       : 4;      // bits 4..7   (RW) Self Refresh timer [see e_PWR_TIMER]
                 uint32_t    LP_MODE      : 3;      // bits 8..10  (RW) Power Management mode [see e_LP_MODE]
                 uint32_t    DPD_EN       : 1;      // bit  11     (RW) Deep Power Down enable
+                                                   //                  This mode will override the reg_lp_mode field setting.
                                                    //                  [ 0x0 = disabled;
                                                    //                    0x1 = enabled ]
                 uint32_t    PD_TIM       : 4;      // bits 12..15 (RW) Power-Down timer [see e_PWR_TIMER]
@@ -639,8 +666,24 @@ namespace REGS
         enum e_PWR_TIMER : uint32_t 
         {
             /* Power management timer values in DDR clock cycles
-             * Each value represents N clock cycles where N = 16 * 2^(value-1)
-             * 0 = immediate, 1 = 16 clocks, 2 = 32 clocks, etc.
+             *
+             * The EMIF will put the external SDRAM in Clock Stop mode after the
+             * EMIF is idle for these number of DDR clock cycles and if
+             * reg_lp_mode field is set to 1.
+             * Set to 0 to immediately enter Clock Stop mode.
+             *
+             * The EMIF will put the external SDRAM in Self Refresh mode after
+             * the EMIF is idle for these number of DDR clock cycles and if
+             * reg_lp_mode field is set to 2.
+             * Set to 0 to immediately enter Self
+             *
+             * The EMIF will put the external SDRAM in Power-Down mode after
+             * the EMIF is idle for these number of DDR clock cycles and if
+             * reg_lp_mode field is set to 4.
+             * Set to 0 to immediately enter Power-Down mode.
+             *
+             * Note: After updating this field, at least one dummy read access to
+             * SDRAM is required for the new value to take affect.
              */
             PWR_TIMER_IMMEDIATE = 0x0,
             PWR_TIMER_16 = 0x1,
@@ -662,13 +705,14 @@ namespace REGS
         
         enum e_LP_MODE : uint32_t 
         {
-            /* Low power mode configuration
-             * Determines automatic power management behavior
+            /* Automatic Power Management enable.
+             * Set to 1 for Clock Stop, set to 2 for Self Refresh, and set to 4 for Power-Down.
+             * All other values will disable automatic power management
              */
-            LP_DISABLED = 0x0,
-            LP_CLOCK_STOP = 0x1,
+            LP_DISABLED     = 0x0,
+            LP_CLOCK_STOP   = 0x1,
             LP_SELF_REFRESH = 0x2,
-            LP_POWER_DOWN = 0x4
+            LP_POWER_DOWN   = 0x4
         };
         
         /* (offset = 0x3C) [reset = 0x0] */ 
@@ -679,11 +723,11 @@ namespace REGS
             struct 
             {                                      
                 uint32_t    CS_TIM_SHADOW   : 4;       // bits 0..3   (RW) Shadow field for CS_TIM
-                                                       //                  Loaded into CS_TIM when SlideAck is asserted
+                                                       //                  Loaded into CS_TIM in PWR_MGMT_CTRL_reg_t when SlideAck is asserted
                 uint32_t    SR_TIM_SHADOW   : 4;       // bits 4..7   (RW) Shadow field for SR_TIM
-                                                       //                  Loaded into SR_TIM when SlideAck is asserted
+                                                       //                  Loaded into SR_TIM in PWR_MGMT_CTRL_reg_t when SlideAck is asserted
                 uint32_t    PD_TIM_SHADOW   : 4;       // bits 8..11  (RW) Shadow field for PD_TIM
-                                                       //                  Loaded into PD_TIM when SlideAck is asserted
+                                                       //                  Loaded into PD_TIM in PWR_MGMT_CTRL_reg_t when SlideAck is asserted
                 uint32_t                    :20;       // bits 12..31 (R)  Reserved
             } b;                                       // bit access
             uint32_t reg;                              // raw register
@@ -697,11 +741,14 @@ namespace REGS
             struct 
             {                                      
                 uint32_t    PR_OLD_COUNT : 8;      // bits 0..7   (RW) Priority Raise Old Counter
-                                                   //                  Number of m_clk cycles after which EMIF raises priority of oldest command
+                                                   //                  Number of m_clk cycles after which EMIF raises priority of oldest command in the OCP Command FIFO.
+                                                   //                  A value of N will be equal to N x 16 clocks. 
                 uint32_t    COS_COUNT_2  : 8;      // bits 8..15  (RW) Priority Counter COS 2
-                                                   //                  Number of m_clk cycles after which EMIF raises priority of COS 2 commands
+                                                   //                  Number of m_clk cycles after which EMIF raises priority of COS 2 commands in the OCP Command FIFO.
+                                                   //                  A value of N will be equal to N x 16 clocks.
                 uint32_t    COS_COUNT_1  : 8;      // bits 16..23 (RW) Priority Counter COS 1
-                                                   //                  Number of m_clk cycles after which EMIF raises priority of COS 1 commands
+                                                   //                  Number of m_clk cycles after which EMIF raises priority of COS 1 commands in the OCP Command FIFO.
+                                                   //                  A value of N will be equal to N x 16 clocks.
                 uint32_t                 : 8;      // bits 24..31 (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
@@ -850,11 +897,12 @@ namespace REGS
                                                           */
             struct 
             {                                      
-                uint32_t    READ_IDLE_INTERVAL  :9;      // bits 0..8    (RW) Read idle interval
-                                                         //                   Maximum interval between read idle detections
+                uint32_t    READ_IDLE_INTERVAL  :9;      // bits 0..8   (RW) Read idle interval
+                                                         //                  Maximum interval between read idle detections ((reg_read_idle_interval-1)*64 clock cycles)
+                                                         //                  A value of zero disables the read idle function.
                 uint32_t                        :7;      // bits 9..15  (R)  Reserved
                 uint32_t    READ_IDLE_LEN       :4;      // bits 16..19 (RW) Read idle length
-                                                         //                  Minimum size of read idle window
+                                                         //                  Minimum size of read idle window (reg_read_idle_len-1 clock cycles)
                 uint32_t                        :12;     // bits 20..31 (R)  Reserved
             } b;                                         // bit access
             uint32_t reg;                                // raw register
@@ -868,10 +916,10 @@ namespace REGS
             struct 
             {                                      
                 uint32_t    READ_IDLE_INTERVAL_SHADOW   : 9;        // bits 0..8   (RW) Shadow field for read idle interval
-                                                                    //                  Loaded into read idle interval when SlideAck is asserted
+                                                                    //                  Loaded into read idle interval in READ_IDLE_CTRL_reg_t when SlideAck is asserted
                 uint32_t                                : 7;        // bits 9..15  (R)  Reserved
                 uint32_t    READ_IDLE_LEN_SHADOW        : 4;        // bits 16..19 (RW) Shadow field for read idle length
-                                                                    //                  Loaded into read idle length when SlideAck is asserted
+                                                                    //                  Loaded into read idle length in READ_IDLE_CTRL_reg_t when SlideAck is asserted
                 uint32_t                                :12;        // bits 20..31 (R)  Reserved
             } b;                                                    // bit access
             uint32_t reg;                                           // raw register
@@ -884,10 +932,10 @@ namespace REGS
                                                    */
             struct 
             {                                      
-                uint32_t    ERR_SYS      : 1;      // bit  0      (RW) System error raw status
+                uint32_t    ERR_SYS      : 1;      // bit  0      (RW) Raw status of system OCP interrupt.
                                                    //                  [ 0x0 = no error;
                                                    //                    0x1 = error ]
-                uint32_t    TA_SYS       : 1;      // bit  1      (RW) System TA raw status
+                uint32_t    TA_SYS       : 1;      // bit  1      (RW) Raw status of system OCP interrupt.
                                                    //                  [ 0x0 = no error;
                                                    //                    0x1 = error ]
                 uint32_t                 :30;      // bits 2..31  (R)  Reserved
@@ -902,10 +950,18 @@ namespace REGS
                                                    */
             struct 
             {                                      
-                uint32_t    ERR_SYS      : 1;      // bit  0      (RW) System error status
+                uint32_t    ERR_SYS      : 1;      // bit  0      (RW) Enabled status of system OCP interrupt.
+                                                   //                  Write 1 to clear the status after interrupt has been serviced (raw
+                                                   //                  status gets cleared, i.e.
+                                                   //                  even if not enabled).
+                                                   //                  Writing a 0 has no effect. 
                                                    //                  [ 0x0 = no error;
                                                    //                    0x1 = error ]
-                uint32_t    TA_SYS       : 1;      // bit  1      (RW) System TA status
+                uint32_t    TA_SYS       : 1;      // bit  1      (RW) Enabled status of system OCP interrupt.
+                                                   //                  Write 1 to clear the status after interrupt has been serviced (raw
+                                                   //                  status gets cleared, i.e.
+                                                   //                  even if not enabled).
+                                                   //                  Writing a 0 has no effect.
                                                    //                  [ 0x0 = no error;
                                                    //                    0x1 = error ]
                 uint32_t                 :30;      // bits 2..31  (R)  Reserved
@@ -920,10 +976,10 @@ namespace REGS
                                                    */
             struct 
             {                                      
-                uint32_t    EN_ERR_SYS   : 1;      // bit  0      (RW) System error enable set
+                uint32_t    EN_ERR_SYS   : 1;      // bit  0      (RW) Enable set for system OCP interrupt.
                                                    //                  [ 0x0 = disabled;
                                                    //                    0x1 = enabled ]
-                uint32_t    EN_TA_SYS    : 1;      // bit  1      (RW) System TA enable set
+                uint32_t    EN_TA_SYS    : 1;      // bit  1      (RW) Enable set for system OCP interrupt.
                                                    //                  [ 0x0 = disabled;
                                                    //                    0x1 = enabled ]
                 uint32_t                 :30;      // bits 2..31  (R)  Reserved
@@ -938,10 +994,10 @@ namespace REGS
                                                    */
             struct 
             {                                      
-                uint32_t    EN_ERR_SYS   : 1;      // bit  0      (RW) System error enable clear
+                uint32_t    EN_ERR_SYS   : 1;      // bit  0      (RW) Enable clear for system OCP interrupt.r
                                                    //                  [ 0x0 = no effect;
                                                    //                    0x1 = disable ]
-                uint32_t    EN_TA_SYS    : 1;      // bit  1      (RW) System TA enable clear
+                uint32_t    EN_TA_SYS    : 1;      // bit  1      (RW) Enable clear for system OCP interrupt.
                                                    //                  [ 0x0 = no effect;
                                                    //                    0x1 = disable ]
                 uint32_t                 :30;      // bits 2..31  (R)  Reserved
@@ -957,9 +1013,15 @@ namespace REGS
             struct 
             {                                      
                 uint32_t    REFINTERVAL  :16;      // bits 0..15  (RW) Refresh periods between ZQCS
-                                                   //                  Number of refresh periods between ZQCS commands
-                uint32_t    ZQCL_MULT    : 2;      // bits 16..17 (RW) ZQCL multiplier [see e_ZQ_MULT]
-                uint32_t    ZQINIT_MULT  : 2;      // bits 18..19 (RW) ZQINIT multiplier [see e_ZQ_MULT]
+                                                   //                  This field supports between one refresh period to 256 ms between
+                                                   //                  ZQCS calibration commands.
+                                                   //                  Refresh period is defined by reg_refresh_rate in SDRAM Refresh
+                                                   //                  Control register
+                uint32_t    ZQCL_MULT    : 2;      // bits 16..17 (RW) Determines number of ZQCS intervals that make up ZQCL/ZQINIT intervals
+                                                   //                  interval, minus one.
+                                                   //                  ZQCS interval is defined by reg_zq_zqcs in SDRAM_TIM_3_reg_t.
+                uint32_t    ZQINIT_MULT  : 2;      // bits 18..19 (RW) Indicates the number of ZQCL intervals that make up a ZQINIT
+                                                   //                  interval, minus one.
                 uint32_t                 : 8;      // bits 20..27 (R)  Reserved
                 uint32_t    SFEXITEN     : 1;      // bit  28     (RW) ZQCL on power-down exit
                                                    //                  [ 0x0 = disabled;
@@ -975,19 +1037,8 @@ namespace REGS
                                                    //                    0x1 = enabled ]
             } b;                                   // bit access
             uint32_t reg;                          // raw register
-        } ZQ_CONFIG_reg_t;
-        
-        /* Enums for multi-value fields */
-        enum e_ZQ_MULT : uint32_t 
-        {
-            /* ZQ calibration interval multipliers
-             * Determines number of ZQCS intervals that make up ZQCL/ZQINIT intervals
-             */
-            ZQ_MULT_1 = 0x0,
-            ZQ_MULT_2 = 0x1,
-            ZQ_MULT_3 = 0x2,
-            ZQ_MULT_4 = 0x3
-        };
+        } ZQ_CONFIG_reg_t;        
+
 
         /* (offset = 0xD4) [reset = 0x0] */ 
         typedef union 
@@ -997,6 +1048,7 @@ namespace REGS
             {                                      
                 uint32_t RDWRLVLINC_RMP_WIN :13;    // bits 0..12  (R)  Incremental leveling ramp window
                                                     //                  Number of refresh periods for ramp window (value = programmed -1)
+                                                    //                  Refresh period is defined by reg_refresh_rate in SDRAM_REF_CTRL_reg_t
                 uint32_t                    :19;    // bits 13..31 (R)  Reserved 
             } b;                                    // bit access
             uint32_t reg;                           // raw register
@@ -1010,12 +1062,16 @@ namespace REGS
             {                                      
                 uint32_t WRLVLINC_RMP_INT       : 8;     // bits 0..7   (RW) Incremental write leveling interval
                                                          //                  Number of pre-scalar intervals between write leveling
+                                                         //                  A value of 0 will disable incremental write leveling during ramp window.
                 uint32_t RDLVLGATEINC_RMP_INT   : 8;     // bits 8..15  (RW) Incremental read DQS gate training interval
                                                          //                  Number of pre-scalar intervals between DQS gate training
+                                                         //                  A value of 0 will disable incremental read DQS gate training during ramp window.
                 uint32_t RDLVLINC_RMP_INT       : 8;     // bits 16..23 (RW) Incremental read data eye training interval
                                                          //                  Number of pre-scalar intervals between data eye training
+                                                         //                  A value of 0 will disable incremental read data eye training during ramp window
                 uint32_t RDWRLVLINC_RMP_PRE     : 7;     // bits 24..30 (RW) Incremental leveling pre-scalar
                                                          //                  Number of refresh periods per interval (value = programmed -1)
+                                                         //                  Refresh period is defined by reg_refresh_rate in SDRAM_REF_CTRL_reg_t
                 uint32_t RDWRLVL_EN             : 1;     // bit  31     (RW) Read-Write Leveling enable
                                                          //                  [ 0x0 = disabled;
                                                          //                    0x1 = enabled ]
@@ -1031,14 +1087,18 @@ namespace REGS
             {                                      
                 uint32_t WRLVLINC_INT      : 8;        // bits 0..7   (RW) Incremental write leveling interval
                                                        //                  Number of pre-scalar intervals between write leveling
+                                                       //                  A value of 0 will disable incremental write leveling.
                 uint32_t RDLVLGATEINC_INT  : 8;        // bits 8..15  (RW) Incremental read DQS gate training interval
                                                        //                  Number of pre-scalar intervals between DQS gate training
+                                                       //                  A value of 0 will disable incremental read DQS gate training.
                 uint32_t RDLVLINC_INT      : 8;        // bits 16..23 (RW) Incremental read data eye training interval
                                                        //                  Number of pre-scalar intervals between data eye training
+                                                       //                  A value of 0 will disable incremental read data eye training.
                 uint32_t RDWRLVLINC_PRE    : 7;        // bits 24..30 (RW) Incremental leveling pre-scalar
                                                        //                  Number of refresh periods per interval (value = programmed -1)
+                                                       //                  Refresh period is defined by reg_refresh_rate in SDRAM_REF_CTRL_reg_t 
                 uint32_t RDWRLVLFULL_START : 1;        // bit  31     (RW) Full leveling trigger
-                                                       //                  [ 0x1 = trigger (self-clearing) ]
+                                                       //                  [ 0x1 = trigger (self-clearing to 0) ]
             } b;                                       // bit access
             uint32_t reg;                              // raw register
         } RDWRLVL_CTRL_reg_t;
@@ -1050,12 +1110,24 @@ namespace REGS
                                                               */
             struct 
             {                                      
-                uint32_t    READ_LATENCY            : 5;      // bits 0..4   (RW) Read data latency
-                                                              //                  Latency for read data from DDR SDRAM (value = required -1)
+                uint32_t    READ_LATENCY            : 5;      // bits 0..4   (RW) This field defines the latency for read data from DDR SDRAM in
+                                                              //                  number of DDR clock cycles.
+                                                              //                  The value applied should be equal to the required value minus one.
+                                                              //                  The maximum read latency supported by the DDR PHY is equal to
+                                                              //                  CAS latency plus 7 clock cycles.
+                                                              //                  The minimum read latency must be equal to CAS latency plus 2
+                                                              //                  clock cycle.
                 uint32_t                            : 3;      // bits 5..7   (R)  Reserved
                 uint32_t    RD_LOCAL_ODT            : 2;      // bits 8..9   (RW) Read local ODT value [see e_LOCAL_ODT]
-                uint32_t    WR_LOCAL_ODT            : 2;      // bits 10..11 (RW) Write local ODT value [see e_LOCAL_ODT]
-                uint32_t    IDLE_LOCAL_ODT          : 2;      // bits 12..13 (RW) Idle local ODT value [see e_LOCAL_ODT]
+                uint32_t    WR_LOCAL_ODT            : 2;      // bits 10..11 (RW) This bit controls the value assigned to the reg_phy_wr_local_odt
+                                                              //                  input on the data macros.
+                                                              //                  Always set to 00.
+                uint32_t    IDLE_LOCAL_ODT          : 2;      // bits 12..13 (RW) Value to drive on the
+                                                              //                  2-bit local_odt (On-Die Termination) PHY outputs when
+                                                              //                  reg_phy_dynamic_pwrdn_enable is asserted and a read is not in
+                                                              //                  progress and reg_phy_dynamic_pwrdn_enable.
+                                                              //                  Typically this is the value required to disable termination (00) to save
+                                                              //                  power when idle.
                 uint32_t                            : 1;      // bit  14     (R)  Reserved
                 uint32_t    PHY_RST_N               : 1;      // bit  15     (RW) PHY reset control
                                                               //                  [ 0x0 = reset;
@@ -1072,8 +1144,13 @@ namespace REGS
         /* Enums for multi-value fields */
         enum e_LOCAL_ODT : uint32_t 
         {
-            /* On-Die Termination configuration
-             * Controls termination strength for different operation modes
+            /* Value to drive on the
+             * 2-bit local_odt (On-Die Termination) PHY outputs when output
+             * enable is not asserted and a read is in progress (where in progress
+             * is defined as after a read command is issued and until all read data
+             * has been returned all the way to the controller.) Typically this is set
+             * to the value required to enable termination at the desired strength for
+             * read usage.
              */
             LOCAL_ODT_OFF  = 0x0,
             LOCAL_ODT_FULL = 0x2,
@@ -1087,21 +1164,37 @@ namespace REGS
                                                    */
             struct 
             {                                      
-                uint32_t    READ_LATENCY_SHADOW         : 5;    // bits 0..4   (RW) Shadow field for read latency
-                                                                //                  Loaded into read latency when SlideAck is asserted
+                uint32_t    READ_LATENCY_SHADOW         : 5;    // bits 0..4   (RW) This field defines the latency for read data from DDR SDRAM in
+                                                                //                  number of DDR clock cycles.
+                                                                //                  The value applied should be equal to the required value minus one.
+                                                                //                  The maximum read latency supported by the DDR PHY is equal to
+                                                                //                  CAS latency plus 7 clock cycles.
+                                                                //                  The minimum read latency must be equal to CAS latency plus 2
+                                                                //                  clock cycle.
                 uint32_t                                : 3;    // bits 5..7   (R)  Reserved
-                uint32_t    RD_LOCAL_ODT_SHADOW         : 2;    // bits 8..9   (RW) Shadow field for read ODT [see e_LOCAL_ODT]
-                                                                //                  Loaded into read ODT when SlideAck is asserted
-                uint32_t    WR_LOCAL_ODT_SHADOW         : 2;    // bits 10..11 (RW) Shadow field for write ODT [see e_LOCAL_ODT]
-                                                                //                  Loaded into write ODT when SlideAck is asserted
-                uint32_t    IDLE_LOCAL_ODT_SHADOW       : 2;    // bits 12..13 (RW) Shadow field for idle ODT [see e_LOCAL_ODT]
-                                                                //                  Loaded into idle ODT when SlideAck is asserted
+                uint32_t    RD_LOCAL_ODT_SHADOW         : 2;    // bits 8..9   (RW) Value to drive on the
+                                                                //                  2-bit local_odt PHY outputs when output enable is not asserted and
+                                                                //                  a read is in progress (where in progress is defined as after a read
+                                                                //                  command is issued and until all read data has been returned all the
+                                                                //                  way to the controller.) Typically this is set to the value required to
+                                                                //                  enable termination at the desired strength for read usage. [see e_LOCAL_ODT]
+                                                                //                  
+                uint32_t    WR_LOCAL_ODT_SHADOW         : 2;    // bits 10..11 (RW) This bit controls the value assigned to the reg_phy_wr_local_odt
+                                                                //                  input on the data macros.Always set to 00.
+                uint32_t    IDLE_LOCAL_ODT_SHADOW       : 2;    // bits 12..13 (RW) Value to drive on the
+                                                                //                  2-bit local_odt PHY outputs when reg_phy_dynamic_pwrdn_enable
+                                                                //                  is asserted and a read is not in progress and
+                                                                //                  reg_phy_dynamic_pwrdn_enable.
+                                                                //                  Typically this is the value required to disable termination (00) to save
+                                                                //                  power when idle.
                 uint32_t                                : 1;    // bit  14     (R)  Reserved
-                uint32_t    PHY_RST_N_SHADOW            : 1;    // bit  15     (RW) Shadow field for PHY reset
-                                                                //                  Loaded into PHY reset when SlideAck is asserted
+                uint32_t    PHY_RST_N_SHADOW            : 1;    // bit  15     (RW) Writing a 1 to this bit will hold the PHY macros in reset.
+                                                                //                  Writing a 0 will bring PHY macros out of reset.
                 uint32_t                                : 4;    // bits 16..19 (R)  Reserved
-                uint32_t    ENABLE_DYNAMIC_PWRDN_SHADOW : 1;    // bit  20     (RW) Shadow field for Dynamic IO power down
-                                                                //                  Loaded into Dynamic IO power down when SlideAck is asserted
+                uint32_t    ENABLE_DYNAMIC_PWRDN_SHADOW : 1;    // bit  20     (RW) Dynamically enables powering down the IO receiver when not
+                                                                //                  performing a read.
+                                                                //                  0 = IO receivers always powered up.
+                                                                //                  1 = IO receives only powered up during a read.
                 uint32_t                                :11;    // bits 16..31 (R)  Reserved
             } b;                                                // bit access
             uint32_t reg;                                       // raw register
@@ -1133,12 +1226,12 @@ namespace REGS
         /* Enums for multi-value fields */
         enum e_COS_MAPPING : uint32_t 
         {
-            /* Class of service mapping values
-             * Determines which class of service is assigned to commands
+            /* Value can be 1 or 2.
+             * Setting a value of 0 or 3 will not assign any class of service.
              */
-            COS_NONE = 0x0,
-            COS_1 = 0x1,
-            COS_2 = 0x2,
+            COS_NONE    = 0x0,
+            COS_1       = 0x1,
+            COS_2       = 0x2,
             COS_INVALID = 0x3
         };
         
@@ -1168,8 +1261,8 @@ namespace REGS
             /* Connection ID mask configuration
              * Determines which bits of the connection ID are masked
              */
-            MASK_NONE = 0x0,
-            MASK_BIT0 = 0x1,
+            MASK_NONE    = 0x0,
+            MASK_BIT0    = 0x1,
             MASK_BITS1_0 = 0x2,
             MASK_BITS2_0 = 0x3
         };
@@ -1179,8 +1272,8 @@ namespace REGS
             /* Extended connection ID mask configuration
              * Determines which bits of the connection ID are masked
              */
-            MASK_EXT_NONE = 0x0,
-            MASK_EXT_BIT0 = 0x1,
+            MASK_EXT_DISABLE = 0x0,
+            MASK_EXT_BIT0    = 0x1,
             MASK_EXT_BITS1_0 = 0x2,
             MASK_EXT_BITS2_0 = 0x3,
             MASK_EXT_BITS3_0 = 0x4,
@@ -1234,8 +1327,8 @@ namespace REGS
 
         struct AM335x_EMIF4D_Type
         {                                                                                      
-            __R   EMIF_MOD_ID_REV_reg_t               EMIF_MOD_ID_REV;            // (0x0) 
-            __R   STATUS_reg_t                        STATUS;                     // (0x4)
+            __R    EMIF_MOD_ID_REV_reg_t              EMIF_MOD_ID_REV;            // (0x0) 
+            __R    STATUS_reg_t                       STATUS;                     // (0x4)
             __RW   SDRAM_CONFIG_reg_t                 SDRAM_CONFIG;               // (0x8)
             __RW   SDRAM_CONFIG_2_reg_t               SDRAM_CONFIG_2;             // (0xC)
             __RW   SDRAM_REF_CTRL_reg_t               SDRAM_REF_CTRL;             // (0x10)
@@ -1272,7 +1365,7 @@ namespace REGS
             __RW   IRQENABLE_CLR_SYS_reg_t            IRQENABLE_CLR_SYS;          // (0xBC)
             __R    uint32_t                           RESERVED9[2];
             __RW   ZQ_CONFIG_reg_t                    ZQ_CONFIG;                  // (0xC8)
-            __R    uint32_t                           RESERVED10[1];
+            __R    uint32_t                           RESERVED10[2];
             __R    RDWRLVL_RAMP_WIN_reg_t             RDWRLVL_RAMP_WIN;           // (0xD4) 
             __RW   RDWRLVL_RAMP_CTRL_reg_t            RDWRLVL_RAMP_CTRL;          // (0xD8) 
             __RW   RDWRLVL_CTRL_reg_t                 RDWRLVL_CTRL;               // (0xDC)
@@ -1284,7 +1377,7 @@ namespace REGS
             __RW   CONNID_TO_COS_1_MAPPING_reg_t      CONNID_TO_COS_1_MAPPING;    // (0x104)
             __RW   CONNID_TO_COS_2_MAPPING_reg_t      CONNID_TO_COS_2_MAPPING;    // (0x108)
             __R    uint32_t                           RESERVED13[5]; 
-            __RW   READ_WRITE_EXEC_THRESHOLD_reg_t    READ_WRITE_EXEC_THRESHOL;   // (0x120)        
+            __RW   READ_WRITE_EXEC_THRESHOLD_reg_t    READ_WRITE_EXEC_THRESHOL;   // (0x120)  
         };
 
         struct AM335x_DDR23mPHY_Type
