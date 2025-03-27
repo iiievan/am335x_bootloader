@@ -420,21 +420,29 @@ namespace REGS
             uint32_t reg;                          // raw register
         } SDRAM_CONFIG_2_reg_t;
         
-        /* (offset = 0x10) [reset = 0x80001388] */
+        /* (offset = 0x10) [reset = 0x80001388] */ 
         typedef union 
-        {
+        { 
                                                   /* SDRAM_REF_CTRL
                                                    */
             struct 
             {                                      
                 uint32_t    REFRESH_RATE :16;      // bits 0..15  (RW) Refresh Rate
+                                                   //                  Value defines rate at which connected SDRAM devices will be refreshed
+                                                   //                  SDRAM refresh rate = EMIF rate / reg_refresh_rate
                 uint32_t                 : 8;      // bits 16..23 (R)  Reserved
                 uint32_t    PASR         : 3;      // bits 24..26 (RW) Partial Array Self Refresh [see e_PASR]
                 uint32_t                 : 1;      // bit  27     (R)  Reserved
-                uint32_t    ASR          : 1;      // bit  28     (RW) Auto Self Refresh [0x0 = manual; 0x1 = auto]
-                uint32_t    SRT          : 1;      // bit  29     (RW) Self-refresh temp range [0x0 = normal; 0x1 = extended]
+                uint32_t    ASR          : 1;      // bit  28     (RW) Auto Self Refresh enable
+                                                   //                  [ 0x0 = manual Self Refresh;
+                                                   //                    0x1 = auto Self Refresh ]
+                uint32_t    SRT          : 1;      // bit  29     (RW) Self-refresh temperature range
+                                                   //                  [ 0x0 = normal operating temperature range;
+                                                   //                    0x1 = extended operating temperature range ]
                 uint32_t                 : 1;      // bit  30     (R)  Reserved
-                uint32_t    INITREF_DIS  : 1;      // bit  31     (RW) Init/Refresh disable [0x0 = enabled; 0x1 = disabled]
+                uint32_t    INITREF_DIS  : 1;      // bit  31     (RW) Initialization and Refresh disable
+                                                   //                  [ 0x0 = enabled;
+                                                   //                    0x1 = disabled ]
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } SDRAM_REF_CTRL_reg_t;
@@ -442,6 +450,10 @@ namespace REGS
         /* Enums for multi-value fields */
         enum e_PASR : uint32_t 
         {
+            /* Partial Array Self Refresh configuration for LPDDR1/DDR3
+             * For LPDDR1: 0 = full array, 1 = 1/2 array, 2 = 1/4 array, 5 = 1/8 array, 6 = 1/16 array
+             * For DDR3: 0 = full array, 1/5 = 1/2 array, 2/6 = 1/4 array, 3/7 = 1/8 array, 4 = 3/4 array
+             */
             PASR_FULL = 0x0,
             PASR_HALF = 0x1,
             PASR_QUARTER = 0x2,
@@ -450,130 +462,163 @@ namespace REGS
             PASR_3QUARTERS = 0x4
         };
         
-        /* (offset = 0x14) [reset = 0x00001388] */
+        /* (offset = 0x14) [reset = 0x00001388] */ 
         typedef union 
-        {
+        { 
                                                   /* SDRAM_REF_CTRL_SHDW
                                                    */
             struct 
             {                                      
-                uint32_t    REFRESH_RATE_SHADOW :16;    // bits 0..15  (RW) Shadow refresh rate
+                uint32_t    REFRESH_RATE_SHADOW :16;    // bits 0..15  (RW) Shadow field for reg_refresh_rate
+                                                        //              Loaded into reg_refresh_rate when SlideAck is asserted
                 uint32_t                        :16;    // bits 16..31 (R) Reserved
             } b;                                        // bit access
             uint32_t reg;                               // raw register
         } SDRAM_REF_CTRL_SHDW_reg_t;
         
-        /* (offset = 0x18) [reset = 0x08891599] */
+        /* (offset = 0x18) [reset = 0x08891599] */ 
         typedef union 
-        {
+        { 
                                                   /* SDRAM_TIM_1
                                                    */
             struct 
             {                                      
                 uint32_t    WTR          : 3;      // bits 0..2   (RW) Write to Read delay
-                uint32_t    RRD          : 3;      // bits 3..5   (RW) Activate to Activate delay
+                                                   //                  Minimum DDR clock cycles from last Write to Read, minus one
+                uint32_t    RRD          : 3;      // bits 3..5   (RW) Activate to Activate delay for different bank
+                                                   //                  Minimum DDR clock cycles between activates to different banks, minus one
                 uint32_t    RC           : 6;      // bits 6..11  (RW) Activate to Activate
+                                                   //                  Minimum DDR clock cycles between activate commands, minus one
                 uint32_t    RAS          : 5;      // bits 12..16 (RW) Activate to Pre-charge
+                                                   //                  Minimum DDR clock cycles from Activate to Pre-charge, minus one
                 uint32_t    WR           : 4;      // bits 17..20 (RW) Write to Pre-charge
+                                                   //                  Minimum DDR clock cycles from last Write to Pre-charge, minus one
                 uint32_t    RCD          : 4;      // bits 21..24 (RW) Activate to Read/Write
+                                                   //                  Minimum DDR clock cycles from Activate to Read/Write, minus one
                 uint32_t    RP           : 4;      // bits 25..28 (RW) Precharge to Activate
+                                                   //                  Minimum DDR clock cycles from Precharge to Activate, minus one
                 uint32_t                 : 3;      // bits 29..31 (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } SDRAM_TIM_1_reg_t;
         
-        /* (offset = 0x1C) [reset = 0x08891599] */
+        /* (offset = 0x1C) [reset = 0x08891599] */ 
         typedef union 
-        {
+        { 
                                                   /* SDRAM_TIM_1_SHDW
                                                    */
             struct 
             {                                      
-                uint32_t    WTR_SHADOW   : 3;      // bits 0..2   (RW) Shadow WTR
-                uint32_t    RRD_SHADOW   : 3;      // bits 3..5   (RW) Shadow RRD
-                uint32_t    RC_SHADOW    : 6;      // bits 6..11  (RW) Shadow RC
-                uint32_t    RAS_SHADOW   : 5;      // bits 12..16 (RW) Shadow RAS
-                uint32_t    WR_SHADOW    : 4;      // bits 17..20 (RW) Shadow WR
-                uint32_t    RCD_SHADOW   : 4;      // bits 21..24 (RW) Shadow RCD
-                uint32_t    RP_SHADOW    : 4;      // bits 25..28 (RW) Shadow RP
+                uint32_t    WTR_SHADOW   : 3;      // bits 0..2   (RW) Shadow field for WTR
+                                                   //                  Loaded into WTR when SlideAck is asserted
+                uint32_t    RRD_SHADOW   : 3;      // bits 3..5   (RW) Shadow field for RRD
+                                                   //                  Loaded into RRD when SlideAck is asserted
+                uint32_t    RC_SHADOW    : 6;      // bits 6..11  (RW) Shadow field for RC
+                                                   //                  Loaded into RC when SlideAck is asserted
+                uint32_t    RAS_SHADOW   : 5;      // bits 12..16 (RW) Shadow field for RAS
+                                                   //                  Loaded into RAS when SlideAck is asserted
+                uint32_t    WR_SHADOW    : 4;      // bits 17..20 (RW) Shadow field for WR
+                                                   //                  Loaded into WR when SlideAck is asserted
+                uint32_t    RCD_SHADOW   : 4;      // bits 21..24 (RW) Shadow field for RCD
+                                                   //                  Loaded into RCD when SlideAck is asserted
+                uint32_t    RP_SHADOW    : 4;      // bits 25..28 (RW) Shadow field for RP
+                                                   //                  Loaded into RP when SlideAck is asserted
                 uint32_t                 : 3;      // bits 29..31 (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } SDRAM_TIM_1_SHDW_reg_t;
         
-        /* (offset = 0x20) [reset = 0x148B31CA] */
+        /* (offset = 0x20) [reset = 0x148B31CA] */ 
         typedef union 
-        {
+        { 
                                                   /* SDRAM_TIM_2
                                                    */
             struct 
             {                                      
                 uint32_t    CKE          : 3;      // bits 0..2   (RW) CKE changes delay
+                                                   //                  Minimum DDR clock cycles between pad_cke_o changes, minus one
                 uint32_t    RTP          : 3;      // bits 3..5   (RW) Read to Precharge
+                                                   //                  Minimum DDR clock cycles from last Read to Precharge, minus one
                 uint32_t    XSRD         :10;      // bits 6..15  (RW) Self-Refresh exit to Read
+                                                   //                  Minimum DDR clock cycles from Self-Refresh exit to Read, minus one
                 uint32_t    XSNR         : 9;      // bits 16..24 (RW) Self-Refresh exit delay
+                                                   //                  Minimum DDR clock cycles from Self-Refresh exit to any command, minus one
                 uint32_t                 : 3;      // bits 25..27 (RW) Reserved
                 uint32_t    XP           : 3;      // bits 28..30 (RW) Powerdown exit delay
+                                                   //                  Minimum DDR clock cycles from Powerdown exit to any command, minus one
                 uint32_t                 : 1;      // bit  31     (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } SDRAM_TIM_2_reg_t;
         
-        /* (offset = 0x24) [reset = 0x148B31CA] */
+        /* (offset = 0x24) [reset = 0x148B31CA] */ 
         typedef union 
-        {
+        { 
                                                   /* SDRAM_TIM_2_SHDW
                                                    */
             struct 
             {                                      
-                uint32_t    CKE_SHADOW   : 3;      // bits 0..2   (RW) Shadow CKE
-                uint32_t    RTP_SHADOW   : 3;      // bits 3..5   (RW) Shadow RTP
-                uint32_t    XSRD_SHADOW  :10;      // bits 6..15  (RW) Shadow XSRD
-                uint32_t    XSNR_SHADOW  : 9;      // bits 16..24 (RW) Shadow XSNR
+                uint32_t    CKE_SHADOW   : 3;      // bits 0..2   (RW) Shadow field for CKE
+                                                   //                  Loaded into CKE when SlideAck is asserted
+                uint32_t    RTP_SHADOW   : 3;      // bits 3..5   (RW) Shadow field for RTP
+                                                   //                  Loaded into RTP when SlideAck is asserted
+                uint32_t    XSRD_SHADOW  :10;      // bits 6..15  (RW) Shadow field for XSRD
+                                                   //                  Loaded into XSRD when SlideAck is asserted
+                uint32_t    XSNR_SHADOW  : 9;      // bits 16..24 (RW) Shadow field for XSNR
+                                                   //                  Loaded into XSNR when SlideAck is asserted
                 uint32_t                 : 3;      // bits 25..27 (RW) Reserved
-                uint32_t    XP_SHADOW    : 3;      // bits 28..30 (RW) Shadow XP
+                uint32_t    XP_SHADOW    : 3;      // bits 28..30 (RW) Shadow field for XP
+                                                   //                  Loaded into XP when SlideAck is asserted
                 uint32_t                 : 1;      // bit  31     (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } SDRAM_TIM_2_SHDW_reg_t;
         
-        /* (offset = 0x28) [reset = 0x00FFE82F] */
+        /* (offset = 0x28) [reset = 0x00FFE82F] */ 
         typedef union 
-        {
+        { 
                                                   /* SDRAM_TIM_3
                                                    */
             struct 
             {                                      
                 uint32_t    RAS_MAX      : 4;      // bits 0..3   (RW) Max Activate to Precharge
+                                                   //                  Maximum number of refresh_rate intervals from Activate to Precharge
                 uint32_t    RFC          : 9;      // bits 4..12  (RW) Refresh/Activate delay
+                                                   //                  Minimum DDR clock cycles from Refresh/Activate to Refresh/Activate, minus one
                 uint32_t                 : 2;      // bits 13..14 (RW) Reserved
                 uint32_t    ZQ_ZQCS      : 6;      // bits 15..20 (RW) ZQCS command cycles
+                                                   //                  Number of DDR clock cycles for ZQCS command, minus one
                 uint32_t                 : 7;      // bits 24..27 (R)  Reserved
                 uint32_t    PDLL_UL      : 4;      // bits 28..31 (RW) PHY DLL unlock cycles
+                                                   //                  Minimum DDR clock cycles for PHY DLL to unlock (N x 128 clocks)
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } SDRAM_TIM_3_reg_t;
         
-        /* (offset = 0x2C) [reset = 0x00FFE82F 00000000 00000000] */
+        /* (offset = 0x2C) [reset = 0x00FFE82F 00000000 00000000] */ 
         typedef union 
-        {
+        { 
                                                      /* SDRAM_TIM_3_SHDW
                                                       */
             struct 
             {                                      
-                uint32_t    RAS_MAX_SHADOW  : 4;     // bits 0..3   (RW) Shadow RAS_MAX
-                uint32_t    RFC_SHADOW      : 9;     // bits 4..12  (RW) Shadow RFC
+                uint32_t    RAS_MAX_SHADOW  : 4;     // bits 0..3   (RW) Shadow field for RAS_MAX
+                                                     //                  Loaded into RAS_MAX when SlideAck is asserted
+                uint32_t    RFC_SHADOW      : 9;     // bits 4..12  (RW) Shadow field for RFC
+                                                     //                  Loaded into RFC when SlideAck is asserted
                 uint32_t                    : 2;     // bits 13..14 (RW) Reserved
-                uint32_t    ZQ_ZQCS_SHADOW  : 6;     // bits 15..20 (RW) Shadow ZQ_ZQCS
-                uint32_t                    : 7;     // bits 24..27 (R) Reserved
-                uint32_t    PDLL_UL_SHADOW  : 4;     // bits 28..31 (RW) Shadow PDLL_UL
+                uint32_t    ZQ_ZQCS_SHADOW  : 6;     // bits 15..20 (RW) Shadow field for ZQ_ZQCS
+                                                     //                  Loaded into ZQ_ZQCS when SlideAck is asserted
+                uint32_t                    : 7;     // bits 24..27 (R)  Reserved
+                uint32_t    PDLL_UL_SHADOW  : 4;     // bits 28..31 (RW) Shadow field for PDLL_UL
+                                                     //                  Loaded into PDLL_UL when SlideAck is asserted
             } b;                                     // bit access
             uint32_t reg;                            // raw register
         } SDRAM_TIM_3_SHDW_reg_t;
         
-        /* (offset = 0x38) [reset = 0x0] */
+        /* (offset = 0x38) [reset = 0x0] */ 
         typedef union 
-        {
+        { 
                                                   /* PWR_MGMT_CTRL
                                                    */
             struct 
@@ -581,9 +626,11 @@ namespace REGS
                 uint32_t    CS_TIM       : 4;      // bits 0..3   (RW) Clock Stop timer [see e_PWR_TIMER]
                 uint32_t    SR_TIM       : 4;      // bits 4..7   (RW) Self Refresh timer [see e_PWR_TIMER]
                 uint32_t    LP_MODE      : 3;      // bits 8..10  (RW) Power Management mode [see e_LP_MODE]
-                uint32_t    DPD_EN       : 1;      // bit  11     (RW) Deep Power Down enable [0x0 = disabled; 0x1 = enabled]
+                uint32_t    DPD_EN       : 1;      // bit  11     (RW) Deep Power Down enable
+                                                   //                  [ 0x0 = disabled;
+                                                   //                    0x1 = enabled ]
                 uint32_t    PD_TIM       : 4;      // bits 12..15 (RW) Power-Down timer [see e_PWR_TIMER]
-                uint32_t                 :16;      // bits 16..31 (R) Reserved
+                uint32_t                 :16;      // bits 16..31 (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } PWR_MGMT_CTRL_reg_t;
@@ -591,6 +638,10 @@ namespace REGS
         /* Enums for multi-value fields */
         enum e_PWR_TIMER : uint32_t 
         {
+            /* Power management timer values in DDR clock cycles
+             * Each value represents N clock cycles where N = 16 * 2^(value-1)
+             * 0 = immediate, 1 = 16 clocks, 2 = 32 clocks, etc.
+             */
             PWR_TIMER_IMMEDIATE = 0x0,
             PWR_TIMER_16 = 0x1,
             PWR_TIMER_32 = 0x2,
@@ -611,51 +662,62 @@ namespace REGS
         
         enum e_LP_MODE : uint32_t 
         {
+            /* Low power mode configuration
+             * Determines automatic power management behavior
+             */
             LP_DISABLED = 0x0,
             LP_CLOCK_STOP = 0x1,
             LP_SELF_REFRESH = 0x2,
             LP_POWER_DOWN = 0x4
         };
         
-        /* (offset = 0x3C) [reset = 0x0] */
+        /* (offset = 0x3C) [reset = 0x0] */ 
         typedef union 
-        {
+        { 
                                                       /* PWR_MGMT_CTRL_SHDW
                                                        */
             struct 
             {                                      
-                uint32_t    CS_TIM_SHADOW   : 4;       // bits 0..3   (RW) Shadow CS_TIM [see e_PWR_TIMER]
-                uint32_t    SR_TIM_SHADOW   : 4;       // bits 4..7   (RW) Shadow SR_TIM [see e_PWR_TIMER]
-                uint32_t    PD_TIM_SHADOW   : 4;       // bits 8..11  (RW) Shadow PD_TIM [see e_PWR_TIMER]
+                uint32_t    CS_TIM_SHADOW   : 4;       // bits 0..3   (RW) Shadow field for CS_TIM
+                                                       //                  Loaded into CS_TIM when SlideAck is asserted
+                uint32_t    SR_TIM_SHADOW   : 4;       // bits 4..7   (RW) Shadow field for SR_TIM
+                                                       //                  Loaded into SR_TIM when SlideAck is asserted
+                uint32_t    PD_TIM_SHADOW   : 4;       // bits 8..11  (RW) Shadow field for PD_TIM
+                                                       //                  Loaded into PD_TIM when SlideAck is asserted
                 uint32_t                    :20;       // bits 12..31 (R)  Reserved
             } b;                                       // bit access
             uint32_t reg;                              // raw register
         } PWR_MGMT_CTRL_SHDW_reg_t;
         
-        /* (offset = 0x54) [reset = 0x00FFFFFF] */
+        /* (offset = 0x54) [reset = 0x00FFFFFF] */ 
         typedef union 
-        {
+        { 
                                                   /* OCP_CONFIG
                                                    */
             struct 
             {                                      
                 uint32_t    PR_OLD_COUNT : 8;      // bits 0..7   (RW) Priority Raise Old Counter
+                                                   //                  Number of m_clk cycles after which EMIF raises priority of oldest command
                 uint32_t    COS_COUNT_2  : 8;      // bits 8..15  (RW) Priority Counter COS 2
+                                                   //                  Number of m_clk cycles after which EMIF raises priority of COS 2 commands
                 uint32_t    COS_COUNT_1  : 8;      // bits 16..23 (RW) Priority Counter COS 1
+                                                   //                  Number of m_clk cycles after which EMIF raises priority of COS 1 commands
                 uint32_t                 : 8;      // bits 24..31 (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } OCP_CONFIG_reg_t;
         
-        /* (offset = 0x58) [reset = 0x8000140A] */
+        /* (offset = 0x58) [reset = 0x8000140A] */ 
         typedef union 
-        {
+        { 
                                                     /* OCP_CFG_VAL_1
                                                      */
             struct 
             {                                      
-                uint32_t    CMD_FIFO_DEPTH  : 8;     // bits 0..7    (R) Command FIFO depth
+                uint32_t    CMD_FIFO_DEPTH  : 8;      // bits 0..7   (R) Command FIFO depth
+                                                      //                 Depth of Command FIFO for this configuration
                 uint32_t    WR_FIFO_DEPTH   : 8;      // bits 8..15  (R) Write Data FIFO depth
+                                                      //                 Depth of Write Data FIFO for this configuration
                 uint32_t                    :14;      // bits 16..29 (R) Reserved
                 uint32_t    SYS_BUS_WIDTH   : 2;      // bits 30..31 (R) L3 OCP data bus width [see e_SYS_BUS_WIDTH]
             } b;                                      // bit access
@@ -665,200 +727,252 @@ namespace REGS
         /* Enums for multi-value fields */
         enum e_SYS_BUS_WIDTH : uint32_t 
         {
+            /* System bus width configuration
+             * Determines the width of the L3 OCP data bus
+             */
             BUS_WIDTH_32 = 0x0,
             BUS_WIDTH_64 = 0x1,
             BUS_WIDTH_128 = 0x2,
             BUS_WIDTH_256 = 0x3
         };
         
-        /* (offset = 0x5C) [reset = 0x00021616 00002011 00000000 00000000 00000000] */
+        /* (offset = 0x5C) [reset = 0x00021616 00002011 00000000 00000000 00000000] */ 
         typedef union 
-        {
+        { 
                                                   /* OCP_CFG_VAL_2
                                                    */
             struct 
             {                                      
                 uint32_t    RCMD_FIFO_DEPTH     : 8;    // bits 0..7   (R) Read Command FIFO depth
+                                                        //                 Depth of Read Command FIFO for this configuration
                 uint32_t    RSD_FIFO_DEPTH      : 8;    // bits 8..15  (R) SDRAM Read Data FIFO depth
+                                                        //                 Depth of SDRAM Read Data FIFO for this configuration
                 uint32_t    RREG_FIFO_DEPTH     : 8;    // bits 16..23 (R) Register Read FIFO depth
+                                                        //                 Depth of Register Read FIFO for this configuration
                 uint32_t                        : 8;    // bits 24..31 (R) Reserved
             } b;                                        // bit access
             uint32_t reg;                               // raw register
         } OCP_CFG_VAL_2_reg_t;
         
-        /* (offset = 0x80) [reset = 0x00592A49] */
+        /* (offset = 0x80) [reset = 0x00592A49] */ 
         typedef union 
-        {
+        { 
                                                   /* PERF_CNT_1
                                                    */
             struct 
             {                                      
                 uint32_t    COUNTER1     :32;      // bits 0..31  (R) Performance counter 1
+                                                   //              32-bit counter configurable via PERF_CNT_CFG register
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } PERF_CNT_1_reg_t;
         
-        /* (offset = 0x84) [reset = 0x1FEB9] */
+        /* (offset = 0x84) [reset = 0x1FEB9] */ 
         typedef union 
-        {
+        { 
                                                   /* PERF_CNT_2
                                                    */
             struct 
             {                                      
                 uint32_t    COUNTER2     :32;      // bits 0..31  (R) Performance counter 2
+                                                   //              32-bit counter configurable via PERF_CNT_CFG register
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } PERF_CNT_2_reg_t;
         
-        /* (offset = 0x88) [reset = 0x10000] */
+        /* (offset = 0x88) [reset = 0x10000] */ 
         typedef union 
-        {
+        { 
                                                   /* PERF_CNT_CFG
                                                    */
             struct 
             {                                      
                 uint32_t    CNTR1_CFG        : 4;   // bits 0..3   (RW) Counter 1 config
+                                                    //                  Filter configuration for Performance Counter 1
                 uint32_t                     :10;   // bits 4..13  (R)  Reserved
-                uint32_t    CNTR1_REGION_EN  : 1;   // bit  14     (RW) Counter 1 region enable [0x0 = disabled; 0x1 = enabled]
-                uint32_t    CNTR1_MCONNID_EN : 1;   // bit  15     (RW) Counter 1 MConnID enable [0x0 = disabled; 0x1 = enabled]
+                uint32_t    CNTR1_REGION_EN  : 1;   // bit  14     (RW) Counter 1 region enable
+                                                    //                  [ 0x0 = disabled;
+                                                    //                    0x1 = enabled ]
+                uint32_t    CNTR1_MCONNID_EN : 1;   // bit  15     (RW) Counter 1 MConnID enable
+                                                    //                  [ 0x0 = disabled;
+                                                    //                    0x1 = enabled ]
                 uint32_t    CNTR2_CFG        : 4;   // bits 16..19 (RW) Counter 2 config
+                                                    //                  Filter configuration for Performance Counter 2
                 uint32_t                     : 10;  // bits 20..29 (R)  Reserved
-                uint32_t    CNTR2_REGION_EN  : 1;   // bit  30     (RW) Counter 2 region enable [0x0 = disabled; 0x1 = enabled]
-                uint32_t    CNTR2_MCONNID_EN : 1;   // bit  31     (RW) Counter 2 MConnID enable [0x0 = disabled; 0x1 = enabled]
+                uint32_t    CNTR2_REGION_EN  : 1;   // bit  30     (RW) Counter 2 region enable
+                                                    //                  [ 0x0 = disabled;
+                                                    //                    0x1 = enabled ]
+                uint32_t    CNTR2_MCONNID_EN : 1;   // bit  31     (RW) Counter 2 MConnID enable
+                                                    //                  [ 0x0 = disabled;
+                                                    //                    0x1 = enabled ]
             } b;                                    // bit access
             uint32_t reg;                           // raw register
         } PERF_CNT_CFG_reg_t;
         
-        /* (offset = 0x8C) [reset = 0x0] */
+        /* (offset = 0x8C) [reset = 0x0] */ 
         typedef union 
-        {
+        { 
                                                   /* PERF_CNT_SEL
                                                    */
             struct 
             {                                      
                 uint32_t    REGION_SEL1  : 2;      // bits 0..1   (RW) MMddrSpace for Counter 1
+                                                   //                  Memory region selection for Performance Counter 1
                 uint32_t                 : 6;      // bits 2..7   (R)  Reserved
                 uint32_t    MCONNID1     : 8;      // bits 8..15  (RW) MConnID for Counter 1
+                                                   //                  Connection ID filter for Performance Counter 1
                 uint32_t    REGION_SEL2  : 2;      // bits 16..17 (RW) MMddrSpace for Counter 2
+                                                   //                  Memory region selection for Performance Counter 2
                 uint32_t                 : 6;      // bits 18..23 (R)  Reserved
                 uint32_t    MCONNID2     : 8;      // bits 24..31 (RW) MConnID for Counter 2
+                                                   //                  Connection ID filter for Performance Counter 2
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } PERF_CNT_SEL_reg_t;
         
-        /* (offset = 0x90) [reset = 0xA484D432 00000000] */
+        /* (offset = 0x90) [reset = 0xA484D432 00000000] */ 
         typedef union 
-        {
-                                                  /* PERF_CNT_TIM
-                                                   */
+        { 
+                                                   /* PERF_CNT_TIM
+                                                    */
             struct 
             {                                      
                 uint32_t    TOTAL_TIME   :32;      // bits 0..31  (R) Total m_clk cycles counter
+                                                   //              32-bit counter of m_clk cycles since EMIF reset
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } PERF_CNT_TIM_reg_t;
         
-        /* (offset = 0x98) [reset = 0x50000] */
+        /* (offset = 0x98) [reset = 0x50000] */ 
         typedef union 
-        {
-                                                  /* READ_IDLE_CTRL
-                                                   */
+        { 
+                                                         /* READ_IDLE_CTRL
+                                                          */
             struct 
             {                                      
-                uint32_t    READ_IDLE_INTERVAL  :9;     // bits 0..8    (RW) Read idle interval
+                uint32_t    READ_IDLE_INTERVAL  :9;      // bits 0..8    (RW) Read idle interval
+                                                         //                   Maximum interval between read idle detections
                 uint32_t                        :7;      // bits 9..15  (R)  Reserved
                 uint32_t    READ_IDLE_LEN       :4;      // bits 16..19 (RW) Read idle length
+                                                         //                  Minimum size of read idle window
                 uint32_t                        :12;     // bits 20..31 (R)  Reserved
             } b;                                         // bit access
             uint32_t reg;                                // raw register
         } READ_IDLE_CTRL_reg_t;
         
-        /* (offset = 0x9C) [reset = 0x0050000 00000000] */
+        /* (offset = 0x9C) [reset = 0x0050000 00000000] */ 
         typedef union 
-        {
+        { 
                                                                   /* READ_IDLE_CTRL_SHDW
                                                                    */
             struct 
             {                                      
-                uint32_t    READ_IDLE_INTERVAL_SHADOW   : 9;        // bits 0..8   (RW) Shadow interval
+                uint32_t    READ_IDLE_INTERVAL_SHADOW   : 9;        // bits 0..8   (RW) Shadow field for read idle interval
+                                                                    //                  Loaded into read idle interval when SlideAck is asserted
                 uint32_t                                : 7;        // bits 9..15  (R)  Reserved
-                uint32_t    READ_IDLE_LEN_SHADOW        : 4;        // bits 16..19 (RW) Shadow length
+                uint32_t    READ_IDLE_LEN_SHADOW        : 4;        // bits 16..19 (RW) Shadow field for read idle length
+                                                                    //                  Loaded into read idle length when SlideAck is asserted
                 uint32_t                                :12;        // bits 20..31 (R)  Reserved
             } b;                                                    // bit access
             uint32_t reg;                                           // raw register
         } READ_IDLE_CTRL_SHDW_reg_t;
         
-        /* (offset = 0xA4) [reset = 0x0] */
+        /* (offset = 0xA4) [reset = 0x0] */ 
         typedef union 
-        {
+        { 
                                                   /* IRQSTATUS_RAW_SYS
                                                    */
             struct 
             {                                      
-                uint32_t    ERR_SYS      : 1;      // bit  0      (RW) System error raw status [0x0 = no error; 0x1 = error]
-                uint32_t    TA_SYS       : 1;      // bit  1      (RW) System TA raw status [0x0 = no error; 0x1 = error]
+                uint32_t    ERR_SYS      : 1;      // bit  0      (RW) System error raw status
+                                                   //                  [ 0x0 = no error;
+                                                   //                    0x1 = error ]
+                uint32_t    TA_SYS       : 1;      // bit  1      (RW) System TA raw status
+                                                   //                  [ 0x0 = no error;
+                                                   //                    0x1 = error ]
                 uint32_t                 :30;      // bits 2..31  (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } IRQSTATUS_RAW_SYS_reg_t;
         
-        /* (offset = 0xAC) [reset = 0x0] */
+        /* (offset = 0xAC) [reset = 0x0] */ 
         typedef union 
-        {
+        { 
                                                   /* IRQSTATUS_SYS
                                                    */
             struct 
             {                                      
-                uint32_t    ERR_SYS      : 1;      // bit  0      (RW) System error status [0x0 = no error; 0x1 = error]
-                uint32_t    TA_SYS       : 1;      // bit  1      (RW) System TA status [0x0 = no error; 0x1 = error]
+                uint32_t    ERR_SYS      : 1;      // bit  0      (RW) System error status
+                                                   //                  [ 0x0 = no error;
+                                                   //                    0x1 = error ]
+                uint32_t    TA_SYS       : 1;      // bit  1      (RW) System TA status
+                                                   //                  [ 0x0 = no error;
+                                                   //                    0x1 = error ]
                 uint32_t                 :30;      // bits 2..31  (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } IRQSTATUS_SYS_reg_t;
         
-        /* (offset = 0xB4) [reset = 0x0] */
+        /* (offset = 0xB4) [reset = 0x0] */ 
         typedef union 
-        {
+        { 
                                                   /* IRQENABLE_SET_SYS
                                                    */
             struct 
             {                                      
-                uint32_t    EN_ERR_SYS   : 1;      // bit  0      (RW) System error enable set [0x0 = disabled; 0x1 = enabled]
-                uint32_t    EN_TA_SYS    : 1;      // bit  1      (RW) System TA enable set [0x0 = disabled; 0x1 = enabled]
+                uint32_t    EN_ERR_SYS   : 1;      // bit  0      (RW) System error enable set
+                                                   //                  [ 0x0 = disabled;
+                                                   //                    0x1 = enabled ]
+                uint32_t    EN_TA_SYS    : 1;      // bit  1      (RW) System TA enable set
+                                                   //                  [ 0x0 = disabled;
+                                                   //                    0x1 = enabled ]
                 uint32_t                 :30;      // bits 2..31  (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } IRQENABLE_SET_SYS_reg_t;
         
-        /* (offset = 0xBC) [reset = 0x0] */
+        /* (offset = 0xBC) [reset = 0x0] */ 
         typedef union 
-        {
+        { 
                                                   /* IRQENABLE_CLR_SYS
                                                    */
             struct 
             {                                      
-                uint32_t    EN_ERR_SYS   : 1;      // bit  0      (RW) System error enable clear [0x0 = no effect; 0x1 = disable]
-                uint32_t    EN_TA_SYS    : 1;      // bit  1      (RW) System TA enable clear [0x0 = no effect; 0x1 = disable]
+                uint32_t    EN_ERR_SYS   : 1;      // bit  0      (RW) System error enable clear
+                                                   //                  [ 0x0 = no effect;
+                                                   //                    0x1 = disable ]
+                uint32_t    EN_TA_SYS    : 1;      // bit  1      (RW) System TA enable clear
+                                                   //                  [ 0x0 = no effect;
+                                                   //                    0x1 = disable ]
                 uint32_t                 :30;      // bits 2..31  (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } IRQENABLE_CLR_SYS_reg_t;
         
-        /* (offset = 0xC8) [reset = 0x0] */
+        /* (offset = 0xC8) [reset = 0x0] */ 
         typedef union 
-        {
+        { 
                                                   /* ZQ_CONFIG
                                                    */
             struct 
             {                                      
                 uint32_t    REFINTERVAL  :16;      // bits 0..15  (RW) Refresh periods between ZQCS
+                                                   //                  Number of refresh periods between ZQCS commands
                 uint32_t    ZQCL_MULT    : 2;      // bits 16..17 (RW) ZQCL multiplier [see e_ZQ_MULT]
                 uint32_t    ZQINIT_MULT  : 2;      // bits 18..19 (RW) ZQINIT multiplier [see e_ZQ_MULT]
                 uint32_t                 : 8;      // bits 20..27 (R)  Reserved
-                uint32_t    SFEXITEN     : 1;      // bit  28     (RW) ZQCL on power-down exit [0x0 = disabled; 0x1 = enabled]
-                uint32_t    DUALCALEN    : 1;      // bit  29     (RW) Dual Calibration enable [0x0 = disabled; 0x1 = enabled]
-                uint32_t    CS0EN        : 1;      // bit  30     (RW) ZQ cal for CS0 enable [0x0 = disabled; 0x1 = enabled]
-                uint32_t    CS1EN        : 1;      // bit  31     (RW) ZQ cal for CS1 enable [0x0 = disabled; 0x1 = enabled]
+                uint32_t    SFEXITEN     : 1;      // bit  28     (RW) ZQCL on power-down exit
+                                                   //                  [ 0x0 = disabled;
+                                                   //                    0x1 = enabled ]
+                uint32_t    DUALCALEN    : 1;      // bit  29     (RW) Dual Calibration enable
+                                                   //                  [ 0x0 = disabled;
+                                                   //                    0x1 = enabled ]
+                uint32_t    CS0EN        : 1;      // bit  30     (RW) ZQ cal for CS0 enable
+                                                   //                  [ 0x0 = disabled;
+                                                   //                    0x1 = enabled ]
+                uint32_t    CS1EN        : 1;      // bit  31     (RW) ZQ cal for CS1 enable
+                                                   //                  [ 0x0 = disabled;
+                                                   //                    0x1 = enabled ]
             } b;                                   // bit access
             uint32_t reg;                          // raw register
         } ZQ_CONFIG_reg_t;
@@ -866,6 +980,9 @@ namespace REGS
         /* Enums for multi-value fields */
         enum e_ZQ_MULT : uint32_t 
         {
+            /* ZQ calibration interval multipliers
+             * Determines number of ZQCS intervals that make up ZQCL/ZQINIT intervals
+             */
             ZQ_MULT_1 = 0x0,
             ZQ_MULT_2 = 0x1,
             ZQ_MULT_3 = 0x2,
@@ -878,7 +995,8 @@ namespace REGS
                                                        */
             struct 
             {                                      
-                uint32_t RDWRLVLINC_RMP_WIN :13;    // bits 0..12  (R)  Incremental leveling ramp window in number of refresh periods (value = programmed -1)
+                uint32_t RDWRLVLINC_RMP_WIN :13;    // bits 0..12  (R)  Incremental leveling ramp window
+                                                    //                  Number of refresh periods for ramp window (value = programmed -1)
                 uint32_t                    :19;    // bits 13..31 (R)  Reserved 
             } b;                                    // bit access
             uint32_t reg;                           // raw register
@@ -890,11 +1008,17 @@ namespace REGS
                                                        */
             struct 
             {                                      
-                uint32_t WRLVLINC_RMP_INT       : 8;     // bits 0..7   (RW) Incremental write leveling interval during ramp window [0x0 = disabled]
-                uint32_t RDLVLGATEINC_RMP_INT   : 8;     // bits 8..15  (RW) Incremental read DQS gate training interval during ramp window [0x0 = disabled]
-                uint32_t RDLVLINC_RMP_INT       : 8;     // bits 16..23 (RW) Incremental read data eye training interval during ramp window [0x0 = disabled]
-                uint32_t RDWRLVLINC_RMP_PRE     : 7;     // bits 24..30 (RW) Incremental leveling pre-scalar in refresh periods (value = programmed -1)
-                uint32_t RDWRLVL_EN             : 1;     // bit  31     (RW) Read-Write Leveling enable [0x0 = disable; 0x1 = enable]
+                uint32_t WRLVLINC_RMP_INT       : 8;     // bits 0..7   (RW) Incremental write leveling interval
+                                                         //                  Number of pre-scalar intervals between write leveling
+                uint32_t RDLVLGATEINC_RMP_INT   : 8;     // bits 8..15  (RW) Incremental read DQS gate training interval
+                                                         //                  Number of pre-scalar intervals between DQS gate training
+                uint32_t RDLVLINC_RMP_INT       : 8;     // bits 16..23 (RW) Incremental read data eye training interval
+                                                         //                  Number of pre-scalar intervals between data eye training
+                uint32_t RDWRLVLINC_RMP_PRE     : 7;     // bits 24..30 (RW) Incremental leveling pre-scalar
+                                                         //                  Number of refresh periods per interval (value = programmed -1)
+                uint32_t RDWRLVL_EN             : 1;     // bit  31     (RW) Read-Write Leveling enable
+                                                         //                  [ 0x0 = disabled;
+                                                         //                    0x1 = enabled ]
             } b;                                         // bit access
             uint32_t reg;                                // raw register
         } RDWRLVL_RAMP_CTRL_reg_t;
@@ -905,31 +1029,41 @@ namespace REGS
                                                        */
             struct 
             {                                      
-                uint32_t WRLVLINC_INT      : 8;        // bits 0..7   (RW) Incremental write leveling interval [0x0 = disabled]
-                uint32_t RDLVLGATEINC_INT  : 8;        // bits 8..15  (RW) Incremental read DQS gate training interval [0x0 = disabled]
-                uint32_t RDLVLINC_INT      : 8;        // bits 16..23 (RW) Incremental read data eye training interval [0x0 = disabled]
-                uint32_t RDWRLVLINC_PRE    : 7;        // bits 24..30 (RW) Incremental leveling pre-scalar in refresh periods (value = programmed -1)
-                uint32_t RDWRLVLFULL_START : 1;        // bit  31     (RW) Full leveling trigger [0x1 = trigger (self-clearing)]
+                uint32_t WRLVLINC_INT      : 8;        // bits 0..7   (RW) Incremental write leveling interval
+                                                       //                  Number of pre-scalar intervals between write leveling
+                uint32_t RDLVLGATEINC_INT  : 8;        // bits 8..15  (RW) Incremental read DQS gate training interval
+                                                       //                  Number of pre-scalar intervals between DQS gate training
+                uint32_t RDLVLINC_INT      : 8;        // bits 16..23 (RW) Incremental read data eye training interval
+                                                       //                  Number of pre-scalar intervals between data eye training
+                uint32_t RDWRLVLINC_PRE    : 7;        // bits 24..30 (RW) Incremental leveling pre-scalar
+                                                       //                  Number of refresh periods per interval (value = programmed -1)
+                uint32_t RDWRLVLFULL_START : 1;        // bit  31     (RW) Full leveling trigger
+                                                       //                  [ 0x1 = trigger (self-clearing) ]
             } b;                                       // bit access
             uint32_t reg;                              // raw register
         } RDWRLVL_CTRL_reg_t;
         
-        /* (offset = 0xE4) [reset = 0x0] */
+        /* (offset = 0xE4) [reset = 0x0] */ 
         typedef union 
-        {
+        { 
                                                              /* DDR_PHY_CTRL_1
                                                               */
             struct 
             {                                      
                 uint32_t    READ_LATENCY            : 5;      // bits 0..4   (RW) Read data latency
+                                                              //                  Latency for read data from DDR SDRAM (value = required -1)
                 uint32_t                            : 3;      // bits 5..7   (R)  Reserved
                 uint32_t    RD_LOCAL_ODT            : 2;      // bits 8..9   (RW) Read local ODT value [see e_LOCAL_ODT]
                 uint32_t    WR_LOCAL_ODT            : 2;      // bits 10..11 (RW) Write local ODT value [see e_LOCAL_ODT]
                 uint32_t    IDLE_LOCAL_ODT          : 2;      // bits 12..13 (RW) Idle local ODT value [see e_LOCAL_ODT]
                 uint32_t                            : 1;      // bit  14     (R)  Reserved
-                uint32_t    PHY_RST_N               : 1;      // bit  15     (RW) PHY reset control [0x0 = reset; 0x1 = normal]
+                uint32_t    PHY_RST_N               : 1;      // bit  15     (RW) PHY reset control
+                                                              //                  [ 0x0 = reset;
+                                                              //                    0x1 = normal ]
                 uint32_t                            : 4;      // bits 16..19 (R)  Reserved
-                uint32_t    ENABLE_DYNAMIC_PWRDN    : 1;      // bit  20     (RW) Dynamic IO power down [0x0 = always on; 0x1 = dynamic]
+                uint32_t    ENABLE_DYNAMIC_PWRDN    : 1;      // bit  20     (RW) Dynamic IO power down
+                                                              //                  [ 0x0 = always on;
+                                                              //                    0x1 = dynamic ]
                 uint32_t                            :11;      // bits 21..31 (R)  Reserved
             } b;                                              // bit access
             uint32_t reg;                                     // raw register
@@ -938,35 +1072,44 @@ namespace REGS
         /* Enums for multi-value fields */
         enum e_LOCAL_ODT : uint32_t 
         {
+            /* On-Die Termination configuration
+             * Controls termination strength for different operation modes
+             */
             LOCAL_ODT_OFF  = 0x0,
             LOCAL_ODT_FULL = 0x2,
             LOCAL_ODT_HALF = 0x3
         };
         
-        /* (offset = 0xE8) [reset = 0x0] */
+        /* (offset = 0xE8) [reset = 0x0] */ 
         typedef union 
-        {
+        { 
                                                   /* DDR_PHY_CTRL_1_SHDW
                                                    */
             struct 
             {                                      
-                uint32_t    READ_LATENCY_SHADOW         : 5;    // bits 0..4   (RW) Shadow read latency
+                uint32_t    READ_LATENCY_SHADOW         : 5;    // bits 0..4   (RW) Shadow field for read latency
+                                                                //                  Loaded into read latency when SlideAck is asserted
                 uint32_t                                : 3;    // bits 5..7   (R)  Reserved
-                uint32_t    RD_LOCAL_ODT_SHADOW         : 2;    // bits 8..9   (RW) Shadow read ODT [see e_LOCAL_ODT]
-                uint32_t    WR_LOCAL_ODT_SHADOW         : 2;    // bits 10..11 (RW) Shadow write ODT [see e_LOCAL_ODT]
-                uint32_t    IDLE_LOCAL_ODT_SHADOW       : 2;    // bits 12..13 (RW) Shadow idle ODT [see e_LOCAL_ODT]
+                uint32_t    RD_LOCAL_ODT_SHADOW         : 2;    // bits 8..9   (RW) Shadow field for read ODT [see e_LOCAL_ODT]
+                                                                //                  Loaded into read ODT when SlideAck is asserted
+                uint32_t    WR_LOCAL_ODT_SHADOW         : 2;    // bits 10..11 (RW) Shadow field for write ODT [see e_LOCAL_ODT]
+                                                                //                  Loaded into write ODT when SlideAck is asserted
+                uint32_t    IDLE_LOCAL_ODT_SHADOW       : 2;    // bits 12..13 (RW) Shadow field for idle ODT [see e_LOCAL_ODT]
+                                                                //                  Loaded into idle ODT when SlideAck is asserted
                 uint32_t                                : 1;    // bit  14     (R)  Reserved
-                uint32_t    PHY_RST_N_SHADOW            : 1;    // bit  15     (RW) Shadow PHY reset [0x0 = reset; 0x1 = normal]
+                uint32_t    PHY_RST_N_SHADOW            : 1;    // bit  15     (RW) Shadow field for PHY reset
+                                                                //                  Loaded into PHY reset when SlideAck is asserted
                 uint32_t                                : 4;    // bits 16..19 (R)  Reserved
-                uint32_t    ENABLE_DYNAMIC_PWRDN_SHADOW : 1;     // bit  20     (RW) Shadow Dynamic IO power down [0x0 = always on; 0x1 = dynamic]
+                uint32_t    ENABLE_DYNAMIC_PWRDN_SHADOW : 1;    // bit  20     (RW) Shadow field for Dynamic IO power down
+                                                                //                  Loaded into Dynamic IO power down when SlideAck is asserted
                 uint32_t                                :11;    // bits 16..31 (R)  Reserved
             } b;                                                // bit access
             uint32_t reg;                                       // raw register
         } DDR_PHY_CTRL_1_SHDW_reg_t;
         
-        /* (offset = 0x100) [reset = 0x0] */
+        /* (offset = 0x100) [reset = 0x0] */ 
         typedef union 
-        {
+        { 
                                                   /* PRIORITY_TO_COS_MAPPING
                                                    */
             struct 
@@ -980,23 +1123,28 @@ namespace REGS
                 uint32_t    PRI_6_COS       : 2;      // bits 12..13 (RW) Priority 6 COS mapping [see e_COS_MAPPING]
                 uint32_t    PRI_7_COS       : 2;      // bits 14..15 (RW) Priority 7 COS mapping [see e_COS_MAPPING]
                 uint32_t                    :15;      // bits 16..30 (R)  Reserved
-                uint32_t    PRI_COS_MAP_EN  : 1;      // bit  31     (RW) Priority mapping enable [0x0 = disabled; 0x1 = enabled]
-            } b;                                   // bit access
-            uint32_t reg;                          // raw register
+                uint32_t    PRI_COS_MAP_EN  : 1;      // bit  31     (RW) Priority mapping enable
+                                                      //                  [ 0x0 = disabled;
+                                                      //                    0x1 = enabled ]
+            } b;                                      // bit access
+            uint32_t reg;                             // raw register
         } PRIORITY_TO_COS_MAPPING_reg_t;
         
         /* Enums for multi-value fields */
         enum e_COS_MAPPING : uint32_t 
         {
+            /* Class of service mapping values
+             * Determines which class of service is assigned to commands
+             */
             COS_NONE = 0x0,
             COS_1 = 0x1,
             COS_2 = 0x2,
             COS_INVALID = 0x3
         };
         
-        /* (offset = 0x104) [reset = 0x0] */
+        /* (offset = 0x104) [reset = 0x0] */ 
         typedef union 
-        {
+        { 
                                                   /* CONNID_TO_COS_1_MAPPING
                                                    */
             struct 
@@ -1007,7 +1155,9 @@ namespace REGS
                 uint32_t    CONNID_2_COS_1      : 8;      // bits 12..19 (RW) ConnID value 2 COS 1
                 uint32_t    MSK_1_COS_1         : 3;      // bits 20..22 (RW) Mask for ConnID 1 COS 1 [see e_CONNID_MASK_EXT]
                 uint32_t    CONNID_1_COS_1      : 8;      // bits 23..30 (RW) ConnID value 1 COS 1
-                uint32_t    CONNID_COS_1_MAP_EN : 1;      // bit  31     (RW) ConnID mapping enable [0x0 = disabled; 0x1 = enabled]
+                uint32_t    CONNID_COS_1_MAP_EN : 1;      // bit  31     (RW) ConnID mapping enable
+                                                          //                  [ 0x0 = disabled;
+                                                          //                    0x1 = enabled ]
             } b;                                          // bit access
             uint32_t reg;                                 // raw register
         } CONNID_TO_COS_1_MAPPING_reg_t;
@@ -1015,6 +1165,9 @@ namespace REGS
         /* Enums for multi-value fields */
         enum e_CONNID_MASK : uint32_t 
         {
+            /* Connection ID mask configuration
+             * Determines which bits of the connection ID are masked
+             */
             MASK_NONE = 0x0,
             MASK_BIT0 = 0x1,
             MASK_BITS1_0 = 0x2,
@@ -1023,6 +1176,9 @@ namespace REGS
         
         enum e_CONNID_MASK_EXT : uint32_t 
         {
+            /* Extended connection ID mask configuration
+             * Determines which bits of the connection ID are masked
+             */
             MASK_EXT_NONE = 0x0,
             MASK_EXT_BIT0 = 0x1,
             MASK_EXT_BITS1_0 = 0x2,
@@ -1033,9 +1189,9 @@ namespace REGS
             MASK_EXT_BITS6_0 = 0x7
         };
         
-        /* (offset = 0x108) [reset = 0x0] */
+        /* (offset = 0x108) [reset = 0x0] */ 
         typedef union 
-        {
+        { 
                                                   /* CONNID_TO_COS_2_MAPPING
                                                    */
             struct 
@@ -1046,21 +1202,25 @@ namespace REGS
                 uint32_t    CONNID_2_COS_2      : 8;      // bits 12..19 (RW) ConnID value 2 COS 2
                 uint32_t    MSK_1_COS_2         : 3;      // bits 20..22 (RW) Mask for ConnID 1 COS 2 [see e_CONNID_MASK_EXT]
                 uint32_t    CONNID_1_COS_2      : 8;      // bits 23..30 (RW) ConnID value 1 COS 2
-                uint32_t    CONNID_COS_2_MAP_EN : 1;      // bit  31     (RW) ConnID mapping enable [0x0 = disabled; 0x1 = enabled]
+                uint32_t    CONNID_COS_2_MAP_EN : 1;      // bit  31     (RW) ConnID mapping enable
+                                                          //                  [ 0x0 = disabled;
+                                                          //                    0x1 = enabled ]
             } b;                                          // bit access
             uint32_t reg;                                 // raw register
         } CONNID_TO_COS_2_MAPPING_reg_t;
 
-        /* (offset = 0x120) [reset = 0x00000305] */
+        /* (offset = 0x120) [reset = 0x00000305] */ 
         typedef union 
-        {
+        { 
                                                   /* READ_WRITE_EXEC_THRESHOLD
                                                    */
             struct 
             {                                      
                 uint32_t    RD_THRSH     : 5;      // bits 0..4   (RW) Read threshold
+                                                   //                  Number of read bursts before switching to writes (value = programmed -1)
                 uint32_t                 : 3;      // bits 5..7   (R)  Reserved
                 uint32_t    WR_THRSH     : 5;      // bits 8..12  (RW) Write threshold
+                                                   //                  Number of write bursts before switching to reads (value = programmed -1)
                 uint32_t                 :19;      // bits 13..31 (R)  Reserved
             } b;                                   // bit access
             uint32_t reg;                          // raw register
