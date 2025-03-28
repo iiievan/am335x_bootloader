@@ -267,7 +267,7 @@ namespace REGS
                 uint32_t                :30;       // bits 2..31     (R)     Reserved
             } b;
             uint32_t reg;
-        } WIROSTATRAW_reg_t;
+        } WIRQSTATRAW_reg_t;
         
         /* (offset = 0x58) [reset = 0x0] */
         typedef union
@@ -288,7 +288,7 @@ namespace REGS
                 uint32_t                :30;       // bits 2..31     (R)     Reserved
             } b;
             uint32_t reg;
-        } WIROSTAT_reg_t;
+        } WIRQSTAT_reg_t;
         
         /* (offset = 0x5C) [reset = 0x0] */
         typedef union
@@ -347,10 +347,10 @@ namespace REGS
             __RW  WDLY_reg_t         WDLY;                // (0x44) Watchdog Delay Configuration Register
             __RW  WSPR_reg_t         WSPR;                // (0x48) Watchdog Start/Stop Register
             __R   uint32_t           RESERVED4[2];   
-            __RW  WIROSTATRAW_reg_t  WIROSTATRAW;         // (0x54) Watchdog Raw Interrupt Status Register
-            __RW  WIROSTAT_reg_t     WIROSTAT;            // (0x58) Watchdog Interrupt Status Register
-            __RW  WIROENSET_reg_t    WIROENSET;           // (0x5C) Watchdog Interrupt Enable Set Register
-            __RW  WIROENCLR_reg_t    WIROENCLR;           // (0x60) Watchdog Interrupt Enable Clear Register
+            __RW  WIRQSTATRAW_reg_t  WIROSTATRAW;         // (0x54) Watchdog Raw Interrupt Status Register
+            __RW  WIRQSTAT_reg_t     WIROSTAT;            // (0x58) Watchdog Interrupt Status Register
+            __RW  WIRQENSET_reg_t    WIROENSET;           // (0x5C) Watchdog Interrupt Enable Set Register
+            __RW  WIRQENCLR_reg_t    WIROENCLR;           // (0x60) Watchdog Interrupt Enable Clear Register
         };
 
         constexpr uint32_t AM335x_WDT1_BASE = 0x44E35000;

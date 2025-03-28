@@ -2209,6 +2209,9 @@
         <file>
             <name>$PROJ_DIR$\regs\PRCM.h</name>
         </file>
+        <file>
+            <name>$PROJ_DIR$\regs\WDT.hpp</name>
+        </file>
     </group>
     <group>
         <name>startup</name>
