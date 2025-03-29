@@ -15,6 +15,7 @@
 #include "control.h"
 #include "emif.h"
 #include "EMIF.hpp"
+#include "MMCHS.hpp"
 
 extern "C" void Entry(void);
 extern "C" void UndefInstHandler(void);
@@ -70,6 +71,10 @@ void input_callback(char c)
 
 void init_board(void)
 { 
+    uint32_t mmc_sz = sizeof(REGS::MMCHS::AM335x_MMCHS_Type);
+    
+    if(mmc_sz != 0x2FC + 4)
+      return;
     copy_vector_table();
     
     mpu_pll_init();

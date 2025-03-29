@@ -2204,6 +2204,9 @@
             <name>$PROJ_DIR$\regs\INTC.h</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\regs\MMCHS.hpp</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\regs\PRCM.cpp</name>
         </file>
         <file>
