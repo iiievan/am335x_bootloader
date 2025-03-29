@@ -1,5 +1,5 @@
- #ifndef _MMCHS_H_
-#define _MMCHS_H_
+#ifndef __MMCHS_HPP
+#define __MMCHS_HPP
 
 #include <stdint.h>
 
@@ -1140,4 +1140,4 @@ namespace REGS
     } // namespace MMCHS
 } // namespace REGS
 
-#endif //_MMCHS_H_
+#endif //__MMCHS_HPP
