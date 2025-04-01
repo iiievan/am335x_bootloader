@@ -49,7 +49,7 @@ namespace REGS
         {
            /** RXD **/
            AM335x_CONTROL_MODULE->conf_uart0_rxd.b.putypesel = PULL_UP;
-           AM335x_CONTROL_MODULE->conf_uart0_rxd.b.putypesel = INPUT_ENABLE;
+           AM335x_CONTROL_MODULE->conf_uart0_rxd.b.rxactive = INPUT_ENABLE;
             
            /** TXD **/
            AM335x_CONTROL_MODULE->conf_uart0_txd.b.putypesel = PULL_UP;

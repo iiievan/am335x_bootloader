@@ -1,5 +1,4 @@
 #include "stdint.h"
-
 #include "init.h"
 #include "board.hpp"
 #include "cp15.h"
@@ -11,11 +10,12 @@
 #include "PRCM.h"
 #include "DMTIMER1MS.h"
 #include "prcm_.h"
-#include "uart.h"
 #include "control.h"
 #include "emif.h"
 #include "EMIF.hpp"
 #include "MMCHS.hpp"
+#include "serial.hpp"
+#include "common.h"
 
 extern "C" void Entry(void);
 extern "C" void UndefInstHandler(void);
@@ -30,6 +30,8 @@ am335x_gpio gpio0(REGS::GPIO::AM335x_GPIO_0);
 am335x_gpio gpio1(REGS::GPIO::AM335x_GPIO_1);
 am335x_gpio gpio2(REGS::GPIO::AM335x_GPIO_2);
 //am335x_gpio gpio3(REGS::GPIO::AM335x_GPIO_3);
+
+serial serial_uart_0(uart_0);
 
 static uint32_t const vec_tbl[14]=
 {
@@ -65,16 +67,12 @@ static void copy_vector_table(void)
 
 void input_callback(char c) 
 {
-  // echo input back out
-  uart_putc(c);
+    // echo input back out
+    serial_uart_0.putc(c);
 }
 
 void init_board(void)
 { 
-    uint32_t mmc_sz = sizeof(REGS::MMCHS::AM335x_MMCHS_Type);
-    
-    if(mmc_sz != 0x2FC + 4)
-      return;
     copy_vector_table();
     
     mpu_pll_init();
@@ -84,6 +82,7 @@ void init_board(void)
     interface_clocks_init();
            
     intc.init();                       //Initializing the ARM Interrupt Controller.
+    intc.master_IRQ_enable();
     
     // setup system timer for 1ms interrupt 
     sys_time.init();
@@ -96,43 +95,41 @@ void init_board(void)
     USR_LED_2.sel_pinmode(PINS::e_GPMC_A7::gpio1_23);
     USR_LED_2.dir_set(REGS::GPIO::GPIO_OUTPUT);    
     USR_LED_3.sel_pinmode(PINS::e_GPMC_A8::gpio1_24);
-    USR_LED_3.dir_set(REGS::GPIO::GPIO_OUTPUT);
+    USR_LED_3.dir_set(REGS::GPIO::GPIO_OUTPUT);    
+
+    serial_uart_0.init(input_callback);
     
-    uart_init(input_callback);
+    USR_LED_0.set();    
+
+    serial_uart_0.puts((char *)"bootloader started... \r\n");
+    serial_uart_0.puts((char *)"UART initialized... \r\n"); 
     
-    USR_LED_0.set();
-    
-    uart_puts((char *)"bootloader started \r\n");
-    uart_puts((char *)"UART initialized \r\n");
-    
-    uart_hexdump(0x01234567);
-    uart_puts((char *)"\n\r");
-    uart_hexdump(0x89ABCDEF);
-    uart_puts((char *)"\n\r");
+    serial_uart_0.hexdump(0x01234567);
+    serial_uart_0.puts((char *)"\n\r");
+    serial_uart_0.hexdump(0x89ABCDEF);
+    serial_uart_0.puts((char *)"\n\r");
     
      // initialize DDR3L, values hardcoded for D2516EC4BXGGB 
     ddr_init();
   
     if (REG(EMIF0_STATUS) & 0x4) 
     {
-        uart_puts((char *)"DDR3L initialized\n\r");
+        serial_uart_0.puts((char *)"DDR3L initialized\n\r");
     } 
     else 
     {
-        uart_puts((char *)"DDR3L initialization failed...\n\r");
+        serial_uart_0.puts((char *)"DDR3L initialization failed...\n\r");
         return;
     }
-    
-    intc.master_IRQ_enable();
     
     // check reading and writing to external DRAM before continuing */
     if (!ddr_check()) 
     {
-        uart_puts((char *)"DDR3L read/write check passed\n\r");
+        serial_uart_0.puts((char *)"DDR3L read/write check passed\n\r");
     } 
     else 
     {
-        uart_puts((char *)"DDR3L read/write check failed...\n\r");
+        serial_uart_0.puts((char *)"DDR3L read/write check failed...\n\r");
         return;
     }        
 }

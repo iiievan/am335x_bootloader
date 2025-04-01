@@ -342,6 +342,7 @@
                     <state>$PROJ_DIR$\regs</state>
                     <state>$PROJ_DIR$\periph</state>
                     <state>$PROJ_DIR$\\periph\pins</state>
+                    <state>$PROJ_DIR$\drivers</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -2132,13 +2133,16 @@
             <name>$PROJ_DIR$\app\init.h</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\app\interrupt_.c</name>
-        </file>
-        <file>
             <name>$PROJ_DIR$\app\main.cpp</name>
         </file>
+    </group>
+    <group>
+        <name>drivers</name>
         <file>
-            <name>$PROJ_DIR$\app\uart.c</name>
+            <name>$PROJ_DIR$\drivers\serial.cpp</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\drivers\serial.hpp</name>
         </file>
     </group>
     <group>
@@ -2177,6 +2181,12 @@
             <name>$PROJ_DIR$\periph\am335x_intc.h</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\periph\am335x_uart.cpp</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\periph\am335x_uart.hpp</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\periph\sys_timer.h</name>
         </file>
     </group>
@@ -2213,6 +2223,9 @@
             <name>$PROJ_DIR$\regs\PRCM.h</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\regs\UART.hpp</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\regs\WDT.hpp</name>
         </file>
     </group>
@@ -2233,6 +2246,18 @@
     </group>
     <group>
         <name>utils</name>
+        <file>
+            <name>$PROJ_DIR$\utils\paired_buffer.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\utils\ring_buffer.hpp</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\utils\sw_Timer.cpp</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\utils\sw_Timer.h</name>
+        </file>
         <file>
             <name>$PROJ_DIR$\utils\utils.c</name>
         </file>

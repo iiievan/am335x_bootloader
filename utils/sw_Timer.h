@@ -1,15 +1,16 @@
 #ifndef __SW_TIMER_H
 #define __SW_TIMER_H
 
-class OS_Timer;
-#include "OS_Timer.h"
+template <typename DMT> 
+class sys_timer;
+#include "sys_timer.h"
 
 typedef void (*tmrCallback)(void * p_Obj);
 
 class sw_Timer
 {
 public:
-              sw_Timer(uint64_t preset, OS_Timer& s_Source, tmrCallback clb);
+              sw_Timer(uint64_t preset, sys_timer<SYST_t>& s_Source, tmrCallback clb);
         void  set_period(uint64_t period)     { m_Preset   = period; }
         void  set_callback(tmrCallback clb)   { m_Callback = clb; }
         bool  is_working() const              { return m_CountPprogress; }
@@ -26,7 +27,7 @@ private:
     uint64_t  m_Preset;      // in  milliseconds
         bool  m_CountPprogress { false };
  tmrCallback  m_Callback;
-    OS_Timer& m_timeSource;
+ sys_timer<SYST_t>& m_timeSource;
 };
 
 extern sw_Timer intrprtr_backup_timer;
