@@ -340,6 +340,7 @@
                     <state>$PROJ_DIR$\startup</state>
                     <state>$PROJ_DIR$\utils</state>
                     <state>$PROJ_DIR$\regs</state>
+                    <state>$PROJ_DIR$\drivers</state>
                     <state>$PROJ_DIR$\periph</state>
                     <state>$PROJ_DIR$\\periph\pins</state>
                 </option>
@@ -666,7 +667,7 @@
             <data>
                 <extensions></extensions>
                 <cmdline></cmdline>
-                <hasPrio>96</hasPrio>
+                <hasPrio>1</hasPrio>
                 <buildSequence>inputOutputBased</buildSequence>
             </data>
         </settings>
@@ -2142,6 +2143,15 @@
         </file>
     </group>
     <group>
+        <name>drivers</name>
+        <file>
+            <name>$PROJ_DIR$\drivers\serial.cpp</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\drivers\serial.hpp</name>
+        </file>
+    </group>
+    <group>
         <name>periph</name>
         <group>
             <name>pins</name>
@@ -2177,6 +2187,12 @@
             <name>$PROJ_DIR$\periph\am335x_intc.h</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\periph\am335x_uart.cpp</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\periph\am335x_uart.hpp</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\periph\sys_timer.h</name>
         </file>
     </group>
@@ -2206,6 +2222,9 @@
         <file>
             <name>$PROJ_DIR$\regs\PRCM.h</name>
         </file>
+        <file>
+            <name>$PROJ_DIR$\regs\UART.hpp</name>
+        </file>
     </group>
     <group>
         <name>startup</name>
@@ -2224,6 +2243,18 @@
     </group>
     <group>
         <name>utils</name>
+        <file>
+            <name>$PROJ_DIR$\utils\paired_buffer.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\utils\ring_buffer.hpp</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\utils\sw_Timer.cpp</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\utils\sw_Timer.h</name>
+        </file>
         <file>
             <name>$PROJ_DIR$\utils\utils.c</name>
         </file>

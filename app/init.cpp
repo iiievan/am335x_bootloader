@@ -14,6 +14,7 @@
 #include "uart.h"
 #include "control.h"
 #include "emif.h"
+#include "serial.hpp"
 
 extern "C" void Entry(void);
 extern "C" void UndefInstHandler(void);
@@ -28,6 +29,8 @@ am335x_gpio gpio0(REGS::GPIO::AM335x_GPIO_0);
 am335x_gpio gpio1(REGS::GPIO::AM335x_GPIO_1);
 am335x_gpio gpio2(REGS::GPIO::AM335x_GPIO_2);
 //am335x_gpio gpio3(REGS::GPIO::AM335x_GPIO_3);
+
+serial serial_uart_0(REGS::UART::AM335X_UART_0);
 
 static uint32_t const vec_tbl[14]=
 {
@@ -92,7 +95,8 @@ void init_board(void)
     USR_LED_3.sel_pinmode(PINS::e_GPMC_A8::gpio1_24);
     USR_LED_3.dir_set(REGS::GPIO::GPIO_OUTPUT);
     
-    uart_init(input_callback);
+    //uart_init(input_callback);
+    serial_uart_0.init(input_callback);
     
     USR_LED_0.set();
     

@@ -1,6 +1,6 @@
 #include"sw_Timer.h"
 
-sw_Timer::sw_Timer(uint64_t preset, OS_Timer& s_Source, tmrCallback clb) 
+sw_Timer::sw_Timer(uint64_t preset, sys_timer<SYST_t>& s_Source, tmrCallback clb) 
 : m_timeSource(s_Source)
 {  
     set_period(preset);
@@ -9,7 +9,7 @@ sw_Timer::sw_Timer(uint64_t preset, OS_Timer& s_Source, tmrCallback clb)
 
 sw_Timer& sw_Timer::update()
 { 
-    m_Timer = m_timeSource.get_mseconds() + m_Preset; 
+    m_Timer = m_timeSource.get_ms() + m_Preset; 
 
     return *this;
 }
@@ -34,7 +34,7 @@ bool  sw_Timer::on_delay(void * p_Obj)
     if(m_CountPprogress)
     {   
 
-        if (m_timeSource.get_mseconds() > m_Timer)
+        if (m_timeSource.get_ms() > m_Timer)
         {
             // порядок следования не менять
             // вначале остановка потом вызов функции
@@ -61,7 +61,7 @@ bool  sw_Timer::off_delay(void * p_Obj)
        // порядок следования не менять
        // вначале остановка потом вызов функции
        // т.к. в функции его может потребоваться запустить заново
-        if (m_timeSource.get_mseconds() > m_Timer)
+        if (m_timeSource.get_ms() > m_Timer)
             stop();
         
          m_Callback(p_Obj);
