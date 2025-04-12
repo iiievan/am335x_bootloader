@@ -339,7 +339,8 @@ void  serial::sleep(bool control)
  */
 void serial::putc(char c) 
 {
-    m_UART_module.char_put((uint8_t)c);
+    while (!m_instance.LSR_UART.b.TXSRE) {}
+    m_instance.THR.b.THR = c;
 }
 
 /* @brief print out null terminated string
