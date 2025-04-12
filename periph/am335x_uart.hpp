@@ -39,7 +39,7 @@ REGS::UART::FCR_reg_t  FIFO_config(REGS::UART::SCR_reg_t  cfg_scr,
                                    REGS::UART::FCR_reg_t  cfg_fcr);
 
       void  BAUD_set(unsigned int baud_rate);
-  uint32_t  reg_config_mode_enable(REGS::UART::e_UART_CONFIG_MODE mode_flag);
+  uint32_t  reg_config_mode_enable(REGS::UART::e_CONFIG_MODE mode_flag);
       //void  line_char_config(uint32_t wlen_stb_flag, uint32_t parity_flag);
       // Programming the Line Characteristics. 
       void  char_len_config(REGS::UART::e_CHAR_LENGHT len);

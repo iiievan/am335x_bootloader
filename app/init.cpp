@@ -31,7 +31,7 @@ am335x_gpio gpio1(REGS::GPIO::AM335x_GPIO_1);
 am335x_gpio gpio2(REGS::GPIO::AM335x_GPIO_2);
 //am335x_gpio gpio3(REGS::GPIO::AM335x_GPIO_3);
 
-serial serial_uart_0(uart_0);
+serial serial_uart_0(REGS::UART::AM335X_UART_0);
 
 static uint32_t const vec_tbl[14]=
 {

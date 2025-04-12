@@ -62,7 +62,7 @@ namespace REGS
     
         /*! @brief      The following interrupt enable register (IER) description is for IrDA mode.  
         *   @details    Refer to Section 19.3.7.1 to
-        *               determine the mode(s) in which this register can be accessed. In IrDA mode, EFR[4] has no impact on the
+        *               determine the mode(s) in which this register can be accessed. In IrDA mode, EFR.ENHANCEDEN has no impact on the
         *               access to IER[7:4]. The IrDA interrupt enable register (IER) can be programmed to enable/disable any
         *               interrupt. There are 8 types of interrupt in these modes, received EOF, LSR interrupt, TX status, status
         *               FIFO interrupt, RX overrun, last byte in RX FIFO, THR interrupt, and RHR interrupt. Each interrupt can be
@@ -88,7 +88,7 @@ namespace REGS
     
         /*! @brief      The following interrupt enable register (IER) description is for CIR mode.  
         *   @details    Refer to Section 19.3.7.1 to
-        *               determine the mode(s) in which this register can be accessed. In IrDA mode, EFR[4] has no impact on the
+        *               determine the mode(s) in which this register can be accessed. In IrDA mode, EFR.ENHANCEDEN has no impact on the
         *               access to IER[7:4]. The CIR interrupt enable register (IER) can be programmed to enable/disable any
         *               interrupt. There are 5 types of interrupt in these modes, TX status, RX overrun, RX stop interrupt, THR
         *               interrupt, and RHR interrupt. Each interrupt can be enabled/disabled individually. In CIR mode, the
@@ -113,7 +113,7 @@ namespace REGS
         /*! @brief      The following interrupt enable register (IER) description is for UART mode.  
         *   @details    Refer to Section 19.3.7.1 to
         *               determine the mode(s) in which this register can be accessed. In UART mode, IER[7:4] can only be
-        *               written when EFR[4] = 1 The interrupt enable register (IER) can be programmed to enable/disable any
+        *               written when EFR.ENHANCEDEN = 1 The interrupt enable register (IER) can be programmed to enable/disable any
         *               interrupt. There are seven types of interrupt in this mode: receiver error, RHR interrupt, THR interrupt,
         *               XOFF received and CTS (active-low)/RTS (active-low) change of state from low to high. Each interrupt
         *               can be enabled/disabled individually. There is also a sleep mode enable bit. The UART interrupt enable
@@ -127,11 +127,11 @@ namespace REGS
                 uint32_t    THRIT       :1;     // bit: 1      (RW) THR interrupt [0x0 = disable; 0x1 = enable ] 
                 uint32_t    LINESTSIT   :1;     // bit: 2      (RW) receiver line status interrupt [0x0 = disable; 0x1 = enable ]
                 uint32_t    MODEMSTSIT  :1;     // bit: 3      (RW) modem status register interrupt [0x0 = disable; 0x1 = enable ]
-                uint32_t    SLEEPMODE   :1;     // bit: 4      (RW) Can be only written when EFR[4] = 1. Sleep mode
+                uint32_t    SLEEPMODE   :1;     // bit: 4      (RW) Can be only written when EFR.ENHANCEDEN = 1. Sleep mode
                                                 //             stops baud rate clock when the module is inactive [0x0 = disable; 0x1 = enable ]
-                uint32_t    XOFFIT      :1;     // bit: 5      (RW) Can be written only when EFR[4] = 1. XOFF interrupt [0x0 = disable; 0x1 = enable ]
-                uint32_t    RTSIT       :1;     // bit: 6      (RW) Can be written only when EFR[4] = 1. RTS (active-low) interrupt [0x0 = disable; 0x1 = enable ]
-                uint32_t    CTSIT       :1;     // bit: 7      (RW) Can be written only when EFR[4] = 1. CTS (active-low) interrupt [0x0 = disable; 0x1 = enable ]
+                uint32_t    XOFFIT      :1;     // bit: 5      (RW) Can be written only when EFR.ENHANCEDEN = 1. XOFF interrupt [0x0 = disable; 0x1 = enable ]
+                uint32_t    RTSIT       :1;     // bit: 6      (RW) Can be written only when EFR.ENHANCEDEN = 1. RTS (active-low) interrupt [0x0 = disable; 0x1 = enable ]
+                uint32_t    CTSIT       :1;     // bit: 7      (RW) Can be written only when EFR.ENHANCEDEN = 1. CTS (active-low) interrupt [0x0 = disable; 0x1 = enable ]
                 uint32_t                :24;    // bit: 8..32  Reserved  
             } b;                                // Structure used for bit access 
             uint32_t  reg;                      // Type used for register access 
@@ -168,14 +168,14 @@ namespace REGS
     
         /*! @brief      Refer to Section 19.3.7.1 to determine the mode(s) in which this register can be accessed  
         *   @details    The enhanced feature register (EFR) enables or disables enhanced features. Most enhanced functions apply only to
-        *               UART modes, but EFR[4] enables write accesses to FCR[5:4], the TX trigger level, which is also used in IrDA modes.
+        *               UART modes, but EFR.ENHANCEDEN enables write accesses to FCR[5:4], the TX trigger level, which is also used in IrDA modes.
         [reset state = 0x0] */ 
         typedef union 
         { 
             struct 
             {             
                 uint32_t    SWFLOWCONTROL       :4;     // bit: 0..3   (RW) Combinations of software flow control can be selected by programming this bit. [ see e_SW_TX_FLOW_CTRL and  e_SW_RX_FLOW_CTRL]
-                uint32_t    ENHANCEDEN          :1;     // bit: 4      (RW) Enhanced functions write enable bit.Writing to IER[7:4], FCR[5:4], and MCR[7:5].[0x0 = disable; 0x1 = enable ] 
+                uint32_t    ENHANCEDEN          :1;     // bit: 4      (RW) Enhanced functions write enable bit.Writing to IER[7:4], FCR[5:4], and MCR[7:5].[see e_ENH] 
                 uint32_t    SPECIALCHARDETECT   :1;     // bit: 5      (RW) Special character detect (UART mode only).[0x0 = Normal operation.; 0x1 = Special character 
                                                         //                  detect enable. Received data is compared
                                                         //                  with XOFF2 data. If a match occurs, the received data is transferred
@@ -274,7 +274,7 @@ namespace REGS
     
         /*! @brief      FIFO Control Register. 
         *   @details    Refer to Section 19.3.7.1 to determine the mode(s) in which this register can be accessed. FCR[5:4] can
-        *               only be written when EFR[4] = 1.
+        *               only be written when EFR.ENHANCEDEN = 1.
         [reset state = 0x0] */ 
         typedef union 
         { 
@@ -288,7 +288,7 @@ namespace REGS
                 uint32_t    DMA_MODE        :1;     // bit: 3       (W) Can be changed only when the baud clock is not running (DLL and DLH cleared to 0).
                                                     //                    If SCR[0] = 0, this register is considered. [0x0 = DMA_MODE 0 (No DMA).; 
                                                     //                                                                 0x1 = DMA_MODE 1 (UART_NDMA_REQ[0] in TX, UART_NDMA_REQ[1] in RX). ]
-                uint32_t    TX_FIFO_TRIG    :2;     // bit: 4,5     (W) Can be written only if EFR[4] = 1. Sets the trigger level for the TX FIFO: If SCR[6] = 0 and TLR[3] to
+                uint32_t    TX_FIFO_TRIG    :2;     // bit: 4,5     (W) Can be written only if EFR.ENHANCEDEN = 1. Sets the trigger level for the TX FIFO: If SCR[6] = 0 and TLR[3] to
                                                     //                  TLR[0] not equal to 0000, TX_FIFO_TRIG is not considered.
                                                     //                  If SCR[6] = 1, TX_FIFO_TRIG is 2 LSB of the trigger level (1 to 63
                                                     //                  on 6 bits) with a granularity of 1.
@@ -437,7 +437,7 @@ namespace REGS
         constexpr uint32_t LCR_Parity_mask = LCR_PARITY_EN | LCR_PARITY_TYPE1 |LCR_PARITY_TYPE2;
     
         /*! @brief    Refer to Section 19.3.7.1 to determine the mode(s) in which this register can be accessed.    
-        *   @details  MCR[7:5] can only be written when EFR[4] = 1. Bits 3-0 control the interface with the modem, data set, or peripheral
+        *   @details  MCR[7:5] can only be written when EFR.ENHANCEDEN = 1. Bits 3-0 control the interface with the modem, data set, or peripheral
         *             device that is emulating the modem.  
         [reset state = 0x0] */ 
         typedef union 
@@ -456,8 +456,8 @@ namespace REGS
                 uint32_t    LOOPBACKEN              :1;         // bit: 4       (RW)  Loopback mode enable. [0x0 = Normal operating mode.; 0x1 = Enable local loopback mode (internal). In this mode, the
                                                                 //                                           MCR[3:0] signals are looped back into MSR[7:4]. The transmit output
                                                                 //                                           is looped back to the receive input internally. ]
-                uint32_t    XONEN                   :1;         // bit: 5       (RW) Can be written only when EFR[4] = 1. [0x0 = Disable XON any function.; 0x1 = Enable XON any function. ]
-                uint32_t    TCRTLR                  :1;         // bit: 6       (RW) Can be written only when EFR[4] = 1. [0x0 = No action.; 0x1 = Enables access to the TCR and TLR registers. ]
+                uint32_t    XONEN                   :1;         // bit: 5       (RW) Can be written only when EFR.ENHANCEDEN = 1. [0x0 = Disable XON any function.; 0x1 = Enable XON any function. ]
+                uint32_t    TCRTLR                  :1;         // bit: 6       (RW) Can be written only when EFR.ENHANCEDEN = 1. [0x0 = No action.; 0x1 = Enables access to the TCR and TLR registers. ]
                 uint32_t                            :25;        // bit: 7..32   Reserved  
             } b;                                                // Structure used for bit access 
             uint32_t  reg;                                      // Type used for register access 
@@ -595,7 +595,7 @@ namespace REGS
         };
     
         /*! @brief        Refer to Section 19.3.7.1 to determine the mode(s) in which this register can be accessed.
-        *   @details      The TCR is accessible only when EFR[4] = 1 and MCR[6] = 1. The transmission control register (TCR) stores the
+        *   @details      The TCR is accessible only when EFR.ENHANCEDEN = 1 and MCR[6] = 1. The transmission control register (TCR) stores the
         *                 receive FIFO threshold levels to start/stop transmission during hardware flow control. Trigger levels from
         *                 0-60 bytes are available with a granularity of 4. Trigger level = 4 x [4-bit register value]. You must ensure
         *                 that TCR[3:0] > TCR[7:4], whenever auto-RTS or software flow control is enabled to avoid a misoperation
@@ -692,7 +692,7 @@ namespace REGS
         } SPR_reg_t;
     
         /*! @brief      Refer to Section 19.3.7.1 to determine the mode(s) in which this register can be accessed.      
-        *   @details    The TLR is accessible only when EFR[4] = 1 and MCR[6] = 1. This register stores the programmable transmit and
+        *   @details    The TLR is accessible only when EFR.ENHANCEDEN = 1 and MCR[6] = 1. This register stores the programmable transmit and
         *               receive FIFO trigger levels used for DMA and IRQ generation.
         [reset state = 0x0] */ 
         typedef union 
@@ -1389,98 +1389,98 @@ namespace REGS
         } TX_DMA_THRESHOLD_reg_t;
 
         struct AM335x_UART_Type
-        {     
+        {                                          // enhanced bit // Access mode       // offset - description          
             union
             { 
-                __W    THR_reg_t               THR;                 // (0x00) - Transmit Holding Register
-                __R    RHR_reg_t               RHR;                 // (0x00) - Receiver Holding Register
-                __RW   DLL_reg_t               DLL;                 // (0x00) - Divisor Latches Low Register
+                __W    THR_reg_t               THR;                 // OPm (W)          // (0x00) - Transmit Holding Register
+                __R    RHR_reg_t               RHR;                 // OPm (R)          // (0x00) - Receiver Holding Register
+                __RW   DLL_reg_t               DLL;                 // CmA, CmB         // (0x00) - Divisor Latches Low Register
             };   
             union
             {
-                __RW   IER_IRDA_reg_t          IER_IRDA;            // (0x04) - Interrupt Enable Register (IrDA)
-                __RW   IER_CIR_reg_t           IER_CIR;             // (0x04) - Interrupt Enable Register (CIR)
-                __RW   IER_UART_reg_t          IER_UART;            // (0x04) - Interrupt Enable Register (UART)
-                __RW   DLH_reg_t               DLH;                 // (0x04) - Divisor Latches High Register
+                __RW   IER_IRDA_reg_t          IER_IRDA;            // OPm              // (0x04) - Interrupt Enable Register (IrDA)
+                __RW   IER_CIR_reg_t           IER_CIR;             // OPm              // (0x04) - Interrupt Enable Register (CIR)
+                __RW   IER_UART_reg_t          IER_UART;  // (enh)  // OPm              // (0x04) - Interrupt Enable Register (UART)
+                __RW   DLH_reg_t               DLH;                 // CmA, CmB         // (0x04) - Divisor Latches High Register
             };      
             union      
             {      
-                __RW   EFR_reg_t               EFR;                 // (0x08) - Enhanced Feature Register 
-                __R    IIR_UART_reg_t          IIR_UART;            // (0x08) - Interrupt Identification Register (UART)
-                __R    IIR_CIR_reg_t           IIR_CIR;             // (0x08) - Interrupt Identification Register (CIR)
-                __W    FCR_reg_t               FCR;                 // (0x08) - FIFO Control Register
-                __R    IIR_IRDA_reg_t          IIR_IRDA;            // (0x08) - Interrupt Identification Register (IrDA)
+                __RW   EFR_reg_t               EFR;        // (enh) // CmB              // (0x08) - Enhanced Feature Register 
+                __R    IIR_UART_reg_t          IIR_UART;            // CmA, OPm (R)     // (0x08) - Interrupt Identification Register (UART)
+                __R    IIR_CIR_reg_t           IIR_CIR;             // CmA, OPm (R)     // (0x08) - Interrupt Identification Register (CIR)
+                __W    FCR_reg_t               FCR;        // (enh) // CmA, OPm (W)     // (0x08) - FIFO Control Register
+                __R    IIR_IRDA_reg_t          IIR_IRDA;            // CmA, OPm (R)     // (0x08) - Interrupt Identification Register (IrDA)
             };                   
-                __RW   LCR_reg_t               LCR;                 // (0x0C) - Line Control Register 
+                __RW   LCR_reg_t               LCR;                 // All modes        // (0x0C) - Line Control Register 
             union               
             {                   
-                __RW   MCR_reg_t               MCR;                 // (0x10) - Modem Control Register
-                __RW   XON1_ADDR1_reg_t        XON1_ADDR1;          // (0x10) - XON1/ADDR1 Register 
+                __RW   MCR_reg_t               MCR;        // (enh) // CmA, OPm         // (0x10) - Modem Control Register
+                __RW   XON1_ADDR1_reg_t        XON1_ADDR1;          // CmB              // (0x10) - XON1/ADDR1 Register 
             };          
             union           
             {           
-                __RW   XON2_ADDR2_reg_t        XON2_ADDR2;          // (0x14) - XON2/ADDR2 Register   
-                __R    LSR_CIR_reg_t           LSR_CIR;             // (0x14) - Line Status Register (CIR)
-                __R    LSR_IRDA_reg_t          LSR_IRDA;            // (0x14) - Line Status Register (IrDA)
-                __R    LSR_UART_reg_t          LSR_UART;            // (0x14) - Line Status Register (UART) 
+                __RW   XON2_ADDR2_reg_t        XON2_ADDR2;          // CmB              // (0x14) - XON2/ADDR2 Register   
+                __R    LSR_CIR_reg_t           LSR_CIR;             // CmA, OPm (R)     // (0x14) - Line Status Register (CIR)
+                __R    LSR_IRDA_reg_t          LSR_IRDA;            // CmA, OPm (R)     // (0x14) - Line Status Register (IrDA)
+                __R    LSR_UART_reg_t          LSR_UART;            // CmA, OPm (R)     // (0x14) - Line Status Register (UART) 
             };          
             union           
             {           
-                __RW   TCR_reg_t               TCR;                 // (0x18) - Transmission Control Register
-                __R    MSR_reg_t               MSR;                 // (0x18) - Modem Status Register 
-                __RW   XOFF1_reg_t             XOFF1;               // (0x18) - XOFF1 Register 
+                __RW   TCR_reg_t               TCR;        // (enh) // CmA, CmB, OPm    // (0x18) - Transmission Control Register
+                __R    MSR_reg_t               MSR;                 // CmA, OPm         // (0x18) - Modem Status Register 
+                __RW   XOFF1_reg_t             XOFF1;               // CmB              // (0x18) - XOFF1 Register 
             };          
             union
             {  
-                __RW   SPR_reg_t               SPR;                 // (0x1C) - Scratchpad Register
-                __RW   TLR_reg_t               TLR;                 // (0x1C) - Trigger Level Register
-                __RW   XOFF2_reg_t             XOFF2;               // (0x1C) - XOFF2 Register 
+                __RW   SPR_reg_t               SPR;                 // CmA, OPm         // (0x1C) - Scratchpad Register
+                __RW   TLR_reg_t               TLR;        // (enh) // CmA, OPm, CmB    // (0x1C) - Trigger Level Register
+                __RW   XOFF2_reg_t             XOFF2;               // CmB              // (0x1C) - XOFF2 Register 
             };              
-                __RW   MDR1_reg_t              MDR1;                // (0x20) - Mode Definition Register 1 
-                __RW   MDR2_reg_t              MDR2;                // (0x24) - Mode Definition Register 2
+                __RW   MDR1_reg_t              MDR1;                // All modes        // (0x20) - Mode Definition Register 1 
+                __RW   MDR2_reg_t              MDR2;                // All modes        // (0x24) - Mode Definition Register 2
             union           
             {           
-                __W    TXFLL_reg_t             TXFLL;               // (0x28) - Transmit Frame Length Low Register
-                __R    SFLSR_reg_t             SFLSR;               // (0x28) - Status FIFO Line Status Register 
+                __W    TXFLL_reg_t             TXFLL;               // All modes (W)    // (0x28) - Transmit Frame Length Low Register
+                __R    SFLSR_reg_t             SFLSR;               // All modes (R)    // (0x28) - Status FIFO Line Status Register 
             };                  
             union               
             {                   
-                __R    RESUME_reg_t            RESUME;              // (0x2C) - RESUME Register
-                __W    TXFLH_reg_t             TXFLH;               // (0x2C) - Transmit Frame Length High Register 
+                __R    RESUME_reg_t            RESUME;              // All modes (R)    // (0x2C) - RESUME Register
+                __W    TXFLH_reg_t             TXFLH;               // All modes (W)    // (0x2C) - Transmit Frame Length High Register 
             };                  
             union               
             {                   
-                __W    RXFLL_reg_t             RXFLL;                // (0x30) - Received Frame Length Low Register
-                __R    SFREGL_reg_t            SFREGL;               // (0x30) - Status FIFO Register Low 
+                __W    RXFLL_reg_t             RXFLL;                // All modes (W)   // (0x30) - Received Frame Length Low Register
+                __R    SFREGL_reg_t            SFREGL;               // All modes (R)   // (0x30) - Status FIFO Register Low 
             };                  
             union               
             {                   
-                __R    SFREGH_reg_t            SFREGH;               // (0x34) - Status FIFO Register High
-                __W    RXFLH_reg_t             RXFLH;                // (0x34) - Received Frame Length High Register 
+                __R    SFREGH_reg_t            SFREGH;               // All modes (R)   // (0x34) - Status FIFO Register High
+                __W    RXFLH_reg_t             RXFLH;                // All modes (W)   // (0x34) - Received Frame Length High Register 
             };      
             union      
             {        
-                __RW   BLR_reg_t               BLR;                  // (0x38) - BOF Control Register
-                __R    UASR_reg_t              UASR;                 // (0x38) - UART Autobauding Status Register 
+                __RW   BLR_reg_t               BLR;                  // OPm             // (0x38) - BOF Control Register
+                __R    UASR_reg_t              UASR;                 // CmA, CmB (R)    // (0x38) - UART Autobauding Status Register 
             };              
-                __RW   ACREG_reg_t             ACREG;                // (0x3C) - Auxiliary Control Register  
-                __RW   SCR_reg_t               SCR;                  // (0x40) - Supplementary Control Register 
-                __RW   SSR_reg_t               SSR;                  // (0x44) - Supplementary Status Register   
-                __RW   EBLR_reg_t              EBLR;                 // (0x48) - BOF Length Register
+                __RW   ACREG_reg_t             ACREG;                // OPm             // (0x3C) - Auxiliary Control Register  
+                __RW   SCR_reg_t               SCR;                  // All modes       // (0x40) - Supplementary Control Register 
+                __RW   SSR_reg_t               SSR;                  // All modes       // (0x44) - Supplementary Status Register   
+                __RW   EBLR_reg_t              EBLR;                 // OPm             // (0x48) - BOF Length Register
                 __R    uint32_t                RESERVED[1];
-                __R    MVR_reg_t               MVR;                  // (0x50) - Module Version Register 
-                __RW   SYSC_reg_t              SYSC;                 // (0x54) - System Configuration Register   
-                __R    SYSS_reg_t              SYSS;                 // (0x58) - System Status Register
-                __RW   WER_reg_t               WER;                  // (0x5C) - Wake-Up Enable Register  
-                __RW   CFPS_reg_t              CFPS;                 // (0x60) - Carrier Frequency Prescaler Register  
-                __R    RXFIFO_LVL_reg_t        RXFIFO_LVL;           // (0x64) - Received FIFO Level Register 
-                __R    TXFIFO_LVL_reg_t        TXFIFO_LVL;           // (0x68) - Transmit FIFO Level Register   
-                __RW   IER2_reg_t              IER2;                 // (0x6C) - IER2 Register
-                __RW   ISR2_reg_t              ISR2;                 // (0x70) - ISR2 Register 
-                __RW   FREQ_SEL_reg_t          FREQ_SEL;             // (0x74) - FREQ_SEL Register 
+                __R    MVR_reg_t               MVR;                  // All modes       // (0x50) - Module Version Register 
+                __RW   SYSC_reg_t              SYSC;                 // All modes       // (0x54) - System Configuration Register   
+                __R    SYSS_reg_t              SYSS;                 // All modes       // (0x58) - System Status Register
+                __RW   WER_reg_t               WER;                  // All modes       // (0x5C) - Wake-Up Enable Register  
+                __RW   CFPS_reg_t              CFPS;                 // All modes       // (0x60) - Carrier Frequency Prescaler Register  
+                __R    RXFIFO_LVL_reg_t        RXFIFO_LVL;           // All modes       // (0x64) - Received FIFO Level Register 
+                __R    TXFIFO_LVL_reg_t        TXFIFO_LVL;           // All modes       // (0x68) - Transmit FIFO Level Register   
+                __RW   IER2_reg_t              IER2;                 // All modes       // (0x6C) - IER2 Register
+                __RW   ISR2_reg_t              ISR2;                 // All modes       // (0x70) - ISR2 Register 
+                __RW   FREQ_SEL_reg_t          FREQ_SEL;             // All modes       // (0x74) - FREQ_SEL Register 
                 __R    uint32_t                RESERVED1[2];  
-                __RW   MDR3_reg_t              MDR3;                 // (0x80) - Mode Definition Register 3
-                __RW   TX_DMA_THRESHOLD_reg_t  TX_DMA_THRESHOLD;     // (0x84) - TX DMA Threshold Register
+                __RW   MDR3_reg_t              MDR3;                 // All modes       // (0x80) - Mode Definition Register 3
+                __RW   TX_DMA_THRESHOLD_reg_t  TX_DMA_THRESHOLD;     // All modes       // (0x84) - TX DMA Threshold Register
         };
 
         constexpr uint32_t AM335x_UART_0_BASE     = 0x44E09000;    
@@ -1490,12 +1490,12 @@ namespace REGS
         constexpr uint32_t AM335x_UART_4_BASE     = 0x481A8000;    
         constexpr uint32_t AM335x_UART_5_BASE     = 0x481AA000;   
          
-        constexpr AM335x_UART_Type * AM335X_UART_0_regs = reinterpret_cast<AM335x_UART_Type *>(AM335x_UART_0_BASE);
-        constexpr AM335x_UART_Type * AM335X_UART_1_regs = reinterpret_cast<AM335x_UART_Type *>(AM335x_UART_1_BASE);
-        constexpr AM335x_UART_Type * AM335X_UART_2_regs = reinterpret_cast<AM335x_UART_Type *>(AM335x_UART_2_BASE);
-        constexpr AM335x_UART_Type * AM335X_UART_3_regs = reinterpret_cast<AM335x_UART_Type *>(AM335x_UART_3_BASE);
-        constexpr AM335x_UART_Type * AM335X_UART_4_regs = reinterpret_cast<AM335x_UART_Type *>(AM335x_UART_4_BASE);
-        constexpr AM335x_UART_Type * AM335X_UART_5_regs = reinterpret_cast<AM335x_UART_Type *>(AM335x_UART_5_BASE); 
+        constexpr AM335x_UART_Type * AM335X_UART_0 = reinterpret_cast<AM335x_UART_Type *>(AM335x_UART_0_BASE);
+        constexpr AM335x_UART_Type * AM335X_UART_1 = reinterpret_cast<AM335x_UART_Type *>(AM335x_UART_1_BASE);
+        constexpr AM335x_UART_Type * AM335X_UART_2 = reinterpret_cast<AM335x_UART_Type *>(AM335x_UART_2_BASE);
+        constexpr AM335x_UART_Type * AM335X_UART_3 = reinterpret_cast<AM335x_UART_Type *>(AM335x_UART_3_BASE);
+        constexpr AM335x_UART_Type * AM335X_UART_4 = reinterpret_cast<AM335x_UART_Type *>(AM335x_UART_4_BASE);
+        constexpr AM335x_UART_Type * AM335X_UART_5 = reinterpret_cast<AM335x_UART_Type *>(AM335x_UART_5_BASE); 
     
         //-> Values used to choose the trigger level granularity. <-//
         enum e_UART_MODULE_TRIG_GRNAULARITY  : uint32_t
@@ -1503,13 +1503,27 @@ namespace REGS
             TRIG_LVL_GRANULARITY_4 = 0x0,      
             TRIG_LVL_GRANULARITY_1 = 0x1       
         };
+
+        // EFR[4] enhanced bit values enumeration
+        enum e_ENH
+        {
+           ENH_DISABLE = 0x0,
+           ENH_ENABLE  = 0x1
+        };
     
         //-> Values to be used while switching between register configuration modes. <-//
-        enum e_UART_CONFIG_MODE  : uint32_t
+        enum e_CONFIG_MODE  : uint32_t
         {
             CONFIG_MODE_A      = 0x0080,
             CONFIG_MODE_B      = 0x00BF,
-            OPERATIONAL_MODE   = 0x007F,
+            OPERATIONAL_MODE   = 0x007F
+        };
+
+        enum e_SUBCONFIG_MODE  : uint32_t
+        {
+            MSR_SPR = 0x0,
+            TCR_TLR = 0x1,
+            XOFF    = 0x2
         };
         
         enum e_UART_INSTANCE_NUM : int

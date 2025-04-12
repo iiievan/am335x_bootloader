@@ -298,7 +298,7 @@ void  am335x_uart::BAUD_set(unsigned int baud_rate)
  *         document for more information.\n
  *
  */
-uint32_t  am335x_uart::reg_config_mode_enable(REGS::UART::e_UART_CONFIG_MODE mode_flag)
+uint32_t  am335x_uart::reg_config_mode_enable(REGS::UART::e_CONFIG_MODE mode_flag)
 {
     volatile uint32_t LCR_reg_value = 0;
     
@@ -2914,4 +2914,4 @@ void  am335x_uart::write(const char *data, size_t len)
      while (already_sent < len);            
 }
 
-am335x_uart uart_0(REGS::UART::AM335X_UART_0_regs);
+am335x_uart uart_0(REGS::UART::AM335X_UART_0);
