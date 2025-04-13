@@ -46,6 +46,7 @@ public:
     void  reset_module();
     void  resume_operation();
     void  init(serial_user_callback usr_clb);
+    void  initW(serial_user_callback usr_clb);
 
     /// <--- FIFO management methods TRM 19.3 ---> ///
 

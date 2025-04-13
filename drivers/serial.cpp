@@ -1,8 +1,11 @@
 #include "serial.hpp"
 #include "uart.h"
+#include "interrupt_.h"
+#include <prcm_.h>
 
 static void uart_isr(void *p_obj);
 static serial_user_callback m_user_callback = NULL;
+
 
 serial::serial(REGS::UART::AM335x_UART_Type *uart_regs)
 : m_UART_module(uart_0),
@@ -108,6 +111,64 @@ void serial::init(serial_user_callback usr_clb)
     m_user_callback = usr_clb; 
     m_INTC_module.register_handler(REGS::INTC::UART0INT, uart_isr);
     m_INTC_module.unmask_interrupt(REGS::INTC::UART0INT);
+}
+
+void  serial::initW(serial_user_callback usr_clb)
+{
+  /* Enable UART0 functional clock [AM335x TRM 1284] */
+  REG(CM_WKUP_UART0_CLKCTRL) &= ~0x3; /* clear MODULEMODE */
+  REG(CM_WKUP_UART0_CLKCTRL) |= 0x2;  /* MODULEMODE = enable */
+  /* poll idle status waiting for fully enabled */
+  while (REG(CM_WKUP_UART0_CLKCTRL) & (0x3 << 16)) {}
+
+  /* Enable UART0 interface clock l4_wkup */
+  REG(CM_WKUP_L4WKUP_CLKCTRL) &= ~0x3; /* clear MODULEMODE */
+  REG(CM_WKUP_L4WKUP_CLKCTRL) |= 0x2;  /* MODULEMODE = enable */
+  /* poll idle status waiting for fully enabled */
+  while (REG(CM_WKUP_L4WKUP_CLKCTRL) & (0x3 << 16)) {}
+
+  /* Control module pin muxing */
+  REG(CONTROL_MODULE_UART0_RXD) = 0x30; /* pullup, receiver enabled */
+  REG(CONTROL_MODULE_UART0_TXD) = 0x10; /* pullup */
+
+  /* UART software reset */
+  REG(UART0_SYSC) |= 0x2;               /* initiate software reset */
+  while (!(REG(UART0_SYSS) & (0x1))) {} /* wait until end of reset operation */
+  REG(UART0_SYSC) = 0x8;
+
+  /* Disable UART to access protocol, baud rate, interrupt settings */
+  REG(UART0_MDR1) |= 0x7;
+
+  /* switch to register configuration mode A */
+  REG(UART0_LCR) = 0x0080;
+  /* disable modem control */
+  REG(UART0_MCR) = 0x00;
+  /* enable FIFO */
+  REG(UART0_FCR) = 0x07;
+  /* load divisor values to achieve baud rate of 115200 */
+  /* [AM335x TRM table 19-25] for divisor values */
+  REG(UART0_DLL) = 0x1A;
+  REG(UART0_DLH) = 0x00;
+
+  /* set protocol formatting */
+  /* no parity, 1 stop bit, 8 bit chars */
+  REG(UART0_LCR) = 0x000B;
+  /* enable RHR interrupt */
+  REG(UART0_IER_UART) = 0x1;
+  /* mode select */
+  REG(UART0_MDR1) = 0x0; /* clear all, UART 16x mode */
+
+  REG(UART0_RESUME);
+
+  m_user_callback = usr_clb;
+  
+  /* register UART ISR */
+  irq_register(72, uart_isr);
+
+  /* unmask UART0 interrupt */
+  /* 72 UART0INT */
+  /* each MIR register has 32 bits, so we are in MIR2. #72-(2*32) = 8 */
+  REG(INTC_MIR_CLEAR2) = (0x1 << 8);
 }
 
 /*
