@@ -96,7 +96,8 @@ void init_board(void)
     USR_LED_3.dir_set(REGS::GPIO::GPIO_OUTPUT);
     
     //uart_init(input_callback);
-    serial_uart_0.init(input_callback);
+    //serial_uart_0.init(input_callback);
+    serial_uart_0.initW(input_callback);
     
     USR_LED_0.set();
     
