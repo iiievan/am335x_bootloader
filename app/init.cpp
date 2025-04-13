@@ -101,7 +101,7 @@ void init_board(void)
     
     USR_LED_0.set();    
 
-    serial_uart_0.puts((char *)"bootloader started... \r\n");
+    serial_uart_0.puts((char *)"\r\nbootloader started... \r\n");
     serial_uart_0.puts((char *)"UART initialized... \r\n"); 
     
     serial_uart_0.hexdump(0x01234567);

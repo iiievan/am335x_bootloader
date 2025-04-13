@@ -62,7 +62,9 @@ void serial::init(serial_user_callback usr_clb)
     m_CM_WKUP_r.L4WKUP_CLKCTRL.b.MODULEMODE = REGS::PRCM::MODULEMODE_ENABLE;       
     while(m_CM_WKUP_r.L4WKUP_CLKCTRL.b.IDLEST != REGS::PRCM::IDLEST_FUNC);  // waiting for fully enabled
     
-    // Control module pin muxing     
+    // Control module pin muxing 
+    m_CM_r.conf_uart0_rxd.reg = 0;
+    m_CM_r.conf_uart0_txd.reg = 0;    
     m_CM_r.conf_uart0_rxd.b.putypesel = REGS::CONTROL_MODULE::PULL_UP;          // RXD pullup 
     m_CM_r.conf_uart0_rxd.b.rxactive  = REGS::CONTROL_MODULE::INPUT_ENABLE;     // RXD enable input 
     m_CM_r.conf_uart0_txd.b.putypesel = REGS::CONTROL_MODULE::PULL_UP;          // TXD pullup
@@ -338,7 +340,8 @@ void  serial::sleep(bool control)
  */
 void serial::putc(char c) 
 {
-    m_UART_module.char_put((uint8_t)c);
+    while (!m_instance.LSR_UART.b.TXSRE) {}
+    m_instance.THR.b.THR = c;
 }
 
 /* @brief print out null terminated string
