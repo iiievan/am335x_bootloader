@@ -66,7 +66,9 @@ void serial::init(serial_user_callback usr_clb)
     m_CM_WKUP_r.L4WKUP_CLKCTRL.b.MODULEMODE = REGS::PRCM::MODULEMODE_ENABLE;       
     while(m_CM_WKUP_r.L4WKUP_CLKCTRL.b.IDLEST != REGS::PRCM::IDLEST_FUNC);  // waiting for fully enabled
     
-    // Control module pin muxing     
+    // Control module pin muxing 
+    m_CM_r.conf_uart0_rxd.reg = 0;
+    m_CM_r.conf_uart0_txd.reg = 0;    
     m_CM_r.conf_uart0_rxd.b.putypesel = REGS::CONTROL_MODULE::PULL_UP;          // RXD pullup 
     m_CM_r.conf_uart0_rxd.b.rxactive  = REGS::CONTROL_MODULE::INPUT_ENABLE;     // RXD enable input 
     m_CM_r.conf_uart0_txd.b.putypesel = REGS::CONTROL_MODULE::PULL_UP;          // TXD pullup
@@ -115,21 +117,22 @@ void serial::init(serial_user_callback usr_clb)
 
 void  serial::initW(serial_user_callback usr_clb)
 {
-  /* Enable UART0 functional clock [AM335x TRM 1284] */
-  REG(CM_WKUP_UART0_CLKCTRL) &= ~0x3; /* clear MODULEMODE */
-  REG(CM_WKUP_UART0_CLKCTRL) |= 0x2;  /* MODULEMODE = enable */
-  /* poll idle status waiting for fully enabled */
-  while (REG(CM_WKUP_UART0_CLKCTRL) & (0x3 << 16)) {}
+    // Enable UART0 functional clock [AM335x TRM 1284] 
+    m_CM_WKUP_r.UART0_CLKCTRL.b.MODULEMODE = REGS::PRCM::MODULEMODE_DISABLED; 
+    m_CM_WKUP_r.UART0_CLKCTRL.b.MODULEMODE = REGS::PRCM::MODULEMODE_ENABLE;       
+    while(m_CM_WKUP_r.UART0_CLKCTRL.b.IDLEST != REGS::PRCM::IDLEST_FUNC);     // waiting for fully enabled
+    
+    // Enable UART0 interface clock l4_wkup
+    m_CM_WKUP_r.L4WKUP_CLKCTRL.b.MODULEMODE = REGS::PRCM::MODULEMODE_DISABLED;
+    m_CM_WKUP_r.L4WKUP_CLKCTRL.b.MODULEMODE = REGS::PRCM::MODULEMODE_ENABLE;       
+    while(m_CM_WKUP_r.L4WKUP_CLKCTRL.b.IDLEST != REGS::PRCM::IDLEST_FUNC);  // waiting for fully enabled
 
-  /* Enable UART0 interface clock l4_wkup */
-  REG(CM_WKUP_L4WKUP_CLKCTRL) &= ~0x3; /* clear MODULEMODE */
-  REG(CM_WKUP_L4WKUP_CLKCTRL) |= 0x2;  /* MODULEMODE = enable */
-  /* poll idle status waiting for fully enabled */
-  while (REG(CM_WKUP_L4WKUP_CLKCTRL) & (0x3 << 16)) {}
-
-  /* Control module pin muxing */
-  REG(CONTROL_MODULE_UART0_RXD) = 0x30; /* pullup, receiver enabled */
-  REG(CONTROL_MODULE_UART0_TXD) = 0x10; /* pullup */
+    // Control module pin muxing  
+    m_CM_r.conf_uart0_rxd.reg = 0;
+    m_CM_r.conf_uart0_txd.reg = 0;
+    m_CM_r.conf_uart0_rxd.b.putypesel = REGS::CONTROL_MODULE::PULL_UP;          // RXD pullup 
+    m_CM_r.conf_uart0_rxd.b.rxactive  = REGS::CONTROL_MODULE::INPUT_ENABLE;     // RXD enable input 
+    m_CM_r.conf_uart0_txd.b.putypesel = REGS::CONTROL_MODULE::PULL_UP;          // TXD pullup
 
   /* UART software reset */
   REG(UART0_SYSC) |= 0x2;               /* initiate software reset */

@@ -93,45 +93,43 @@ void init_board(void)
     USR_LED_2.sel_pinmode(PINS::e_GPMC_A7::gpio1_23);
     USR_LED_2.dir_set(REGS::GPIO::GPIO_OUTPUT);    
     USR_LED_3.sel_pinmode(PINS::e_GPMC_A8::gpio1_24);
-    USR_LED_3.dir_set(REGS::GPIO::GPIO_OUTPUT);
-    
-    //uart_init(input_callback);
-    //serial_uart_0.init(input_callback);
-    serial_uart_0.initW(input_callback);
+    USR_LED_3.dir_set(REGS::GPIO::GPIO_OUTPUT);    
+
+    serial_uart_0.init(input_callback);
     
     USR_LED_0.set();
     
-    uart_puts((char *)"bootloader started \r\n");
-    uart_puts((char *)"UART initialized \r\n");
+    serial_uart_0.puts((char *)"bootloader started \r\n");
+    serial_uart_0.puts((char *)"UART initialized \r\n");
     
-    uart_hexdump(0x01234567);
-    uart_puts((char *)"\n\r");
-    uart_hexdump(0x89ABCDEF);
-    uart_puts((char *)"\n\r");
+    serial_uart_0.hexdump(0x01234567);
+    serial_uart_0.puts((char *)"\n\r");
+    serial_uart_0.hexdump(0x89ABCDEF);
+    serial_uart_0.puts((char *)"\n\r");
     
      // initialize DDR3L, values hardcoded for D2516EC4BXGGB 
     ddr_init();
   
     if (REG(EMIF0_STATUS) & 0x4) 
     {
-        uart_puts((char *)"DDR3L initialized\n\r");
+        serial_uart_0.puts((char *)"DDR3L initialized\n\r");
     } 
     else 
     {
-        uart_puts((char *)"DDR3L initialization failed...\n\r");
+        serial_uart_0.puts((char *)"DDR3L initialization failed...\n\r");
         return;
-    }
+    }  
     
     intc.master_IRQ_enable();
     
     // check reading and writing to external DRAM before continuing */
     if (!ddr_check()) 
     {
-        uart_puts((char *)"DDR3L read/write check passed\n\r");
+        serial_uart_0.puts((char *)"DDR3L read/write check passed\n\r");
     } 
     else 
     {
-        uart_puts((char *)"DDR3L read/write check failed...\n\r");
+        serial_uart_0.puts((char *)"DDR3L read/write check failed...\n\r");
         return;
     }        
 }
