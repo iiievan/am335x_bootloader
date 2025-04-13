@@ -341,7 +341,9 @@ void  serial::sleep(bool control)
 void serial::putc(char c) 
 {
     while (!m_instance.LSR_UART.b.TXSRE) {}
-    m_instance.THR.b.THR = c;
+    
+    //m_instance.THR.b.THR = c;  - dont do that in interrupts, sends every 1st character. 2-nd char dissapeared.
+    m_instance.THR.reg = c;
 }
 
 /* @brief print out null terminated string
