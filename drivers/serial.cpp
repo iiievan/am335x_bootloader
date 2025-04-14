@@ -140,9 +140,6 @@ void serial::init(serial_user_callback usr_clb)
     // Disable UART to access protocol, baud rate, interrupt settings 
     switch_operating_mode(MODE_DISABLE);
     
-    // switch to register configuration mode A 
-    switch_reg_config_mode(CONFIG_MODE_A, ENH_ENABLE);
-    
     // disable modem control 
     MCR_reg_t tMCR;
     tMCR.reg = 0;
@@ -153,19 +150,16 @@ void serial::init(serial_user_callback usr_clb)
     tFCR.b.FIFO_EN = 0x1;
     tFCR.b.RX_FIFO_CLEAR = 0x1;
     tFCR.b.TX_FIFO_CLEAR = 0x1;
-    FIFO_register_write(tFCR); 
-    
+    FIFO_register_write(tFCR);    
     
     // set protocol formatting 
     // no parity, 1 stop bit, 8 bit chars 
-    m_UART_module.char_len_config(REGS::UART::CHL_8_BITS);
-    m_UART_module.stop_bit_config(REGS::UART::STOP_1);
-    m_UART_module.parity_config(REGS::UART::PARITY_NONE);
+    data_format_set(CHL_8_BITS,STOP_1,PARITY_NONE);
     
-    // load divisor values to achieve baud rate of 115200 
-    // [AM335x TRM table 19-25] for divisor values
-    m_UART_module.divisor_latch_write(0x001A);  
-    m_UART_module.divisor_latch_disable();
+    divisor_latch divisor;
+    divisor.set_baud(KBPS_115_2);
+    divisor_latch_set(divisor);  
+    divisor_latch_disable();
     
     // enable RHR interrupt 
     m_UART_module.int_enable(REGS::UART::RECEIVE_IT);
@@ -198,37 +192,23 @@ void serial::init(serial_user_callback usr_clb)
 void  serial::FIFO_register_write(REGS::UART::FCR_reg_t  fcr)
 { 
     using namespace REGS::UART;
-    e_CONFIG_MODE  conf = m_state.config_mode;
-            e_ENH  enh  =  m_state.enhanced_sts;
-    divisor_latch  divisor;
 
-    divisor.b.DLH = 0x00;
-    divisor.b.DLL = 0x00;
+    divisor_latch  divisor_before = divisor_latch_get();
+    divisor_latch  divisor_zero;
 
-    // Programming the specified bits of FCR.
-    if(m_state.config_mode == CONFIG_MODE_B || 
-       m_state.enhanced_sts == ENH_DISABLE)
+    // The FIFO_EN and DMA_MODE bits of FCR can be written to only when
+    // the Baud Clock is not running(DLL and DLH register are cleared  to 0).
+    if(divisor_before.raw != 0x0000)
     {
-        switch_reg_config_mode(CONFIG_MODE_A, ENH_ENABLE);  
- 
-        divisor_latch_set(divisor);     //The FIFO_EN and DMA_MODE bits of FCR can be written to only when
-                                        // the Baud Clock is not running(DLL and DLH register are cleared  to 0).
-      
+        divisor_zero.raw = 0x0000;
+        divisor_latch_set(divisor_zero);    
+    }
+    switch_reg_config_mode(CONFIG_MODE_A, ENH_ENABLE); 
                                                                      
-        m_instance.FCR.reg = fcr.reg;                                 
+    m_instance.FCR.reg = fcr.reg;                                 
        
-        //divisor_latch_write(div_latch_reg_val);       // FIXME
-        switch_reg_config_mode(conf, enh); 
-    }
-    else
-    {
-        divisor_latch_set(divisor);    //The FIFO_EN and DMA_MODE bits of FCR can be written to only when
-                                       // the Baud Clock is not running(DLL and DLH register are cleared  to 0).
-       
-        m_instance.FCR.reg = fcr.reg;                                 
-       
-        //divisor_latch_write(div_latch_reg_val);   // FIXME                          .
-    }
+    // restore value of divisor latch
+    divisor_latch_set(divisor_before); 
 }
 
 /*
@@ -368,12 +348,41 @@ void  serial::switch_reg_subconfig_mode(REGS::UART::e_SUBCONFIG_MODE mode)
 }
 
 /*
+ * @brief  This API is used to read the specified divisor value to Divisor
+ *         Latch registers DLL and DLH.
+ *
+ * @return  divisor  latch values of registers DLL and DLH.
+ */
+REGS::UART::divisor_latch  serial::divisor_latch_get(void)
+{
+    using namespace REGS::UART;
+    volatile  bool  sleep_bit = false;
+     divisor_latch  result;
+
+    switch_reg_config_mode(OPERATIONAL_MODE, ENH_ENABLE);
+
+    sleep_bit = m_instance.IER_UART.b.SLEEPMODE;
+
+    if(sleep_bit)
+        sleep(false);  
+
+    switch_reg_config_mode(CONFIG_MODE_A, ENH_DISABLE);
+
+    result.b.DLH = (uint8_t)m_instance.DLH.reg;
+    result.b.DLL = (uint8_t)m_instance.DLL.reg;
+
+    if(sleep_bit)
+       sleep(true);
+
+   return result;
+}
+
+/*
  * @brief  This API is used to write the specified divisor value to Divisor
  *         Latch registers DLL and DLH.
  *
  * @param  divisor  The 14-bit value whose least 8 bits go to DLL
  *                  and highest 6 bits go to DLH.
- * 
  */
 void  serial::divisor_latch_set(REGS::UART::divisor_latch divisor)
 {
@@ -381,8 +390,6 @@ void  serial::divisor_latch_set(REGS::UART::divisor_latch divisor)
 
     volatile  bool  sleep_bit = false;
      e_MODESELECT  modf = m_state.module_function;
-    e_CONFIG_MODE  conf = m_state.config_mode;
-            e_ENH  enh  = m_state.enhanced_sts;
 
     switch_reg_config_mode(OPERATIONAL_MODE, ENH_ENABLE);
 
@@ -401,44 +408,57 @@ void  serial::divisor_latch_set(REGS::UART::divisor_latch divisor)
 
     if(sleep_bit)
        sleep(true); 
-    
-    m_state.update();
-    
+       
     //restore the original state of  module
     if(m_state.module_function != modf)
-        switch_operating_mode(modf);                           
-
-    if(m_state.config_mode != conf || 
-       m_state.enhanced_sts != enh)  
-        switch_reg_config_mode(conf, enh);    
+        switch_operating_mode(modf);     
 }
 
 /*
- * @brief  This API switches the specified Modem Control register to desired values
- * 
- * @param  'mcr' - desired MCR value;
+ * @brief  This API enables write access to Divisor Latch registers DLL and
+ *         DLH.
  */
-void  serial::modem_control_set(REGS::UART::MCR_reg_t mcr)
+void  serial::divisor_latch_enable()
 {
-    using namespace REGS::UART;
-    e_CONFIG_MODE  conf = m_state.config_mode;
-            e_ENH  enh =  m_state.enhanced_sts;
-    
-    // Programming the specified bits of MCR.
-    if(m_state.config_mode == CONFIG_MODE_B || 
-       m_state.enhanced_sts == ENH_DISABLE)
-    {;
-        switch_reg_config_mode(CONFIG_MODE_A, ENH_ENABLE);
-
-        m_instance.MCR.reg |= mcr.reg;
-
-        switch_reg_config_mode(conf, enh);
-    } 
-    else      
-        m_instance.MCR.reg |= mcr.reg; 
-
-    m_state.update();  // because TCRTLR may be changed, and subonfig mode with him
+    m_instance.LCR.b.DIV_EN = HIGH;
+    m_state.update();
 }
+
+/*
+ * @brief  This API disables write access to Divisor Latch registers DLL and
+ *         DLH.
+ */
+void  serial::divisor_latch_disable()
+{
+    m_instance.LCR.b.DIV_EN = LOW;
+    m_state.update();
+}
+
+/*
+ * @brief  This API spicify data format of uart transmission and reception
+ *         such as character length, parity bit, and stop bit
+ * 
+ * @param  'char_len' - word length to be transmitted or received;
+ * @param  'stop_bit' - number of stop bits;
+ * @param  'parity'   -  parity bit;
+ */
+void  serial::data_format_set(REGS::UART::e_CHAR_LENGHT  char_len,
+                                 REGS::UART::e_STOP_BIT  stop_bit,
+                               REGS::UART::e_LCR_PARITY  parity)
+{   
+
+    m_instance.LCR.b.CHAR_LENGTH = 0;  
+    m_instance.LCR.b.CHAR_LENGTH = char_len;    // then write
+
+    m_instance.LCR.b.NB_STOP = 0;
+    m_instance.LCR.b.NB_STOP = stop_bit;  // then write
+
+    m_instance.LCR.b.PARITY_EN = 0;
+    m_instance.LCR.b.PARITY_TYPE1 = 0;
+    m_instance.LCR.b.PARITY_TYPE2 = 0;
+    
+    m_instance.LCR.reg |= (parity & REGS::UART::LCR_Parity_mask);
+} 
 
 /*
  * @brief  This API can be used to control the Power Management
@@ -522,6 +542,22 @@ void  serial::sleep(bool control)
         switch_reg_config_mode(OPERATIONAL_MODE, ENH_ENABLE);
 
     m_instance.IER_UART.b.SLEEPMODE = control;
+}
+
+/*
+ * @brief  This API switches the specified Modem Control register to desired values
+ * 
+ * @param  'mcr' - desired MCR value;
+ */
+void  serial::modem_control_set(REGS::UART::MCR_reg_t mcr)
+{
+    using namespace REGS::UART;    
+
+    switch_reg_config_mode(CONFIG_MODE_A, ENH_ENABLE);
+
+    m_instance.MCR.reg |= mcr.reg; 
+
+    m_state.update();  // because TCRTLR may be changed, and subonfig mode with him
 }
 
 /* @brief write char out to UART. blocks if Tx FIFO is full

@@ -66,8 +66,8 @@ public:
          ~serial();
 
     /// <--- Start module init ---> ///
-    void  reset_module();
-    void  resume_operation();
+    void  reset_module(void);
+    void  resume_operation(void);
     void  init(serial_user_callback usr_clb);
 
     /// <--- FIFO management methods TRM 19.3 ---> ///
@@ -80,8 +80,16 @@ public:
 
     /// <--- Protocol formating methods TRM 19.3 ---> ///
     ///  1. Clock generation setup:
+    REGS::UART::divisor_latch  divisor_latch_get(void);
     void  divisor_latch_set(REGS::UART::divisor_latch divisor);
+    void  divisor_latch_enable();
+    void  divisor_latch_disable();
+
     ///  2. Data formating setup:
+    void  data_format_set(REGS::UART::e_CHAR_LENGHT  char_len,
+                             REGS::UART::e_STOP_BIT  stop_bit,
+                           REGS::UART::e_LCR_PARITY  parity);
+
     ///  3. Interrupt management: 
 
     /// <--- Power management methods ---> ///
