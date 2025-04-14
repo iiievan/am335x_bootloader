@@ -1525,6 +1525,126 @@ namespace REGS
             TCR_TLR = 0x1,
             XOFF    = 0x2
         };
+
+        enum e_BAUDRATE : uint32_t
+        {
+            KBPS_0_3 = 0,       // 16x
+            KBPS_0_6 = 1,       // 16x
+            KBPS_1_2 = 2,       // 16x
+            KBPS_2_4 = 3,       // 16x
+            KBPS_4_8 = 4,       // 16x
+            KBPS_9_6 = 5,       // 16x
+            KBPS_14_4 = 6,      // 16x
+            KBPS_19_2 = 7,      // 16x
+            KBPS_28_8 = 8,      // 16x
+            KBPS_38_4 = 9,      // 16x
+            KBPS_57_6 = 10,     // 16x
+            KBPS_115_2 = 11,    // 16x
+            KBPS_230_4 = 12,    // 16x
+            KBPS_480_8 = 13,    // 13x
+            KBPS_921_6 = 14,    // 13x
+            MBPS_1_843 = 15,    // 13x
+            MBPS_3_6884 = 16    // 13x
+        };
+
+        union divisor_latch
+        { 
+            struct 
+            {             
+                uint8_t    DLL  :8;     
+                uint8_t    DLH  :8;       
+            } b;                        // Structure used for bit access 
+            uint16_t  raw;              // Type used for register access 
+
+            divisor_latch() { raw = 0x001A; }
+
+            e_MODESELECT set_baud(e_BAUDRATE bdrt)
+            {
+                e_MODESELECT result = MODE_UART_16x;
+                switch(bdrt)
+                {
+                    case KBPS_0_3:
+                        b.DLH = 0x27;
+                        b.DLL = 0x10;
+                        break;
+                    case KBPS_0_6:
+                        b.DLH = 0x13;
+                        b.DLL = 0x88;
+                        break;
+                    case KBPS_1_2:
+                        b.DLH = 0x09;
+                        b.DLL = 0xC4;
+                        break;
+                    case KBPS_2_4:
+                        b.DLH = 0x04;
+                        b.DLL = 0xE2;
+                        break;
+                    case KBPS_4_8:
+                        b.DLH = 0x02;
+                        b.DLL = 0x71;
+                        break;
+                    case KBPS_9_6:
+                        b.DLH = 0x01;
+                        b.DLL = 0x38;
+                        break;
+                    case KBPS_14_4:
+                        b.DLH = 0x00;
+                        b.DLL = 0xD0;
+                        break;
+                    case KBPS_19_2:
+                        b.DLH = 0x00;
+                        b.DLL = 0x9C;
+                        break;
+                    case KBPS_28_8:
+                        b.DLH = 0x00;
+                        b.DLL = 0x68;
+                        break;
+                    case KBPS_38_4:
+                        b.DLH = 0x00;
+                        b.DLL = 0x4E;
+                        break;
+                    case KBPS_57_6:
+                        b.DLH = 0x00;
+                        b.DLL = 0x34;
+                        break;
+                    case KBPS_115_2:
+                        b.DLH = 0x00;
+                        b.DLL = 0x1A;
+                        break;
+                    case KBPS_230_4:
+                        b.DLH = 0x00;
+                        b.DLL = 0x0D;
+                        break;
+                    case KBPS_480_8:
+                        b.DLH = 0x00;
+                        b.DLL = 0x08;
+                        result = MODE_UART_13x;
+                        break;
+                    case KBPS_921_6:
+                        b.DLH = 0x00;
+                        b.DLL = 0x04;
+                        result = MODE_UART_13x;
+                        break;
+                    case MBPS_1_843:
+                        b.DLH = 0x00;
+                        b.DLL = 0x02;
+                        result = MODE_UART_13x;
+                        break;
+                    case MBPS_3_6884:
+                        b.DLH = 0x00;
+                        b.DLL = 0x01;
+                        result = MODE_UART_13x;
+                        break;
+                    default:
+                        // 115200 by default 
+                        b.DLH = 0x00;
+                        b.DLL = 0x1A;
+                      break;
+                }
+
+                return result;
+            }
+        };
         
         enum e_UART_INSTANCE_NUM : int
         {

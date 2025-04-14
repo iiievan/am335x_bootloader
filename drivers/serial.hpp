@@ -9,6 +9,7 @@
 #include "PRCM.h"
 
 
+
 extern am335x_uart uart_0;
 extern am335x_intc intc;
 
@@ -16,13 +17,35 @@ typedef void (*serial_user_callback)(char);
 
 class serial
 {
+    class module_state_t
+    {
+    private:
+        REGS::UART::AM335x_UART_Type &m_instance;
+    public:
+        
+            REGS::UART::e_MODESELECT  module_function;
+           REGS::UART::e_CONFIG_MODE  config_mode;
+        REGS::UART::e_SUBCONFIG_MODE  subconfig_mode;
+                   REGS::UART::e_ENH  enhanced_sts;
+
+                                      module_state_t(REGS::UART::AM335x_UART_Type *uart_regs)
+                                      : m_instance(*uart_regs),
+                                        module_function(REGS::UART::MODE_DISABLE),
+                                        config_mode(REGS::UART::OPERATIONAL_MODE),
+                                        subconfig_mode(REGS::UART::MSR_SPR),
+                                        enhanced_sts(REGS::UART::ENH_DISABLE) 
+                                       {}
+
+                                void  update();
+    };
 
 private:
                                   am335x_uart &m_UART_module;
                  REGS::UART::AM335x_UART_Type &m_instance;
                                   am335x_intc &m_INTC_module;
               REGS::PRCM::AM335x_CM_WKUP_Type &m_CM_WKUP_r;
-REGS::CONTROL_MODULE::AM335x_CTRL_MODULE_Type &m_CM_r; 
+REGS::CONTROL_MODULE::AM335x_CTRL_MODULE_Type &m_CM_r;
+                               module_state_t  m_state; 
 
                         /* FOR CONFIG MODE REGISTERS SWITCHING */
                         REGS::UART::LCR_reg_t  m_LCR_before;
@@ -48,6 +71,7 @@ public:
     void  init(serial_user_callback usr_clb);
 
     /// <--- FIFO management methods TRM 19.3 ---> ///
+    void  FIFO_register_write(REGS::UART::FCR_reg_t  fcr);
 
     /// <--- Mode select methods  TRM 19.3 ---> ///
     void  switch_operating_mode(REGS::UART::e_MODESELECT mode);
@@ -56,6 +80,7 @@ public:
 
     /// <--- Protocol formating methods TRM 19.3 ---> ///
     ///  1. Clock generation setup:
+    void  divisor_latch_set(REGS::UART::divisor_latch divisor);
     ///  2. Data formating setup:
     ///  3. Interrupt management: 
 

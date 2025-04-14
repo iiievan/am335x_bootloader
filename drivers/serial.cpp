@@ -9,6 +9,7 @@ serial::serial(REGS::UART::AM335x_UART_Type *uart_regs)
   m_INTC_module(intc),
   m_CM_WKUP_r(*REGS::PRCM::AM335x_CM_WKUP),
   m_CM_r(*REGS::CONTROL_MODULE::AM335x_CONTROL_MODULE),
+  m_state(uart_regs),
   m_hexchars{'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'}
 { 
 
@@ -25,13 +26,72 @@ serial::~serial()
  */
 void  serial::reset_module()
 {
+    using namespace REGS::UART;
+
     // Performing Software Reset of the module.
     m_instance.SYSC.b.SOFTRESET = HIGH;
 
     // Wait until the process of Module Reset is complete.
     while(!m_instance.SYSS.b.RESETDONE);
 
-    switch_operating_mode(REGS::UART::MODE_UART_16x);
+    m_state.update();
+}
+
+void  serial::module_state_t::update()
+{
+    using namespace REGS::UART;
+    LCR_reg_t tLCR;
+    MCR_reg_t tMCR;
+
+    // get current operating module function UART, IrDA, CIR etc.
+    module_function = (e_MODESELECT)m_instance.MDR1.b.MODESELECT;
+
+    // get current enhanced function bit state
+    tLCR.reg = m_instance.LCR.reg;
+    m_instance.LCR.reg = (((uint32_t)CONFIG_MODE_B) & 0xFF);
+    enhanced_sts = (e_ENH)m_instance.EFR.b.ENHANCEDEN;
+    m_instance.LCR.reg = tLCR.reg;
+
+    // get configuration mode registers status
+    if((m_instance.LCR.reg & 0xFF) != 0xBF && 
+        enhanced_sts == ENH_ENABLE) 
+        config_mode = CONFIG_MODE_A;
+
+    if((m_instance.LCR.reg & 0xFF) == 0xBF && 
+       enhanced_sts == ENH_ENABLE) 
+        config_mode = CONFIG_MODE_B;
+
+    if(enhanced_sts == ENH_DISABLE) 
+        config_mode = OPERATIONAL_MODE;
+
+    tLCR.reg = m_instance.LCR.reg;
+    m_instance.LCR.reg = (((uint32_t)CONFIG_MODE_A) & 0xFF);
+    tMCR.reg = m_instance.MCR.reg;
+    m_instance.LCR.reg = tLCR.reg;
+
+    // get subconfiguration mode registers status
+    switch(config_mode)
+    {
+        case OPERATIONAL_MODE:
+        case CONFIG_MODE_A:
+            if(enhanced_sts == ENH_ENABLE && 
+               tMCR.b.TCRTLR == HIGH)
+                subconfig_mode = TCR_TLR;
+
+            if(enhanced_sts == ENH_DISABLE || 
+               tMCR.b.TCRTLR == LOW)
+                subconfig_mode = MSR_SPR;
+            break;
+        case CONFIG_MODE_B:
+            if(enhanced_sts == ENH_ENABLE && 
+               tMCR.b.TCRTLR == HIGH)
+                subconfig_mode = TCR_TLR;
+
+            if(enhanced_sts == ENH_DISABLE ||
+               tMCR.b.TCRTLR == LOW) 
+                subconfig_mode = XOFF;
+            break;
+    }
 }
 
 /*
@@ -52,6 +112,8 @@ void  serial::resume_operation()
  */
 void serial::init(serial_user_callback usr_clb) 
 {  
+    using namespace REGS::UART;
+
     // Enable UART0 functional clock [AM335x TRM 1284] 
     m_CM_WKUP_r.UART0_CLKCTRL.b.MODULEMODE = REGS::PRCM::MODULEMODE_DISABLED; 
     m_CM_WKUP_r.UART0_CLKCTRL.b.MODULEMODE = REGS::PRCM::MODULEMODE_ENABLE;       
@@ -72,20 +134,26 @@ void serial::init(serial_user_callback usr_clb)
     // UART software reset    
     reset_module();
     idle_mode_configure(REGS::UART::NO_IDLE);
+    wakeup_control(false);
+    auto_idle_mode_control(false);
     
     // Disable UART to access protocol, baud rate, interrupt settings 
-    switch_operating_mode(REGS::UART::MODE_DISABLE);
+    switch_operating_mode(MODE_DISABLE);
     
     // switch to register configuration mode A 
-    switch_reg_config_mode(REGS::UART::CONFIG_MODE_A, REGS::UART::ENH_ENABLE);
+    switch_reg_config_mode(CONFIG_MODE_A, ENH_ENABLE);
     
     // disable modem control 
-    m_UART_module.modem_control_set(0x00);  
+    MCR_reg_t tMCR;
+    tMCR.reg = 0;
+    modem_control_set(tMCR);  
     
-    // enable FIFO 
-    REGS::UART::FCR_reg_t FCR_reg;
-    FCR_reg.reg = 0x07;
-    m_UART_module.FIFO_register_write(FCR_reg); 
+    FCR_reg_t tFCR;
+    tFCR.reg = 0;
+    tFCR.b.FIFO_EN = 0x1;
+    tFCR.b.RX_FIFO_CLEAR = 0x1;
+    tFCR.b.TX_FIFO_CLEAR = 0x1;
+    FIFO_register_write(tFCR); 
     
     
     // set protocol formatting 
@@ -112,6 +180,58 @@ void serial::init(serial_user_callback usr_clb)
 }
 
 /*
+ * @brief  This API is used to write a specified value to the FIFO Control
+ *         Register(FCR).
+ *
+ * @param  fcr     This specifies the value to be written to the FCR.
+ *
+ * @note  1> The FIFO_EN and DMA_MODE bits of FCR can be written to only when
+ *           the Baud Clock is not running(DLL and DLH register are cleared
+ *           to 0). Modifying DLL and DLH registers in turn requires that the
+ *           UART be operated in Disabled Mode(MDR1[2:0] = 0x7).
+ *        2> Writing to 'TX_FIFO_TRIG' field in FCR requires that the
+ *           ENHANCEDEN bit in EFR(EFR[4]) be set to 1.
+ *        Prior to writing to the FCR, this API does the above two operations.
+ *        It also restores the respective bit values after FCR has been
+ *        written to.
+ */
+void  serial::FIFO_register_write(REGS::UART::FCR_reg_t  fcr)
+{ 
+    using namespace REGS::UART;
+    e_CONFIG_MODE  conf = m_state.config_mode;
+            e_ENH  enh  =  m_state.enhanced_sts;
+    divisor_latch  divisor;
+
+    divisor.b.DLH = 0x00;
+    divisor.b.DLL = 0x00;
+
+    // Programming the specified bits of FCR.
+    if(m_state.config_mode == CONFIG_MODE_B || 
+       m_state.enhanced_sts == ENH_DISABLE)
+    {
+        switch_reg_config_mode(CONFIG_MODE_A, ENH_ENABLE);  
+ 
+        divisor_latch_set(divisor);     //The FIFO_EN and DMA_MODE bits of FCR can be written to only when
+                                        // the Baud Clock is not running(DLL and DLH register are cleared  to 0).
+      
+                                                                     
+        m_instance.FCR.reg = fcr.reg;                                 
+       
+        //divisor_latch_write(div_latch_reg_val);       // FIXME
+        switch_reg_config_mode(conf, enh); 
+    }
+    else
+    {
+        divisor_latch_set(divisor);    //The FIFO_EN and DMA_MODE bits of FCR can be written to only when
+                                       // the Baud Clock is not running(DLL and DLH register are cleared  to 0).
+       
+        m_instance.FCR.reg = fcr.reg;                                 
+       
+        //divisor_latch_write(div_latch_reg_val);   // FIXME                          .
+    }
+}
+
+/*
  * @brief  This API configures the operating mode for the UART instance.
  *         The different operating modes are:
  *         - UART(16x, 13x, 16x Auto-Baud)
@@ -134,10 +254,10 @@ void serial::init(serial_user_callback usr_clb)
  *
  */
 void  serial::switch_operating_mode(REGS::UART::e_MODESELECT mode)
-{    
-    m_save_opmode();  
+{   
     m_instance.MDR1.b.MODESELECT = 0;              // Clearing the MODESELECT field in MDR1.
-    m_instance.MDR1.b.MODESELECT = mode;           // Programming the MODESELECT field in MDR1.    
+    m_instance.MDR1.b.MODESELECT = mode;           // Programming the MODESELECT field in MDR1.
+    m_state.module_function = mode;    
 }
 
 /*
@@ -171,22 +291,24 @@ void  serial::switch_operating_mode(REGS::UART::e_MODESELECT mode)
 
 void  serial::switch_reg_config_mode(REGS::UART::e_CONFIG_MODE mode, REGS::UART::e_ENH enh)
 { 
-    REGS::UART::LCR_reg_t LCR;
+    using namespace REGS::UART;
+    LCR_reg_t tLCR;
 
-     // if LCR[7] is 0x0 uart in opertioanl mode, save register to restore later 
-     // when resume operational
-     if(m_instance.LCR.b.DIV_EN == LOW)
+     // if uart in opertioanl mode, save register to restore later 
+     // when resume operational mode
+     if(m_state.config_mode == OPERATIONAL_MODE)
         m_save_LCR();  
 
     switch(mode)  
     {
-        case REGS::UART::CONFIG_MODE_A:
-        case REGS::UART::CONFIG_MODE_B:
+        case CONFIG_MODE_A:
+        case CONFIG_MODE_B:
             m_instance.LCR.reg = ((uint32_t)mode & 0xFF);
             break;
-        case REGS::UART::OPERATIONAL_MODE:
+        case OPERATIONAL_MODE:
             // if LCR[7] is 0x1 restore register saved later
-            if(m_instance.LCR.b.DIV_EN == HIGH)
+            if(m_state.config_mode == CONFIG_MODE_A || 
+               m_state.config_mode == CONFIG_MODE_B)
                 m_restore_LCR();
             m_instance.LCR.reg &= 0x7F;
             break;
@@ -194,18 +316,17 @@ void  serial::switch_reg_config_mode(REGS::UART::e_CONFIG_MODE mode, REGS::UART:
             break;
     }
 
-    LCR.reg = m_instance.LCR.reg;
-    m_instance.LCR.reg = (((uint32_t)REGS::UART::CONFIG_MODE_B) & 0xFF);
+    m_state.config_mode = mode;
 
-    if(enh) 
-    {
-        m_instance.EFR.b.ENHANCEDEN = 0;
-        m_instance.EFR.b.ENHANCEDEN = REGS::UART::ENH_ENABLE; 
-    } 
-    else
-        m_instance.EFR.b.ENHANCEDEN = REGS::UART::ENH_DISABLE;
+    tLCR.reg = m_instance.LCR.reg;
+    m_instance.LCR.reg = (((uint32_t)CONFIG_MODE_B) & 0xFF);
 
-    m_instance.LCR.reg = LCR.reg; 
+
+    m_instance.EFR.b.ENHANCEDEN = 0;
+    m_instance.EFR.b.ENHANCEDEN = enh; 
+    m_state.enhanced_sts        = enh;
+
+    m_instance.LCR.reg = tLCR.reg; 
 }
 
 /*
@@ -223,23 +344,73 @@ void  serial::switch_reg_config_mode(REGS::UART::e_CONFIG_MODE mode, REGS::UART:
  */
 void  serial::switch_reg_subconfig_mode(REGS::UART::e_SUBCONFIG_MODE mode)
 {
+    using namespace REGS::UART;
+
     switch(mode)
     {
         case REGS::UART::MSR_SPR:
-            switch_reg_config_mode(REGS::UART::CONFIG_MODE_A, REGS::UART::ENH_ENABLE);
+            switch_reg_config_mode(CONFIG_MODE_A, ENH_ENABLE);
             m_instance.MCR.b.TCRTLR = LOW;
-            switch_reg_config_mode(REGS::UART::CONFIG_MODE_A, REGS::UART::ENH_DISABLE);
+            switch_reg_config_mode(CONFIG_MODE_A, ENH_DISABLE);
             break;
         case REGS::UART::TCR_TLR:
-            switch_reg_config_mode(REGS::UART::CONFIG_MODE_A, REGS::UART::ENH_ENABLE);
+            switch_reg_config_mode(CONFIG_MODE_A, ENH_ENABLE);
             m_instance.MCR.b.TCRTLR = HIGH;
             break;
         case REGS::UART::XOFF:
-            switch_reg_config_mode(REGS::UART::CONFIG_MODE_A, REGS::UART::ENH_ENABLE);
+            switch_reg_config_mode(CONFIG_MODE_A, ENH_ENABLE);
             m_instance.MCR.b.TCRTLR = LOW;
-            switch_reg_config_mode(REGS::UART::CONFIG_MODE_B, REGS::UART::ENH_DISABLE);
+            switch_reg_config_mode(CONFIG_MODE_B, ENH_DISABLE);
             break;
     }
+
+    m_state.subconfig_mode = mode;
+}
+
+/*
+ * @brief  This API is used to write the specified divisor value to Divisor
+ *         Latch registers DLL and DLH.
+ *
+ * @param  divisor  The 14-bit value whose least 8 bits go to DLL
+ *                  and highest 6 bits go to DLH.
+ * 
+ */
+void  serial::divisor_latch_set(REGS::UART::divisor_latch divisor)
+{
+    using namespace REGS::UART;
+
+    volatile  bool  sleep_bit = false;
+     e_MODESELECT  modf = m_state.module_function;
+    e_CONFIG_MODE  conf = m_state.config_mode;
+            e_ENH  enh  = m_state.enhanced_sts;
+
+    switch_reg_config_mode(OPERATIONAL_MODE, ENH_ENABLE);
+
+    sleep_bit = m_instance.IER_UART.b.SLEEPMODE;
+
+    if(sleep_bit)
+        sleep(false);  
+
+    switch_reg_config_mode(CONFIG_MODE_A, ENH_DISABLE); 
+
+    if(modf != MODE_DISABLE)
+        switch_operating_mode(MODE_DISABLE);  
+    
+    m_instance.DLL.reg = (divisor.b.DLL & 0xFF);                
+    m_instance.DLH.reg = (divisor.b.DLH & 0x3F);  
+
+    if(sleep_bit)
+       sleep(true); 
+    
+    m_state.update();
+    
+    //restore the original state of  module
+    if(m_state.module_function != modf)
+        switch_operating_mode(modf);                           
+
+    if(m_state.config_mode != conf || 
+       m_state.enhanced_sts != enh)  
+        switch_reg_config_mode(conf, enh);    
 }
 
 /*
@@ -249,8 +420,24 @@ void  serial::switch_reg_subconfig_mode(REGS::UART::e_SUBCONFIG_MODE mode)
  */
 void  serial::modem_control_set(REGS::UART::MCR_reg_t mcr)
 {
-    // Programming the specified bits of MCR.  
-    m_instance.MCR.reg |= mcr.reg;
+    using namespace REGS::UART;
+    e_CONFIG_MODE  conf = m_state.config_mode;
+            e_ENH  enh =  m_state.enhanced_sts;
+    
+    // Programming the specified bits of MCR.
+    if(m_state.config_mode == CONFIG_MODE_B || 
+       m_state.enhanced_sts == ENH_DISABLE)
+    {;
+        switch_reg_config_mode(CONFIG_MODE_A, ENH_ENABLE);
+
+        m_instance.MCR.reg |= mcr.reg;
+
+        switch_reg_config_mode(conf, enh);
+    } 
+    else      
+        m_instance.MCR.reg |= mcr.reg; 
+
+    m_state.update();  // because TCRTLR may be changed, and subonfig mode with him
 }
 
 /*
@@ -330,7 +517,9 @@ void  serial::sleep(bool control)
 {
     using namespace REGS::UART;
   
-    switch_reg_config_mode(OPERATIONAL_MODE, ENH_ENABLE);
+    if(m_state.config_mode != OPERATIONAL_MODE && 
+        m_state.enhanced_sts != ENH_ENABLE)
+        switch_reg_config_mode(OPERATIONAL_MODE, ENH_ENABLE);
 
     m_instance.IER_UART.b.SLEEPMODE = control;
 }
