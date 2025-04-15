@@ -133,7 +133,7 @@ void serial::init(serial_user_callback usr_clb)
     
     // UART software reset    
     reset_module();
-    idle_mode_configure(REGS::UART::NO_IDLE);
+    idle_mode_configure(NO_IDLE);
     wakeup_control(false);
     auto_idle_mode_control(false);
     
@@ -150,25 +150,27 @@ void serial::init(serial_user_callback usr_clb)
     tFCR.b.FIFO_EN = 0x1;
     tFCR.b.RX_FIFO_CLEAR = 0x1;
     tFCR.b.TX_FIFO_CLEAR = 0x1;
-    FIFO_register_write(tFCR);    
-    
-    // set protocol formatting 
-    // no parity, 1 stop bit, 8 bit chars 
-    data_format_set(CHL_8_BITS,STOP_1,PARITY_NONE);
+    FIFO_register_write(tFCR);
     
     divisor_latch divisor;
     divisor.set_baud(KBPS_115_2);
     divisor_latch_set(divisor);  
     divisor_latch_disable();
     
+    // set protocol formatting 
+    // no parity, 1 stop bit, 8 bit chars 
+    data_format_set(CHL_8_BITS,STOP_1,PARITY_NONE);
+    
     // enable RHR interrupt 
-    m_UART_module.int_enable(REGS::UART::RECEIVE_IT);
+    m_UART_module.int_enable(RECEIVE_IT);
+    switch_reg_config_mode(OPERATIONAL_MODE,ENH_DISABLE);
     
-    switch_operating_mode(REGS::UART::MODE_UART_16x);
-    
+    switch_operating_mode(MODE_UART_16x);    
     resume_operation();
     
+    
     m_user_callback = usr_clb; 
+    
     m_INTC_module.register_handler(REGS::INTC::UART0INT, uart_isr);
     m_INTC_module.unmask_interrupt(REGS::INTC::UART0INT);
 }
@@ -208,7 +210,8 @@ void  serial::FIFO_register_write(REGS::UART::FCR_reg_t  fcr)
     m_instance.FCR.reg = fcr.reg;                                 
        
     // restore value of divisor latch
-    divisor_latch_set(divisor_before); 
+    if(divisor_before.raw != 0x0000)
+        divisor_latch_set(divisor_before); 
 }
 
 /*
@@ -387,10 +390,12 @@ REGS::UART::divisor_latch  serial::divisor_latch_get(void)
 void  serial::divisor_latch_set(REGS::UART::divisor_latch divisor)
 {
     using namespace REGS::UART;
+    LCR_reg_t tLCR;
 
     volatile  bool  sleep_bit = false;
      e_MODESELECT  modf = m_state.module_function;
 
+    tLCR.reg = m_instance.LCR.reg;
     switch_reg_config_mode(OPERATIONAL_MODE, ENH_ENABLE);
 
     sleep_bit = m_instance.IER_UART.b.SLEEPMODE;
@@ -398,7 +403,7 @@ void  serial::divisor_latch_set(REGS::UART::divisor_latch divisor)
     if(sleep_bit)
         sleep(false);  
 
-    switch_reg_config_mode(CONFIG_MODE_A, ENH_DISABLE); 
+    switch_reg_config_mode(CONFIG_MODE_B, ENH_ENABLE); 
 
     if(modf != MODE_DISABLE)
         switch_operating_mode(MODE_DISABLE);  
@@ -408,10 +413,12 @@ void  serial::divisor_latch_set(REGS::UART::divisor_latch divisor)
 
     if(sleep_bit)
        sleep(true); 
+    
+    m_instance.LCR.reg = tLCR.reg;
        
     //restore the original state of  module
     if(m_state.module_function != modf)
-        switch_operating_mode(modf);     
+        switch_operating_mode(modf);        
 }
 
 /*
@@ -458,6 +465,8 @@ void  serial::data_format_set(REGS::UART::e_CHAR_LENGHT  char_len,
     m_instance.LCR.b.PARITY_TYPE2 = 0;
     
     m_instance.LCR.reg |= (parity & REGS::UART::LCR_Parity_mask);
+    
+    m_save_LCR();
 } 
 
 /*

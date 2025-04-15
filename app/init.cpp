@@ -82,8 +82,7 @@ void init_board(void)
     interface_clocks_init();
            
     intc.init();                       //Initializing the ARM Interrupt Controller.
-    intc.master_IRQ_enable();
-    
+        
     // setup system timer for 1ms interrupt 
     sys_time.init();
     
@@ -98,6 +97,8 @@ void init_board(void)
     USR_LED_3.dir_set(REGS::GPIO::GPIO_OUTPUT);    
 
     serial_uart_0.init(input_callback);
+    
+    intc.master_IRQ_enable();
     
     USR_LED_0.set();    
 
@@ -131,7 +132,7 @@ void init_board(void)
     {
         serial_uart_0.puts((char *)"DDR3L read/write check failed...\n\r");
         return;
-    }        
+    } 
 }
 
 
