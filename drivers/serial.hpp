@@ -40,7 +40,6 @@ class serial
     };
 
 private:
-                                  am335x_uart &m_UART_module;
                  REGS::UART::AM335x_UART_Type &m_instance;
                                   am335x_intc &m_INTC_module;
               REGS::PRCM::AM335x_CM_WKUP_Type &m_CM_WKUP_r;
@@ -51,10 +50,6 @@ REGS::CONTROL_MODULE::AM335x_CTRL_MODULE_Type &m_CM_r;
                         REGS::UART::LCR_reg_t  m_LCR_before;
                                          void  m_save_LCR()    { m_LCR_before.reg = m_instance.LCR.reg; } 
                                          void  m_restore_LCR() { m_instance.LCR.reg = m_LCR_before.reg; } 
-
-                     REGS::UART::e_MODESELECT  m_mode_before; 
-                                         void  m_save_opmode()    { m_mode_before = (REGS::UART::e_MODESELECT)m_instance.MDR1.b.MODESELECT; } 
-                                         void  m_restore_opmode() { m_instance.MDR1.b.MODESELECT = m_mode_before; } 
 
                    REGS::UART::IER_UART_reg_t  m_IER_before; 
                                          void  m_save_IER()    { m_IER_before.reg = m_instance.IER_UART.reg; } 
@@ -91,6 +86,8 @@ public:
                            REGS::UART::e_LCR_PARITY  parity);
 
     ///  3. Interrupt management: 
+    void  int_enable(REGS::UART::e_UART_IT_EN int_flag);
+    void  int_disable(REGS::UART::e_UART_IT_EN int_flag);
 
     /// <--- Power management methods ---> ///
     void  idle_mode_configure(REGS::UART::e_IDLEMODE mode);
@@ -98,7 +95,7 @@ public:
     void  auto_idle_mode_control(bool control);
     void  sleep(bool control);
 
-    /// <--- Other management methods ---> ///
+    /// <--- Other features---> ///
     void  modem_control_set(REGS::UART::MCR_reg_t mcr);
 
     void  putc(char c);

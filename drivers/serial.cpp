@@ -4,8 +4,7 @@ static void uart_isr(void *p_obj);
 static serial_user_callback m_user_callback = NULL;
 
 serial::serial(REGS::UART::AM335x_UART_Type *uart_regs)
-: m_UART_module(uart_0),
-  m_instance(*uart_regs),
+: m_instance(*uart_regs),
   m_INTC_module(intc),
   m_CM_WKUP_r(*REGS::PRCM::AM335x_CM_WKUP),
   m_CM_r(*REGS::CONTROL_MODULE::AM335x_CONTROL_MODULE),
@@ -161,7 +160,7 @@ void serial::init(serial_user_callback usr_clb)
     data_format_set(CHL_8_BITS,STOP_1,PARITY_NONE);
     
     // enable RHR interrupt 
-    m_UART_module.int_enable(RECEIVE_IT);
+    int_enable(RECEIVE_IT);
     switch_reg_config_mode(OPERATIONAL_MODE,ENH_DISABLE);
     
     switch_operating_mode(MODE_UART_16x);    
@@ -264,9 +263,9 @@ void  serial::switch_operating_mode(REGS::UART::e_MODESELECT mode)
  *         register configuration modes have been defined, each corresponding
  *         to a specific state of the LCR. The three register configuration
  *         modes are:\n
- *         - Configuration Mode A: LCR[7] = 1 and LCR[7:0] != 0xBF.\n
- *         - Configuration Mode B: LCR[7:0] = 0xBF.\n
- *         - Operational Mode    : LCR[7] = 0.\n
+ *         - Configuration Mode A: LCR[7] = 1 and LCR[7:0] != 0xBF.
+ *         - Configuration Mode B: LCR[7:0] = 0xBF
+ *         - Operational Mode    : LCR[7] = 0
  *
  */
 
@@ -275,11 +274,6 @@ void  serial::switch_reg_config_mode(REGS::UART::e_CONFIG_MODE mode, REGS::UART:
     using namespace REGS::UART;
     LCR_reg_t tLCR;
 
-     // if uart in opertioanl mode, save register to restore later 
-     // when resume operational mode
-     if(m_state.config_mode == OPERATIONAL_MODE)
-        m_save_LCR();  
-
     switch(mode)  
     {
         case CONFIG_MODE_A:
@@ -287,10 +281,6 @@ void  serial::switch_reg_config_mode(REGS::UART::e_CONFIG_MODE mode, REGS::UART:
             m_instance.LCR.reg = ((uint32_t)mode & 0xFF);
             break;
         case OPERATIONAL_MODE:
-            // if LCR[7] is 0x1 restore register saved later
-            if(m_state.config_mode == CONFIG_MODE_A || 
-               m_state.config_mode == CONFIG_MODE_B)
-                m_restore_LCR();
             m_instance.LCR.reg &= 0x7F;
             break;
         default:
@@ -299,15 +289,17 @@ void  serial::switch_reg_config_mode(REGS::UART::e_CONFIG_MODE mode, REGS::UART:
 
     m_state.config_mode = mode;
 
-    tLCR.reg = m_instance.LCR.reg;
-    m_instance.LCR.reg = (((uint32_t)CONFIG_MODE_B) & 0xFF);
-
-
-    m_instance.EFR.b.ENHANCEDEN = 0;
-    m_instance.EFR.b.ENHANCEDEN = enh; 
-    m_state.enhanced_sts        = enh;
-
-    m_instance.LCR.reg = tLCR.reg; 
+    if(m_state.enhanced_sts != enh)
+    {
+        tLCR.reg = m_instance.LCR.reg;
+        m_instance.LCR.reg = (((uint32_t)CONFIG_MODE_B) & 0xFF);
+    
+        m_instance.EFR.b.ENHANCEDEN = 0;
+        m_instance.EFR.b.ENHANCEDEN = enh; 
+        m_state.enhanced_sts        = enh;
+    
+        m_instance.LCR.reg = tLCR.reg;
+    } 
 }
 
 /*
@@ -361,14 +353,11 @@ REGS::UART::divisor_latch  serial::divisor_latch_get(void)
      divisor_latch  result;
 
     switch_reg_config_mode(OPERATIONAL_MODE, ENH_ENABLE);
-
     sleep_bit = m_instance.IER_UART.b.SLEEPMODE;
-
     if(sleep_bit)
         sleep(false);  
 
     switch_reg_config_mode(CONFIG_MODE_A, ENH_DISABLE);
-
     result.b.DLH = (uint8_t)m_instance.DLH.reg;
     result.b.DLL = (uint8_t)m_instance.DLL.reg;
 
@@ -388,31 +377,27 @@ REGS::UART::divisor_latch  serial::divisor_latch_get(void)
 void  serial::divisor_latch_set(REGS::UART::divisor_latch divisor)
 {
     using namespace REGS::UART;
-    LCR_reg_t tLCR;
 
     volatile  bool  sleep_bit = false;
-     e_MODESELECT  modf = m_state.module_function;
+      e_MODESELECT  modf = m_state.module_function;
 
-    tLCR.reg = m_instance.LCR.reg;
+    m_save_LCR();
+
     switch_reg_config_mode(OPERATIONAL_MODE, ENH_ENABLE);
-
     sleep_bit = m_instance.IER_UART.b.SLEEPMODE;
-
     if(sleep_bit)
         sleep(false);  
 
-    switch_reg_config_mode(CONFIG_MODE_B, ENH_ENABLE); 
-
+    switch_reg_config_mode(CONFIG_MODE_B, ENH_ENABLE);
     if(modf != MODE_DISABLE)
-        switch_operating_mode(MODE_DISABLE);  
-    
+        switch_operating_mode(MODE_DISABLE); 
     m_instance.DLL.reg = (divisor.b.DLL & 0xFF);                
     m_instance.DLH.reg = (divisor.b.DLH & 0x3F);  
 
     if(sleep_bit)
        sleep(true); 
     
-    m_instance.LCR.reg = tLCR.reg;
+    m_restore_LCR();
        
     //restore the original state of  module
     if(m_state.module_function != modf)
@@ -453,19 +438,88 @@ void  serial::data_format_set(REGS::UART::e_CHAR_LENGHT  char_len,
 {   
 
     m_instance.LCR.b.CHAR_LENGTH = 0;  
-    m_instance.LCR.b.CHAR_LENGTH = char_len;    // then write
+    m_instance.LCR.b.CHAR_LENGTH = char_len;
 
     m_instance.LCR.b.NB_STOP = 0;
-    m_instance.LCR.b.NB_STOP = stop_bit;  // then write
+    m_instance.LCR.b.NB_STOP = stop_bit;
 
     m_instance.LCR.b.PARITY_EN = 0;
     m_instance.LCR.b.PARITY_TYPE1 = 0;
     m_instance.LCR.b.PARITY_TYPE2 = 0;
     
     m_instance.LCR.reg |= (parity & REGS::UART::LCR_Parity_mask);
+} 
+
+/*
+ * @brief   This API enables the specified interrupts in the UART mode of
+ *          operation.
+ *
+ * @param   int_flag   Bit mask value of the bits corresponding to Interrupt
+ *                     Enable Register(IER). This specifies the UART interrupts
+ *                     to be enabled.
+ *
+ * @note    This API modifies the contents of UART Interrupt Enable Register
+ *          (IER). Modifying the bits IER[7:4] requires that EFR[4] be set.
+ *          This API does the needful before it accesses IER.
+ *          Moreover, this API should be called when UART is operating in
+ *          UART 16x Mode, UART 13x Mode or UART 16x Auto-baud mode.\n
+ */
+void  serial::int_enable(REGS::UART::e_UART_IT_EN int_flag)
+{
+    using namespace REGS::UART;
+
+    m_save_LCR();
+    switch_reg_config_mode(OPERATIONAL_MODE, ENH_ENABLE);
+
+    // It is suggested that the System Interrupts for UART in the
+    // Interrupt Controller are enabled after enabling the peripheral
+    // interrupts of the UART using this API. If done otherwise, there
+    // is a risk of LCR value not getting restored and illicit characters
+    // transmitted or received from/to the UART. The situation is explained
+    // below.
+    // The scene is that the system interrupt for UART is already enabled and
+    // the current API is invoked. On enabling the interrupts corresponding
+    // to IER[7:4] bits below, if any of those interrupt conditions
+    // already existed, there is a possibility that the control goes to
+    // Interrupt Service Routine (ISR) without executing the remaining
+    // statements in this API. Executing the remaining statements is
+    // critical in that the LCR value is restored in them.
+    // However, there seems to be no risk in this API for enabling interrupts
+    // corresponding to IER[3:0] because it is done at the end and no
+    // statements follow that.
+
+    m_instance.IER_UART.reg |= (((uint32_t)int_flag) & 0xF0);
+
+    switch_reg_config_mode(OPERATIONAL_MODE, ENH_DISABLE);
+
+    m_restore_LCR();  
+
+    m_instance.IER_UART.reg |= (int_flag & 0x0F);
+}
+
+/*
+ * @brief   This API disables the specified interrupts in the UART mode of
+ *          operation.
+ *
+ * @param   int_flag   Bit mask value of the bits corresponding to Interrupt
+ *                     Enable Register(IER). This specifies the UART interrupts
+ *                     to be disabled.
+ *
+ * @note  The note motod of int_enable() also applies to this API.
+ */
+void  serial::int_disable(REGS::UART::e_UART_IT_EN int_flag)
+{
+    using namespace REGS::UART;
     
     m_save_LCR();
-} 
+    switch_reg_config_mode(OPERATIONAL_MODE, ENH_ENABLE);
+
+    m_instance.IER_UART.reg &= ~(((uint32_t)int_flag) & 0xFF);
+
+    switch_reg_config_mode(OPERATIONAL_MODE, ENH_DISABLE);
+
+    m_restore_LCR();
+}
 
 /*
  * @brief  This API can be used to control the Power Management
@@ -482,10 +536,7 @@ void  serial::data_format_set(REGS::UART::e_CHAR_LENGHT  char_len,
  */
 void  serial::idle_mode_configure(REGS::UART::e_IDLEMODE mode)
 {
-    // Clearing the IDLEMODE field in SYSC.
     m_instance.SYSC.b.IDLEMODE = 0x0;
-
-    // Programming the IDLEMODE field in SYSC.
     m_instance.SYSC.b.IDLEMODE = mode;
 }
 
@@ -502,10 +553,7 @@ void  serial::idle_mode_configure(REGS::UART::e_IDLEMODE mode)
  */
 void  serial::wakeup_control(bool control)
 {
-    // Clearing the ENAWAKEUP bit in SYSC register.
     m_instance.SYSC.b.ENAWAKEUP = 0;
-
-    // Programming the ENAWAKEUP feature in SYSC register.
     m_instance.SYSC.b.ENAWAKEUP = control;
 }
 
@@ -522,10 +570,7 @@ void  serial::wakeup_control(bool control)
  */
 void  serial::auto_idle_mode_control(bool control)
 {
-    // Clearing the AUTOIDLE bit in SYSC register.
     m_instance.SYSC.b.AUTOIDLE = 0;
-
-    // Programming the AUTOIDLE bit in SYSC register.
     m_instance.SYSC.b.AUTOIDLE = control;
 }
 
@@ -572,7 +617,7 @@ void  serial::modem_control_set(REGS::UART::MCR_reg_t mcr)
  */
 void serial::putc(char c) 
 {
-    while (!m_instance.LSR_UART.b.TXSRE) {}
+    while (!m_instance.LSR_UART.b.TXSRE);
     
     //m_instance.THR.b.THR = c;  - dont do that in interrupts, sends every 1st character. 2-nd char dissapeared.
     m_instance.THR.reg = c;
@@ -613,17 +658,7 @@ void serial::hexdump(uint32_t val)
  */
 char serial::getc(void) 
 {
-    //// check if there is at least one character in Rx FIFO 
-    //if (!(REG(UART0_LSR_UART) & 0x1)) 
-    //{
-    //    //TODO is 0 a valid char? return empty result in some other way? */
-    //    return 0;
-    //} 
-    //else 
-    //{
-    //    return REG(UART0_RHR) & 0xFF;
-    //}
-    return m_UART_module.char_get();
+    return 0; // FIXME
 }
 
 static void uart_isr(void *p_obj) 
