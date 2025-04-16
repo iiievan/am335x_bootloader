@@ -58,6 +58,14 @@ REGS::CONTROL_MODULE::AM335x_CTRL_MODULE_Type &m_CM_r;
                                    const char  m_hexchars[16];                  
 public:
           serial(REGS::UART::AM335x_UART_Type *uart_regs);
+          template<REGS::UART::AM335x_UART_Type *uart_regs>
+          serial() {
+            
+          }
+          template<typename UART_Type>
+          serial() {
+            
+          }
          ~serial();
 
     /// <--- Start module init ---> ///
@@ -103,6 +111,9 @@ public:
     void  hexdump(uint32_t val); 
     char  getc(void);
 };
+
+
+serial new_serial = serial<AM335x_UART_0_BASE_t>();
 
 extern serial serial_uart_0;
 

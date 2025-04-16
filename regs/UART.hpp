@@ -1496,6 +1496,17 @@ namespace REGS
         constexpr AM335x_UART_Type * AM335X_UART_3 = reinterpret_cast<AM335x_UART_Type *>(AM335x_UART_3_BASE);
         constexpr AM335x_UART_Type * AM335X_UART_4 = reinterpret_cast<AM335x_UART_Type *>(AM335x_UART_4_BASE);
         constexpr AM335x_UART_Type * AM335X_UART_5 = reinterpret_cast<AM335x_UART_Type *>(AM335x_UART_5_BASE); 
+
+        template<uint32_t UART_BASE_t>
+        struct UART_Base {
+            static constexpr auto value = UART_BASE_t;
+        };
+        using AM335x_UART_0_BASE_t = UART_Base<AM335x_UART_0_BASE>;
+        using AM335x_UART_1_BASE_t = UART_Base<AM335x_UART_1_BASE>;
+        using AM335x_UART_2_BASE_t = UART_Base<AM335x_UART_2_BASE>;
+        using AM335x_UART_3_BASE_t = UART_Base<AM335x_UART_3_BASE>;
+        using AM335x_UART_4_BASE_t = UART_Base<AM335x_UART_4_BASE>;
+        using AM335x_UART_5_BASE_t = UART_Base<AM335x_UART_5_BASE>;
     
         //-> Values used to choose the trigger level granularity. <-//
         enum e_UART_MODULE_TRIG_GRNAULARITY  : uint32_t
