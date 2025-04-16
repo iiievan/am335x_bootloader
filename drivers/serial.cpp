@@ -131,19 +131,18 @@ void serial::init(serial_user_callback usr_clb)
     m_CM_r.conf_uart0_rxd.b.rxactive  = REGS::CONTROL_MODULE::INPUT_ENABLE;     // RXD enable input 
     m_CM_r.conf_uart0_txd.b.putypesel = REGS::CONTROL_MODULE::PULL_UP;          // TXD pullup
     
-    // UART software reset    
     reset_module();
     idle_mode_configure(NO_IDLE);
     wakeup_control(false);
     auto_idle_mode_control(false);
     
-    // Disable UART to access protocol, baud rate, interrupt settings 
-    switch_operating_mode(MODE_DISABLE);
+    // Disable UART to access protocol, baud rate, interrupt settings
+    switch_operating_mode(MODE_DISABLE); 
     
     // disable modem control 
     MCR_reg_t tMCR;
     tMCR.reg = 0;
-    modem_control_set(tMCR);  
+    modem_control_set(tMCR); 
     
     FCR_reg_t tFCR;
     tFCR.reg = 0;
@@ -151,10 +150,10 @@ void serial::init(serial_user_callback usr_clb)
     tFCR.b.RX_FIFO_CLEAR = 0x1;
     tFCR.b.TX_FIFO_CLEAR = 0x1;
     FIFO_register_write(tFCR);
-    
+
     divisor_latch divisor;
     divisor.set_baud(KBPS_115_2);
-    divisor_latch_set(divisor);  
+    divisor_latch_set(divisor); 
     divisor_latch_disable();
     
     // set protocol formatting 
@@ -166,8 +165,7 @@ void serial::init(serial_user_callback usr_clb)
     switch_reg_config_mode(OPERATIONAL_MODE,ENH_DISABLE);
     
     switch_operating_mode(MODE_UART_16x);    
-    resume_operation();
-    
+    resume_operation();    
     
     m_user_callback = usr_clb; 
     
