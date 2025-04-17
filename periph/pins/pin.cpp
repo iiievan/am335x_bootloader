@@ -325,22 +325,24 @@ namespace PINS
             m_gpio_regs.IRQWAKEN_1.reg &= ~m_pinbitmsk;
     }
 
-    template class pin<e_GPMC_A5, 21U, 0x854>;
-    template class pin<e_GPMC_A6, 22U, 0x858>;
-    template class pin<e_GPMC_A7, 23U, 0x85C>;
-    template class pin<e_GPMC_A8, 24U, 0x860>;
+    template class  pin<e_GPMC_A5, 21U, 0x854>;
+    template class  pin<e_GPMC_A6, 22U, 0x858>;
+    template class  pin<e_GPMC_A7, 23U, 0x85C>;
+    template class  pin<e_GPMC_A8, 24U, 0x860>;
 
-    template class pin<e_GPMC_WAIT0, 30U, 0x870>;
-    template class pin<e_UART1_RTSn, 13U, 0x97C>;
-    template class pin<e_UART1_CTSn, 12U, 0x978>;
-    template class pin<e_UART0_TXD,  11U, 0x974>;
-    template class pin<e_UART0_RXD,  10U, 0x970>;
-    template class pin<e_XDMA_EVENT_INTR1, 20U, 0x9B4>;
+    template class  pin<e_GPMC_WAIT0, 30U, 0x870>;
+    template class  pin<e_UART1_RTSn, 13U, 0x97C>;
+    template class  pin<e_UART1_CTSn, 12U, 0x978>;
+    template class  pin<e_UART0_TXD,  11U, 0x974>;
+    template class  pin<e_UART0_RXD,  10U, 0x970>;
+    template class  pin<e_UART1_TXD,  15U, 0x984>;
+    template class  pin<e_UART1_RXD,  14U, 0x980>;
+    template class  pin<e_XDMA_EVENT_INTR1, 20U, 0x9B4>;
 
-    template class pin<e_LCD_DATA1, 7U, 0x8A4>;
-    template class pin<e_LCD_DATA3, 9U, 0x8AC>;
-    template class pin<e_LCD_DATA5, 11U, 0x8B4>;
-    template class pin<e_LCD_DATA7, 13U, 0x8BC>;
+    template class  pin<e_LCD_DATA1, 7U, 0x8A4>;
+    template class  pin<e_LCD_DATA3, 9U, 0x8AC>;
+    template class  pin<e_LCD_DATA5, 11U, 0x8B4>;
+    template class  pin<e_LCD_DATA7, 13U, 0x8BC>;
 
 }   // namespace PINS
 

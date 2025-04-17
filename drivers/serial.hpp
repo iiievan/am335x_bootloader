@@ -5,16 +5,45 @@
 #include "am335x_uart.hpp"
 #include "am335x_intc.h"
 #include "UART.hpp"
-#include "CONTROL_MODULE.h"
 #include "PRCM.h"
+#include "am3358zcz_pins.hpp"
+#include "pin.h"
 
-
-
-extern am335x_uart uart_0;
 extern am335x_intc intc;
 
 typedef void (*serial_user_callback)(char);
 
+template <REGS::UART::e_UART_modules uart_module>
+struct uart_pins;
+
+template <>
+struct uart_pins<REGS::UART::UART_0>
+{
+    using rx_pin = PINS::pin<PINS::e_UART0_RXD,  10U, 0x970>;
+    using tx_pin = PINS::pin<PINS::e_UART0_TXD,  11U, 0x974>;
+    using pinmode_rx_t = PINS::e_UART0_RXD;
+    using pinmode_tx_t = PINS::e_UART0_TXD;
+    static constexpr auto pinmode_rx = PINS::e_UART0_RXD::uart0_rxd;
+    static constexpr auto pinmode_tx = PINS::e_UART0_TXD::uart0_txd;
+    static constexpr auto gpio_regs = REGS::GPIO::AM335x_GPIO_1;
+    static constexpr auto uart_regs = REGS::UART::AM335X_UART_0;
+};
+
+template <>
+struct uart_pins<REGS::UART::UART_1>
+{
+    using rx_pin = PINS::pin<PINS::e_UART1_RXD, 14U, 0x980>;
+    using tx_pin = PINS::pin<PINS::e_UART1_TXD, 15U, 0x984>;
+    using pinmode_rx_t = PINS::e_UART1_RXD;
+    using pinmode_tx_t = PINS::e_UART1_TXD;
+    static constexpr auto pinmode_rx = PINS::e_UART1_RXD::uart1_rxd;
+    static constexpr auto pinmode_tx = PINS::e_UART1_TXD::uart1_txd;
+    static constexpr auto gpio_regs = REGS::GPIO::AM335x_GPIO_0;
+    static constexpr auto uart_regs = REGS::UART::AM335X_UART_1;
+    
+};
+
+template <REGS::UART::e_UART_modules uart_module>
 class serial
 {
     class module_state_t
@@ -27,15 +56,8 @@ class serial
            REGS::UART::e_CONFIG_MODE  config_mode;
         REGS::UART::e_SUBCONFIG_MODE  subconfig_mode;
                    REGS::UART::e_ENH  enhanced_sts;
-
-                                      module_state_t(REGS::UART::AM335x_UART_Type *uart_regs)
-                                      : m_instance(*uart_regs),
-                                        module_function(REGS::UART::MODE_DISABLE),
-                                        config_mode(REGS::UART::OPERATIONAL_MODE),
-                                        subconfig_mode(REGS::UART::MSR_SPR),
-                                        enhanced_sts(REGS::UART::ENH_DISABLE) 
-                                       {}
-
+    
+                                      module_state_t(REGS::UART::AM335x_UART_Type * p_regs);
                                 void  update();
     };
 
@@ -43,8 +65,12 @@ private:
                  REGS::UART::AM335x_UART_Type &m_instance;
                                   am335x_intc &m_INTC_module;
               REGS::PRCM::AM335x_CM_WKUP_Type &m_CM_WKUP_r;
-REGS::CONTROL_MODULE::AM335x_CTRL_MODULE_Type &m_CM_r;
-                               module_state_t  m_state; 
+                               module_state_t  m_state;
+
+            typename uart_pins<uart_module>::rx_pin  m_rx_pin;
+const typename uart_pins<uart_module>::pinmode_rx_t  m_rx_pinmode {uart_pins<uart_module>::pinmode_rx};
+            typename uart_pins<uart_module>::tx_pin  m_tx_pin;
+const typename uart_pins<uart_module>::pinmode_tx_t  m_tx_pinmode {uart_pins<uart_module>::pinmode_tx};
 
                         /* FOR CONFIG MODE REGISTERS SWITCHING */
                         REGS::UART::LCR_reg_t  m_LCR_before;
@@ -57,7 +83,7 @@ REGS::CONTROL_MODULE::AM335x_CTRL_MODULE_Type &m_CM_r;
                                          
                                    const char  m_hexchars[16];                  
 public:
-          serial(REGS::UART::AM335x_UART_Type *uart_regs);
+          serial();
          ~serial();
 
     /// <--- Start module init ---> ///
@@ -104,8 +130,8 @@ public:
     char  getc(void);
 };
 
-extern serial serial_uart_0;
-
+template class  serial<REGS::UART::UART_0>;
+template class  serial<REGS::UART::UART_1>;
 
 
 #endif //__SERIAL_HPP

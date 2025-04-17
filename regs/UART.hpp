@@ -140,14 +140,15 @@ namespace REGS
         // enum for interrupt enable
         enum e_UART_IT_EN : uint32_t
         {
-            RECEIVE_IT   = BIT(0),  
-            TRANSMIT_IT  = BIT(1),  
-            LINESTS_IT   = BIT(2),  
-            MODEMSTS_IT  = BIT(3),  
-            SLEEPMODE_IT = BIT(4),  
-            XOFF_IT      = BIT(5),  
-            RTS_IT       = BIT(6),
-            CTS_IT       = BIT(7)
+            RECEIVE_IT   = BIT(0),      // enable Receiver Data available interrupt and
+                                        // Character timeout indication interrupt. 
+            TRANSMIT_IT  = BIT(1),      // enable Transmitter Holding Register Empty interrupt
+            LINESTS_IT   = BIT(2),      // enable Line Status interrupt 
+            MODEMSTS_IT  = BIT(3),      // enable Modem Status interrupt
+            SLEEPMODE_IT = BIT(4),      // enable Sleep Mode
+            XOFF_IT      = BIT(5),      // enable XOFF interrupt 
+            RTS_IT       = BIT(6),      // enable Request-To-Send interrupt
+            CTS_IT       = BIT(7)       // enable Clear-To-Send interrupt,
         };
     
         /*! @brief      Refer to Section 19.3.7.1 to determine the mode(s) in which this register can be accessed.  
@@ -1496,6 +1497,16 @@ namespace REGS
         constexpr AM335x_UART_Type * AM335X_UART_3 = reinterpret_cast<AM335x_UART_Type *>(AM335x_UART_3_BASE);
         constexpr AM335x_UART_Type * AM335X_UART_4 = reinterpret_cast<AM335x_UART_Type *>(AM335x_UART_4_BASE);
         constexpr AM335x_UART_Type * AM335X_UART_5 = reinterpret_cast<AM335x_UART_Type *>(AM335x_UART_5_BASE); 
+
+        enum e_UART_modules : uint8_t
+        {
+            UART_0 = 0,
+            UART_1 = 1,
+            UART_2 = 2,
+            UART_3 = 3,
+            UART_4 = 4,
+            UART_5 = 5
+        };
     
         //-> Values used to choose the trigger level granularity. <-//
         enum e_UART_MODULE_TRIG_GRNAULARITY  : uint32_t

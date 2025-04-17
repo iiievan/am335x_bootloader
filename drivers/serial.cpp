@@ -3,40 +3,19 @@
 static void uart_isr(void *p_obj);
 static serial_user_callback m_user_callback = NULL;
 
-serial::serial(REGS::UART::AM335x_UART_Type *uart_regs)
-: m_instance(*uart_regs),
-  m_INTC_module(intc),
-  m_CM_WKUP_r(*REGS::PRCM::AM335x_CM_WKUP),
-  m_CM_r(*REGS::CONTROL_MODULE::AM335x_CONTROL_MODULE),
-  m_state(uart_regs),
-  m_hexchars{'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'}
-{ 
-
-}
-
-serial::~serial()
+template <REGS::UART::e_UART_modules uart_module>
+serial<uart_module>::module_state_t::module_state_t(REGS::UART::AM335x_UART_Type *p_regs)
+: m_instance(*p_regs),
+  module_function(REGS::UART::MODE_DISABLE),
+  config_mode(REGS::UART::OPERATIONAL_MODE),
+  subconfig_mode(REGS::UART::MSR_SPR),
+  enhanced_sts(REGS::UART::ENH_DISABLE) 
 {
 
 }
 
-/*
- * @brief  This API performs a module reset of the UART module. It also
- *         waits until the reset process is complete.
- */
-void  serial::reset_module()
-{
-    using namespace REGS::UART;
-
-    // Performing Software Reset of the module.
-    m_instance.SYSC.b.SOFTRESET = HIGH;
-
-    // Wait until the process of Module Reset is complete.
-    while(!m_instance.SYSS.b.RESETDONE);
-
-    m_state.update();
-}
-
-void  serial::module_state_t::update()
+template <REGS::UART::e_UART_modules uart_module>
+void  serial<uart_module>::module_state_t::update()
 {
     using namespace REGS::UART;
     LCR_reg_t tLCR;
@@ -93,6 +72,44 @@ void  serial::module_state_t::update()
     }
 }
 
+template <REGS::UART::e_UART_modules uart_module>
+serial<uart_module>::serial()
+: m_instance(*uart_pins<uart_module>::uart_regs),
+  m_rx_pin(uart_pins<uart_module>::gpio_regs),
+  m_tx_pin(uart_pins<uart_module>::gpio_regs),
+  m_INTC_module(intc),
+  m_CM_WKUP_r(*REGS::PRCM::AM335x_CM_WKUP),
+  m_state(uart_pins<uart_module>::uart_regs),
+  m_hexchars{'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'}
+{ 
+
+}
+
+template <REGS::UART::e_UART_modules uart_module>
+serial<uart_module>::~serial()
+{
+
+}
+
+/*
+ * @brief  This API performs a module reset of the UART module. It also
+ *         waits until the reset process is complete.
+ */
+template <REGS::UART::e_UART_modules uart_module>
+void  serial<uart_module>::reset_module()
+{
+    using namespace REGS::UART;
+
+    // Performing Software Reset of the module.
+    m_instance.SYSC.b.SOFTRESET = HIGH;
+
+    // Wait until the process of Module Reset is complete.
+    while(!m_instance.SYSS.b.RESETDONE);
+
+    m_state.update();
+}
+
+
 /*
  * @brief  This API reads the RESUME register which clears the internal flags.
  *  
@@ -100,7 +117,8 @@ void  serial::module_state_t::update()
  *         transmission/reception gets halted and some internal flags are set.
  *         Clearing these flags would resume the halted operation.
  */
-void  serial::resume_operation()
+template <REGS::UART::e_UART_modules uart_module>
+void  serial<uart_module>::resume_operation()
 {   
     // Dummy read of RESUME register.
     uint8_t resume_read = m_instance.RESUME.b.RESUME;
@@ -109,7 +127,8 @@ void  serial::resume_operation()
 /* @brief initialize UART0 peripheral and set it up for polling I/O
  * @param callback: user defined RX callback function;
  */
-void serial::init(serial_user_callback usr_clb) 
+template <REGS::UART::e_UART_modules uart_module>
+void serial<uart_module>::init(serial_user_callback usr_clb) 
 {  
     using namespace REGS::UART;
 
@@ -123,12 +142,17 @@ void serial::init(serial_user_callback usr_clb)
     m_CM_WKUP_r.L4WKUP_CLKCTRL.b.MODULEMODE = REGS::PRCM::MODULEMODE_ENABLE;       
     while(m_CM_WKUP_r.L4WKUP_CLKCTRL.b.IDLEST != REGS::PRCM::IDLEST_FUNC);  // waiting for fully enabled
     
-    // Control module pin muxing 
-    m_CM_r.conf_uart0_rxd.reg = 0;
-    m_CM_r.conf_uart0_txd.reg = 0;    
-    m_CM_r.conf_uart0_rxd.b.putypesel = REGS::CONTROL_MODULE::PULL_UP;          // RXD pullup 
-    m_CM_r.conf_uart0_rxd.b.rxactive  = REGS::CONTROL_MODULE::INPUT_ENABLE;     // RXD enable input 
-    m_CM_r.conf_uart0_txd.b.putypesel = REGS::CONTROL_MODULE::PULL_UP;          // TXD pullup
+    m_rx_pin.sel_pinmode(m_rx_pinmode);
+    m_rx_pin.pullup_enable(true);
+    m_rx_pin.sel_pull_type(REGS::CONTROL_MODULE::PULL_UP);
+    m_rx_pin.dir_set(REGS::GPIO::GPIO_INPUT);
+    m_rx_pin.sel_slewrate(REGS::CONTROL_MODULE::FAST);
+
+    m_tx_pin.sel_pinmode(m_tx_pinmode);
+    m_tx_pin.pullup_enable(true);
+    m_tx_pin.sel_pull_type(REGS::CONTROL_MODULE::PULL_UP);
+    m_tx_pin.dir_set(REGS::GPIO::GPIO_OUTPUT);
+    m_tx_pin.sel_slewrate(REGS::CONTROL_MODULE::FAST); 
     
     reset_module();
     idle_mode_configure(NO_IDLE);
@@ -188,7 +212,8 @@ void serial::init(serial_user_callback usr_clb)
  *        It also restores the respective bit values after FCR has been
  *        written to.
  */
-void  serial::FIFO_register_write(REGS::UART::FCR_reg_t  fcr)
+template <REGS::UART::e_UART_modules uart_module>
+void  serial<uart_module>::FIFO_register_write(REGS::UART::FCR_reg_t  fcr)
 { 
     using namespace REGS::UART;
 
@@ -233,7 +258,8 @@ void  serial::FIFO_register_write(REGS::UART::FCR_reg_t  fcr)
  * 'REGS::UART::MODE_DISABLE'           - switch to Disabled state
  *
  */
-void  serial::switch_operating_mode(REGS::UART::e_MODESELECT mode)
+template <REGS::UART::e_UART_modules uart_module>
+void  serial<uart_module>::switch_operating_mode(REGS::UART::e_MODESELECT mode)
 {   
     m_instance.MDR1.b.MODESELECT = 0;              // Clearing the MODESELECT field in MDR1.
     m_instance.MDR1.b.MODESELECT = mode;           // Programming the MODESELECT field in MDR1.
@@ -268,8 +294,8 @@ void  serial::switch_operating_mode(REGS::UART::e_MODESELECT mode)
  *         - Operational Mode    : LCR[7] = 0
  *
  */
-
-void  serial::switch_reg_config_mode(REGS::UART::e_CONFIG_MODE mode, REGS::UART::e_ENH enh)
+template <REGS::UART::e_UART_modules uart_module>
+void  serial<uart_module>::switch_reg_config_mode(REGS::UART::e_CONFIG_MODE mode, REGS::UART::e_ENH enh)
 { 
     using namespace REGS::UART;
     LCR_reg_t tLCR;
@@ -315,7 +341,8 @@ void  serial::switch_reg_config_mode(REGS::UART::e_CONFIG_MODE mode, REGS::UART:
  *  'XOFF'     - Acces to XOFF registers can be realized in ñonfiguration mode B of operation.
  * 
  */
-void  serial::switch_reg_subconfig_mode(REGS::UART::e_SUBCONFIG_MODE mode)
+template <REGS::UART::e_UART_modules uart_module>
+void  serial<uart_module>::switch_reg_subconfig_mode(REGS::UART::e_SUBCONFIG_MODE mode)
 {
     using namespace REGS::UART;
 
@@ -346,7 +373,8 @@ void  serial::switch_reg_subconfig_mode(REGS::UART::e_SUBCONFIG_MODE mode)
  *
  * @return  divisor  latch values of registers DLL and DLH.
  */
-REGS::UART::divisor_latch  serial::divisor_latch_get(void)
+template <REGS::UART::e_UART_modules uart_module>
+REGS::UART::divisor_latch  serial<uart_module>::divisor_latch_get(void)
 {
     using namespace REGS::UART;
     volatile  bool  sleep_bit = false;
@@ -374,7 +402,8 @@ REGS::UART::divisor_latch  serial::divisor_latch_get(void)
  * @param  divisor  The 14-bit value whose least 8 bits go to DLL
  *                  and highest 6 bits go to DLH.
  */
-void  serial::divisor_latch_set(REGS::UART::divisor_latch divisor)
+template <REGS::UART::e_UART_modules uart_module>
+void  serial<uart_module>::divisor_latch_set(REGS::UART::divisor_latch divisor)
 {
     using namespace REGS::UART;
 
@@ -408,7 +437,8 @@ void  serial::divisor_latch_set(REGS::UART::divisor_latch divisor)
  * @brief  This API enables write access to Divisor Latch registers DLL and
  *         DLH.
  */
-void  serial::divisor_latch_enable()
+template <REGS::UART::e_UART_modules uart_module>
+void  serial<uart_module>::divisor_latch_enable()
 {
     m_instance.LCR.b.DIV_EN = HIGH;
     m_state.update();
@@ -418,7 +448,8 @@ void  serial::divisor_latch_enable()
  * @brief  This API disables write access to Divisor Latch registers DLL and
  *         DLH.
  */
-void  serial::divisor_latch_disable()
+template <REGS::UART::e_UART_modules uart_module>
+void  serial<uart_module>::divisor_latch_disable()
 {
     m_instance.LCR.b.DIV_EN = LOW;
     m_state.update();
@@ -432,7 +463,8 @@ void  serial::divisor_latch_disable()
  * @param  'stop_bit' - number of stop bits;
  * @param  'parity'   -  parity bit;
  */
-void  serial::data_format_set(REGS::UART::e_CHAR_LENGHT  char_len,
+template <REGS::UART::e_UART_modules uart_module>
+void  serial<uart_module>::data_format_set(REGS::UART::e_CHAR_LENGHT  char_len,
                                  REGS::UART::e_STOP_BIT  stop_bit,
                                REGS::UART::e_LCR_PARITY  parity)
 {   
@@ -464,7 +496,8 @@ void  serial::data_format_set(REGS::UART::e_CHAR_LENGHT  char_len,
  *          Moreover, this API should be called when UART is operating in
  *          UART 16x Mode, UART 13x Mode or UART 16x Auto-baud mode.\n
  */
-void  serial::int_enable(REGS::UART::e_UART_IT_EN int_flag)
+template <REGS::UART::e_UART_modules uart_module>
+void  serial<uart_module>::int_enable(REGS::UART::e_UART_IT_EN int_flag)
 {
     using namespace REGS::UART;
 
@@ -507,7 +540,8 @@ void  serial::int_enable(REGS::UART::e_UART_IT_EN int_flag)
  *
  * @note  The note motod of int_enable() also applies to this API.
  */
-void  serial::int_disable(REGS::UART::e_UART_IT_EN int_flag)
+template <REGS::UART::e_UART_modules uart_module>
+void  serial<uart_module>::int_disable(REGS::UART::e_UART_IT_EN int_flag)
 {
     using namespace REGS::UART;
     
@@ -534,7 +568,8 @@ void  serial::int_disable(REGS::UART::e_UART_IT_EN int_flag)
  * 'REGS::UART::ENAWAKEUP'  - to enable Smart Idle Wakeup mode\n
  * 'REGS::UART::IDLEMODE'   - to enable Smart Idle mode\n
  */
-void  serial::idle_mode_configure(REGS::UART::e_IDLEMODE mode)
+template <REGS::UART::e_UART_modules uart_module>
+void  serial<uart_module>::idle_mode_configure(REGS::UART::e_IDLEMODE mode)
 {
     m_instance.SYSC.b.IDLEMODE = 0x0;
     m_instance.SYSC.b.IDLEMODE = mode;
@@ -551,7 +586,8 @@ void  serial::idle_mode_configure(REGS::UART::e_IDLEMODE mode)
  * 'true'  - enable Wake-Up feature
  * 'false' - disable Wake-Up feature
  */
-void  serial::wakeup_control(bool control)
+template <REGS::UART::e_UART_modules uart_module>
+void  serial<uart_module>::wakeup_control(bool control)
 {
     m_instance.SYSC.b.ENAWAKEUP = 0;
     m_instance.SYSC.b.ENAWAKEUP = control;
@@ -568,7 +604,8 @@ void  serial::wakeup_control(bool control)
  * 'false' - disable Auto-Idle mode
  * 'true'  - enable Auto-Idle mode
  */
-void  serial::auto_idle_mode_control(bool control)
+template <REGS::UART::e_UART_modules uart_module>
+void  serial<uart_module>::auto_idle_mode_control(bool control)
 {
     m_instance.SYSC.b.AUTOIDLE = 0;
     m_instance.SYSC.b.AUTOIDLE = control;
@@ -585,7 +622,8 @@ void  serial::auto_idle_mode_control(bool control)
  * 'false' - disable Sleep mode
  * 'true'  - enable Sleep mode
  */
-void  serial::sleep(bool control)
+template <REGS::UART::e_UART_modules uart_module>
+void  serial<uart_module>::sleep(bool control)
 {
     using namespace REGS::UART;
   
@@ -601,7 +639,8 @@ void  serial::sleep(bool control)
  * 
  * @param  'mcr' - desired MCR value;
  */
-void  serial::modem_control_set(REGS::UART::MCR_reg_t mcr)
+template <REGS::UART::e_UART_modules uart_module>
+void  serial<uart_module>::modem_control_set(REGS::UART::MCR_reg_t mcr)
 {
     using namespace REGS::UART;    
 
@@ -615,7 +654,8 @@ void  serial::modem_control_set(REGS::UART::MCR_reg_t mcr)
 /* @brief write char out to UART. blocks if Tx FIFO is full
  * @param 'c': input ascii symbol;
  */
-void serial::putc(char c) 
+template <REGS::UART::e_UART_modules uart_module>
+void serial<uart_module>::putc(char c) 
 {
     while (!m_instance.LSR_UART.b.TXSRE);
     
@@ -626,7 +666,8 @@ void serial::putc(char c)
 /* @brief print out null terminated string
  * @param 'c': input pointer on ascii symbol array;
  */
-void serial::puts(char* c) 
+template <REGS::UART::e_UART_modules uart_module>
+void serial<uart_module>::puts(char* c) 
 {
     uint32_t i = 0;
     
@@ -640,7 +681,8 @@ void serial::puts(char* c)
 /* @brief utility to print out a 32 bit value
  * @param 'val': value to format to hex - not more 4 bytes lenght;
  */
-void serial::hexdump(uint32_t val) 
+template <REGS::UART::e_UART_modules uart_module>
+void serial<uart_module>::hexdump(uint32_t val) 
 {
     int32_t i;
     putc('0');
@@ -656,7 +698,8 @@ void serial::hexdump(uint32_t val)
 /* @brief poll for new character from UART, returns 0 if Rx FIFO is empty 
  * @return: received ascii symbol;
  */
-char serial::getc(void) 
+template <REGS::UART::e_UART_modules uart_module>
+char serial<uart_module>::getc(void) 
 {
     return 0; // FIXME
 }

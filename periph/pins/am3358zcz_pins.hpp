@@ -99,7 +99,31 @@ namespace PINS
         pr1_edc_latch0_in   = 6, // I
         gpio0_12            = 7  // I/O
     };
-    extern       pin<e_UART1_CTSn, 12U, 0x978>  uart1_ctsn;
+    extern  pin<e_UART1_CTSn, 12U, 0x978>  uart1_ctsn;
+
+    enum class e_UART1_RXD : uint8_t
+    { 
+        uart1_rxd           = 0, // I 
+        mmc1_sdwp           = 1, // I
+        dcan1_tx            = 2, // O
+        I2C1_SDA            = 3, // I/OD
+        pr1_uart0_rxd       = 5, // I
+        pr1_pru1_pru_r31_16 = 6, // I
+        gpio0_14            = 7  // I/O
+    };
+    extern  pin<e_UART1_RXD, 14U, 0x980>  uart1_rxd;
+
+    enum class e_UART1_TXD : uint8_t
+    { 
+        uart1_txd           = 0, // O 
+        mmc2_sdwp           = 1, // I
+        dcan1_rx            = 2, // I
+        I2C1_SCL            = 3, // I/OD
+        pr1_uart0_txd       = 5, // O
+        pr1_pru0_pru_r31_16 = 6, // I
+        gpio0_15            = 7  // I/O
+    };
+    extern  pin<e_UART1_TXD, 15U, 0x984>  uart1_txd;
 
     enum class e_UART0_TXD : uint8_t
     { 
