@@ -671,6 +671,11 @@ namespace REGS
             return (INTC_ILR_reg_t*&)ILR;
         }
 
+        inline void new_IRQ_agree() 
+        {
+            AM335x_INTC->CONTROL.b.NewIRQAgr = HIGH;
+        }
+
     }   // namespace INTC
 
 }   // namespace REGS

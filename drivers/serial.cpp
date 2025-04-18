@@ -715,5 +715,5 @@ static void uart_isr(void *p_obj)
         m_user_callback(received);
     }  
 
-    REGS::INTC::AM335x_INTC->CONTROL.b.NewIRQAgr = HIGH;
+    REGS::INTC::new_IRQ_agree();
 }
