@@ -4,6 +4,7 @@
 #include "cp15.h"
 #include "am335x_intc.h"
 #include "am335x_dmtimer.h"
+#include "am335x_edma.h"
 #include "am335x_gpio.h"
 #include "pin.h"
 #include "sys_timer.h"
@@ -31,7 +32,8 @@ am335x_gpio gpio1(REGS::GPIO::AM335x_GPIO_1);
 am335x_gpio gpio2(REGS::GPIO::AM335x_GPIO_2);
 //am335x_gpio gpio3(REGS::GPIO::AM335x_GPIO_3);
 
-serial<REGS::UART::UART_0> serial_uart_0;;
+serial<REGS::UART::UART_0> serial_uart_0;
+AM335x_EDMA eDMA;
 
 static uint32_t const vec_tbl[14]=
 {
@@ -133,6 +135,8 @@ void init_board(void)
         serial_uart_0.puts((char *)"DDR3L read/write check failed...\n\r");
         return;
     } 
+    
+    //eDMA.init(REGS::EDMA::EVENT_Q0);
 }
 
 

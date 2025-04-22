@@ -2169,6 +2169,12 @@
             <name>$PROJ_DIR$\periph\am335x_dmtimer.h</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\periph\am335x_edma.cpp</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\periph\am335x_edma.h</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\periph\am335x_gpio.cpp</name>
         </file>
         <file>
@@ -2203,6 +2209,9 @@
         </file>
         <file>
             <name>$PROJ_DIR$\regs\DMTIMER1MS.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\regs\EDMA.hpp</name>
         </file>
         <file>
             <name>$PROJ_DIR$\regs\EMIF.hpp</name>
