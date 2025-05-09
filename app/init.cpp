@@ -75,6 +75,15 @@ void input_callback(char c)
 
 void init_board(void)
 { 
+    size_t cc_size = sizeof(REGS::EDMA::AM335x_EDMA3CC_Type);
+    size_t tc_size = sizeof(REGS::EDMA::AM335x_EDMA3TC_Type);
+    
+    if(cc_size != 0x1094 + 4)
+        return;
+    
+     if(tc_size != 0x3D4 + 4)
+        return;   
+     
     copy_vector_table();
     
     mpu_pll_init();
