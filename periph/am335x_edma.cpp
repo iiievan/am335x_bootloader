@@ -14,7 +14,7 @@
  *          Event Queue used is either (0 or 1). There are only four shadow 
  *          regions and only two event Queues
  */
-void AM335x_EDMA::init(REGS::EDMA::e_DMA_QUEUE que_num)
+void AM335x_EDMA::init(REGS::EDMA::e_EVENT_QUEUE que_num)
 {
     using namespace REGS::EDMA;
     uint32_t count = 0;
@@ -197,7 +197,7 @@ void AM335x_EDMA::disable_ch_in_shadow_reg(REGS::EDMA::e_EDMA3_CH_TYPE ch_type, 
  *        EDMA3_CHANNEL_TYPE_DMA 
  *        EDMA3_CHANNEL_TYPE_QDMA
  */
-void AM335x_EDMA::map_ch_to_evtQ(REGS::EDMA::e_EDMA3_CH_TYPE ch_type, uint32_t ch_num, REGS::EDMA::e_DMA_QUEUE evt_Qnum)
+void AM335x_EDMA::map_ch_to_evtQ(REGS::EDMA::e_EDMA3_CH_TYPE ch_type, uint32_t ch_num, REGS::EDMA::e_EVENT_QUEUE evt_Qnum)
 {
     using namespace REGS::EDMA;
     if ( CHANNEL_TYPE_DMA == ch_type)
@@ -799,7 +799,7 @@ uint32_t AM335x_EDMA::QDMA_get_paRAM_entry(uint32_t paRAM_id, uint32_t paRAM_ent
  *
  *  @return  'true' if parameters are valid, else 'false'
  */
-bool  AM335x_EDMA::request_channel(REGS::EDMA::e_EDMA3_CH_TYPE ch_type, uint32_t ch_num, uint32_t tcc_num, REGS::EDMA::e_DMA_QUEUE evt_Qnum)
+bool  AM335x_EDMA::request_channel(REGS::EDMA::e_EDMA3_CH_TYPE ch_type, uint32_t ch_num, uint32_t tcc_num, REGS::EDMA::e_EVENT_QUEUE evt_Qnum)
 {
     using namespace REGS::EDMA;
     bool ret_val = false;
@@ -881,7 +881,7 @@ bool  AM335x_EDMA::request_channel(REGS::EDMA::e_EDMA3_CH_TYPE ch_type, uint32_t
  *
  *  @return  'true' if parameters are valid else return 'false'
  */
-bool  AM335x_EDMA::free_channel(REGS::EDMA::e_EDMA3_CH_TYPE ch_type, uint32_t ch_num, uint32_t trig_mode, uint32_t tcc_num, REGS::EDMA::e_DMA_QUEUE evt_Qnum)
+bool  AM335x_EDMA::free_channel(REGS::EDMA::e_EDMA3_CH_TYPE ch_type, uint32_t ch_num, uint32_t trig_mode, uint32_t tcc_num, REGS::EDMA::e_EVENT_QUEUE evt_Qnum)
 {
     using namespace REGS::EDMA;
     bool ret_val = false;
@@ -1084,7 +1084,7 @@ bool  AM335x_EDMA::disable_transfer(uint32_t ch_num, uint32_t trig_mode)
  *                          will be unmapped (valid only for the
  *                          Master Channel (DMA/QDMA) request). 
  */
-void AM335x_EDMA::clear_error_bits(uint32_t ch_num, REGS::EDMA::e_DMA_QUEUE evt_Qnum)
+void AM335x_EDMA::clear_error_bits(uint32_t ch_num, REGS::EDMA::e_EVENT_QUEUE evt_Qnum)
 {
     using namespace REGS::EDMA;
     if(ch_num <  AM335X_DMACH_MAX)

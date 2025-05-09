@@ -23,11 +23,11 @@ public:
               }
              ~AM335x_EDMA() { }
 
-        void  init(REGS::EDMA::e_DMA_QUEUE que_num);
+        void  init(REGS::EDMA::e_EVENT_QUEUE que_num);
         void  set_non_idle_mode();
         void  enable_ch_in_shadow_reg(REGS::EDMA::e_EDMA3_CH_TYPE ch_type, uint32_t ch_num);
         void  disable_ch_in_shadow_reg(REGS::EDMA::e_EDMA3_CH_TYPE ch_type, uint32_t ch_num);
-        void  map_ch_to_evtQ(REGS::EDMA::e_EDMA3_CH_TYPE ch_type, uint32_t ch_num, REGS::EDMA::e_DMA_QUEUE evt_Qnum);
+        void  map_ch_to_evtQ(REGS::EDMA::e_EDMA3_CH_TYPE ch_type, uint32_t ch_num, REGS::EDMA::e_EVENT_QUEUE evt_Qnum);
         void  unmap_ch_to_evtQ(REGS::EDMA::e_EDMA3_CH_TYPE ch_type, uint32_t ch_num);
         void  map_QDMA_ch_to_paRAM(uint32_t ch_num, uint32_t *paRAM_id);
         void  set_QDMA_trig_word(uint32_t ch_num, uint8_t trig_word);
@@ -50,11 +50,11 @@ REGS::EDMA::paRAM_entry_t* QDMA_get_paRAM(uint32_t paRAM_id);
         void  QDMA_set_paRAM(uint32_t paRAM_id, REGS::EDMA::paRAM_entry_t* new_paRAM);
         void  QDMA_set_paRAM_entry(uint32_t paRAM_id, uint32_t paRAM_entry, uint32_t new_paRAM_entry_val);
     uint32_t  QDMA_get_paRAM_entry(uint32_t paRAM_id, uint32_t paRAM_entry);
-        bool  request_channel(REGS::EDMA::e_EDMA3_CH_TYPE ch_type, uint32_t ch_num, uint32_t tcc_num, REGS::EDMA::e_DMA_QUEUE evt_Qnum);
-        bool  free_channel(REGS::EDMA::e_EDMA3_CH_TYPE ch_type, uint32_t ch_num, uint32_t trig_mode, uint32_t tcc_num, REGS::EDMA::e_DMA_QUEUE evt_Qnum);
+        bool  request_channel(REGS::EDMA::e_EDMA3_CH_TYPE ch_type, uint32_t ch_num, uint32_t tcc_num, REGS::EDMA::e_EVENT_QUEUE evt_Qnum);
+        bool  free_channel(REGS::EDMA::e_EDMA3_CH_TYPE ch_type, uint32_t ch_num, uint32_t trig_mode, uint32_t tcc_num, REGS::EDMA::e_EVENT_QUEUE evt_Qnum);
         bool  enable_transfer(uint32_t ch_num, uint32_t trig_mode);
         bool  disable_transfer(uint32_t ch_num, uint32_t trig_mode);
-        void  clear_error_bits(uint32_t ch_num, REGS::EDMA::e_DMA_QUEUE evt_Qnum);
+        void  clear_error_bits(uint32_t ch_num, REGS::EDMA::e_EVENT_QUEUE evt_Qnum);
     uint32_t  get_CCERR_status();
     uint32_t  get_ERR_intr_status();
  REGS::EDMA::QEMR_reg_t  QDMA_get_ERR_intr_status();
