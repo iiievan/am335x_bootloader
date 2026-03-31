@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.24)
 
 # project settings
-project(am335x_bootloader LANGUAGES ASM C CXX)
+project(am335x_boot LANGUAGES ASM C CXX)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 11)
 
 set(CMAKE_SYSTEM_NAME               Generic)
@@ -20,11 +21,12 @@ set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
 set(APP ${PROJECT_NAME})
 
-set(LINKER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/init/${APP}.ld)
+set(LINKER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/${APP}.ld)
 
 set(_TARGET_CFLAGS
         -mcpu=cortex-a8
         -mtune=cortex-a8
+        -mfloat-abi=hard
         -mfpu=neon
 )
 
@@ -34,15 +36,21 @@ set(_C_FLAGS ${_TARGET_CFLAGS}
         -funsigned-char
         -ffunction-sections
         -Wall
+        -Wextra
+        -g
+        -ffreestanding
+        -nostdlib
 )
 
 set(_CXX_FLAGS ${_C_FLAGS}
         -fno-exceptions
+        -fno-rtti
+        -fno-use-cxa-atexit
 )
 
 set(_ASM_FLAGS ${_TARGET_CFLAGS}
-        -r
         -x assembler-with-cpp
+        -g
 )
 
 set(_EXE_LINKER_FLAGS
@@ -65,11 +73,11 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
-include_directories(${PROJECT_SOURCE_DIR}/init)
+include_directories(${PROJECT_SOURCE_DIR}/startup)
 
 file(GLOB_RECURSE INIT_SRC
-        ${PROJECT_SOURCE_DIR}/init/*.*
+        ${PROJECT_SOURCE_DIR}/startup/*.s
+        ${PROJECT_SOURCE_DIR}/startup/*.cpp
 )
 
 add_subdirectory(app)
-
