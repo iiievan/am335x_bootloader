@@ -13,18 +13,16 @@ SECTIONS
 {
     . = ORIGIN(SRAM);
 
-    /* Startup code must be FIRST */
-    .startup : {
-        . = ALIGN(4);
-        KEEP(*(.text.boot))     /* boot.s code in this section */
-        KEEP(*(.text.startup))  /* Alternative section name */
+    /* Таблица векторов должна быть первой в памяти */
+    .vectors : {
+        . = ALIGN(32);
+        KEEP(*(.vectors))
     } > SRAM
 
-    /* All other code sections */
-    .text : {
+    /* Startup code must be SECOND (после таблицы векторов) */
+    .startup : {
         . = ALIGN(4);
-        *(.text*)               /* All other code */
-        *(.rodata*)             /* Read-only data */
+        KEEP(*(.text.boot))
     } > SRAM
 
     .data : {

@@ -15,6 +15,7 @@
         .global __preinit_array_end
         .global __init_array_start
         .global __init_array_end
+        .global _vectors
 
 @************************ Internal Definitions ******************************
 @
@@ -41,7 +42,7 @@
         .equ  I_F_BIT, 0xC0
 
 @**************************** Code Section ***********************************
-@ Important: Must be in .text.boot section to be first
+@ Important: Must be in .text.boot section to be second and vectors.s - first
         .section .text.boot, "ax"
         .code 32
 
@@ -87,6 +88,15 @@ Entry:
 @
          MSR   cpsr_c, #MODE_SYS|I_F_BIT       @ change to system mode
          MOV   sp, r0                          @ write the stack pointer
+
+@
+@ Set Vector Base Address Register (VBAR)
+@ Указываем, где находится таблица векторов
+@
+         LDR   r0, =_vectors                  @ Адрес таблицы векторов
+         MCR   p15, 0, r0, c12, c0, 0         @ Записываем в VBAR
+         DSB                                  @ Data Synchronization Barrier
+         ISB                                  @ Instruction Synchronization Barrier
 
 @
 @ Enable Neon/VFP Co-Processor for C++ floating point

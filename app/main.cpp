@@ -1,70 +1,37 @@
 #include <stdint.h>
 #include "init.h"
 
-/*=======================================================================*/
-/*  All Structures and Common Constants                                  */
-/*=======================================================================*/
+#define SVC_PUTCHAR    0
+#define SVC_GETCHAR    1
 
-/*=======================================================================*/
-/*  Definition of all global Data                                        */
-/*=======================================================================*/
+inline void svc_putchar(char c)
+{
+    __asm__ volatile(
+        "mov r0, %0\n\t"
+        "svc %1\n\t"
+        :
+        : "r"(c), "I"(SVC_PUTCHAR)
+        : "r0"
+    );
+}
 
-/*=======================================================================*/
-/*  Definition of all local Data                                         */
-/*=======================================================================*/
-static const uint32_t d  = 7;
-static const float    fd = 5.3f;
-static uint32_t       dd = 8;
-
-/* Must be 0, BSS must be cleared by the startup */
-static uint32_t       must_zero_after_startup;
-
-/*=======================================================================*/
-/*  All code exported                                                    */
-/*=======================================================================*/
-
-/*************************************************************************/
-/*  main                                                                 */
-/*************************************************************************/
 int main (void)
 {
-  uint32_t a  = 1;
-  uint32_t b  = 2;
-  uint32_t c  = 0;
-  float    fa = 1.3f;
-  float    fb = 2.7f;
-  float    fc = 3.9f;
+    init_board();
 
-   init_board();
+    // svc interrupt test
+    //svc_putchar('H');
 
-  fa = fa + fd;
-  a  = a + d + dd + must_zero_after_startup;
+    // Вызов Undefined Instruction
+    __asm__ volatile(".word 0xFFFFFFFF");
 
-  /* A must be 16 here */
-  if (a != 16) while (1) {};
+    // Вызов Data Abort (чтение из несуществующей области)
+    *(volatile uint32_t*)0xFFFFFFFF;
 
-  while (1)
-  {
-    a++;
-    b++;
-    c = a + b;
+    while(true)
+    {
 
-    fa = fa + 2.6f;
-    fb = fb + 1.67f;
-    fc = fa + fb;
-  }
+    }
 
-  /*
-   * Prevent compiler warnings
-   */
-  (void)fc;
-  (void)c;
-
-  /*
-   * This return here make no sense.
-   * But to prevent the compiler warning:
-   * "return type of 'main' is not 'int'
-   * we use an int as return :-)
-   */
-  return(0);
-} /* main */
+    return(0);
+}
