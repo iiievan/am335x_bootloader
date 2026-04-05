@@ -98,6 +98,31 @@ Entry:
          DSB                                  @ Data Synchronization Barrier
          ISB                                  @ Instruction Synchronization Barrier
 
+@ Invalidate Branch Prediction
+         MOV     r0, #0
+         MCR     p15, #0, r0, c7, c5, #6
+         ISB
+
+@ НЕ включаем Branch Predictor!
+@        MRC     p15, #0, r0, c1, c0, #0
+@        ORR     r0, r0, #0x00000800
+@        MCR     p15, #0, r0, c1, c0, #0
+
+@ Invalidate TLB
+@       MOV     r0, #0x0
+@       MCR     p15, 0, r0, c8, c7, 0
+
+@ Invalidate instruction cache
+        MOV     r0, #0
+        MCR     p15, 0, r0, c7, c5, 0
+
+@ Invalidate Data Cache
+        BL      BSP_DCacheInvalidateAll
+
+@ Set domain access
+        LDR     r0, =0x55555555
+        MCR     p15, 0, r0, c3, c0, 0
+
 @
 @ Enable Neon/VFP Co-Processor for C++ floating point
 @
@@ -134,6 +159,24 @@ Loop:
          MOV   lr, pc                          @ Dummy return
          BX    r10                             @ Branch to main
          SUB   pc, pc, #0x08                   @ looping
+
+@******************************************************************************
+@ Function: BSP_DCacheInvalidateAll
+@******************************************************************************
+BSP_DCacheInvalidateAll:
+        MOV     r0, #0x1FF            @ Load set index
+BSP_DCacheInvalidateAll_loop_1:
+        MOV     r1, #0x00000003         @ Load number of ways
+BSP_DCacheInvalidateAll_loop_2:
+        MOV     r2, r1, LSL #30
+        ADD     r2, r2, r0, LSL #5
+        MCR     p15, 0, r2, c7, c6, 2
+        SUBS    r1, r1, #1
+        BGE     BSP_DCacheInvalidateAll_loop_2
+        SUBS    r0, r0, #1
+        BGE     BSP_DCacheInvalidateAll_loop_1
+        DSB
+        BX      lr
 
 @ End of the file
          .end

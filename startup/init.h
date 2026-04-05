@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-void init_board(void);
+bool init_board(void);
 
 #ifdef __cplusplus
 }

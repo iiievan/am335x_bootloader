@@ -17,16 +17,22 @@ inline void svc_putchar(char c)
 
 int main (void)
 {
-    init_board();
+    bool init_sts = false;
 
-    // svc interrupt test
-    //svc_putchar('H');
+    init_sts = init_board();
 
-    // Вызов Undefined Instruction
-    __asm__ volatile(".word 0xFFFFFFFF");
+    if (!init_sts)
+    {
+        svc_putchar('H');
+    }
+    else
+    {
+        // Вызов Undefined Instruction
+        __asm__ volatile(".word 0xFFFFFFFF");
 
-    // Вызов Data Abort (чтение из несуществующей области)
-    *(volatile uint32_t*)0xFFFFFFFF;
+        // Вызов Data Abort (чтение из несуществующей области)
+        *(volatile uint32_t*)0xFFFFFFFF;
+    }
 
     while(true)
     {
