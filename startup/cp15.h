@@ -58,6 +58,7 @@ extern "C" {
 #define CP15_CONTROL_ACCESSFLAG                (0x20000000)
 #define CP15_CONTROL_ALIGN_CHCK                (0x00000002)
 #define CP15_CONTROL_MMU                       (0x00000001)
+#define AM335X_VECTOR_BASE                     (0x4030FC00)
 
 /*****************************************************************************/
 /*

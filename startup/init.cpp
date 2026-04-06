@@ -1,6 +1,7 @@
 /*=======================================================================*/
 /*  Includes                                                             */
 /*=======================================================================*/
+#include <stdbool.h>
 #include "init.h"
 #include "cp15.h"
 #include "PRCM.hpp"
@@ -11,24 +12,70 @@
 #include"include/control.h"
 
 
+#define DDR_TEST_SIZE            (32 * 1024 * 1024)
+
+extern "C"
+{
+    void Entry(void);
+    void UndefInstHandler(void);
+    void SVC_Handler(void);
+    void AbortHandler(void);
+    void IRQHandler(void);
+    void FIQHandler(void);
+
+    void CP15VectorBaseAddrSet(unsigned int addr);
+    void CP15DCacheDisable(void);
+    void CP15ICacheDisable(void);
+    void CP15DCacheCleanFlush(void);
+    void CP15ICacheFlush(void);
+    void CP15TlbInvalidate(void);
+    void CP15MMUDisable(void);
+    void CP15BranchPredictionDisable(void);
+}
+
+static uint32_t const vec_tbl[14] =
+{
+    0xE59FF018,    /* Opcode for loading PC with the contents of [PC + 0x18] */
+    0xE59FF018,    /* Opcode for loading PC with the contents of [PC + 0x18] */
+    0xE59FF018,    /* Opcode for loading PC with the contents of [PC + 0x18] */
+    0xE59FF018,    /* Opcode for loading PC with the contents of [PC + 0x18] */
+    0xE59FF014,    /* Opcode for loading PC with the contents of [PC + 0x14] */
+    0xE24FF008,    /* Opcode for loading PC with (PC - 8) (eq. to while(1)) */
+    0xE59FF010,    /* Opcode for loading PC with the contents of [PC + 0x10] */
+    0xE59FF010,    /* Opcode for loading PC with the contents of [PC + 0x10] */
+    (uint32_t)Entry,
+    (uint32_t)UndefInstHandler,
+    (uint32_t)SVC_Handler,
+    (uint32_t)AbortHandler,
+    (uint32_t)IRQHandler,
+    (uint32_t)FIQHandler
+};
+
 static void mpu_pll_init();
 static void core_pll_init();
 static void per_pll_init();
 static void ddr_pll_init();
 static void interface_clocks_init();
 static void ddr_init();
-static uint8_t ddr_check();
+static bool ddr_check();
+
+static void copy_vector_table(void)
+{
+    uint32_t *dest = (uint32_t *)AM335X_VECTOR_BASE;
+    uint32_t *src  = (uint32_t *)vec_tbl;
+    uint32_t count;
+
+    CP15VectorBaseAddrSet(AM335X_VECTOR_BASE);
+
+    for(count = 0; count < sizeof(vec_tbl)/sizeof(vec_tbl[0]); count++)
+    {
+        dest[count] = src[count];
+    }
+}
 
 bool init_board()
 {
-    CP15MMUDisable();
-    CP15DCacheDisable();
-    CP15ICacheDisable();
-    CP15BranchPredictionDisable();
-    CP15TlbInvalidate();
-
-    __asm__ volatile ("dsb" : : : "memory");
-    __asm__ volatile ("isb");
+    copy_vector_table();
 
     mpu_pll_init();
     core_pll_init();
@@ -38,15 +85,15 @@ bool init_board()
 
     ddr_init();
 
-  if ((REG(EMIF0_STATUS) & 0x4) == false)
-  {
-      return false;
-  }
+    if ((REG(EMIF0_STATUS) & 0x4) == false)
+    {
+        return false;
+    }
 
-  if (!ddr_check())
-  {
-      return false;
-  }
+    if (!ddr_check())
+    {
+        return false;
+    }
 
   return true;
 }
@@ -284,33 +331,53 @@ static void ddr_init(void)
 }
 
 // read and write to some addresses in DDR, returns 0 on sucess
-static uint8_t ddr_check(void)
+static bool ddr_check(void)
 {
     uint32_t i;
 
-    CP15DCacheDisable();    // Отключаем D-cache
-    CP15ICacheDisable();    // Отключаем I-cache (на всякий случай)
+    CP15DCacheDisable();
+    CP15ICacheDisable();
+    CP15DCacheCleanFlush();
+    CP15ICacheFlush();
+    CP15TlbInvalidate();
 
-    __asm__ volatile ("dsb");
+    __asm__ volatile ("dsb" : : : "memory");
     __asm__ volatile ("isb");
 
-    // write to a bunch of addresses
-    for (i = 0; i < 0x20000000; i += 0x2000)
+    volatile uint32_t* ddr = (uint32_t*)DDR_START;
+
+    // Паттерн 0x55555555
+    for (i = 0; i < DDR_TEST_SIZE / 4; i += 1024)
     {
-        REG(DDR_START + i) = i;
+        ddr[i] = 0x55555555;
+    }
+    __asm__ volatile ("dsb" : : : "memory");
+    for (i = 0; i < DDR_TEST_SIZE / 4; i += 1024)
+    {
+        if (ddr[i] != 0x55555555) return false;
     }
 
-    __asm__ volatile ("dsb");
-    __asm__ volatile ("dmb");
-
-    // read from the same addresses and compare with expected value
-    for (i = 0; i < 0x20000000; i += 0x2000)
+    // Паттерн 0xAAAAAAAA
+    for (i = 0; i < DDR_TEST_SIZE / 4; i += 1024)
     {
-      if (REG(DDR_START + i) != i)
-      {
-        return 1;
-      }
+        ddr[i] = 0xAAAAAAAA;
+    }
+    __asm__ volatile ("dsb" : : : "memory");
+    for (i = 0; i < DDR_TEST_SIZE / 4; i += 1024)
+    {
+        if (ddr[i] != 0xAAAAAAAA) return false;
     }
 
-    return 0;
+    // Адресный тест
+    for (i = 0; i < DDR_TEST_SIZE / 4; i += 1024)
+    {
+        ddr[i] = i;
+    }
+    __asm__ volatile ("dsb" : : : "memory");
+    for (i = 0; i < DDR_TEST_SIZE / 4; i += 1024)
+    {
+        if (ddr[i] != i) return false;
+    }
+
+    return true;
 }

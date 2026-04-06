@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdbool.h>
 #include "init.h"
 
 #define SVC_PUTCHAR    0
@@ -23,15 +24,7 @@ int main (void)
 
     if (!init_sts)
     {
-        svc_putchar('H');
-    }
-    else
-    {
-        // Вызов Undefined Instruction
-        __asm__ volatile(".word 0xFFFFFFFF");
-
-        // Вызов Data Abort (чтение из несуществующей области)
-        *(volatile uint32_t*)0xFFFFFFFF;
+        while (1);
     }
 
     while(true)
