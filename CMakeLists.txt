@@ -15,10 +15,7 @@ set(CMAKE_SYSTEM_PROCESSOR          arm)
 
 
 set(APP ${PROJECT_NAME})
-
 set(LINKER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/${APP}.ld)
-
-
 
 set(_EXE_LINKER_FLAGS
         -e Entry
@@ -29,6 +26,8 @@ set(_EXE_LINKER_FLAGS
         -Wl,-Map,${APP}.map
         -T ${LINKER_SCRIPT}
 )
+
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS_INIT} ${_EXE_LINKER_FLAGS}")
 
 string(REPLACE ";" " " TARGET_C_FLAGS "${CMAKE_COMMON_FLAGS_INIT}")
 string(REPLACE ";" " " CMAKE_C_FLAGS "${CMAKE_C_FLAGS_INIT}")
@@ -50,3 +49,4 @@ file(GLOB_RECURSE INIT_SRC
 )
 
 add_subdirectory(app)
+add_subdirectory(thirdparty)

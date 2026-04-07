@@ -10,7 +10,7 @@
 #include"include/emif.h"
 #include"include/prcm.h"
 #include"include/control.h"
-
+#include "SEGGER_RTT.h"
 
 #define DDR_TEST_SIZE            (32 * 1024 * 1024)
 
@@ -82,6 +82,13 @@ bool init_board()
     per_pll_init();
     ddr_pll_init();
     interface_clocks_init();
+
+    SEGGER_RTT_Init();
+    SEGGER_RTT_WriteString(0, "\n\n=== AM335x Boot Loader Starting ===\n");
+    SEGGER_RTT_WriteString(0, "RTT Test: If you see this, RTT works!\n");
+
+
+    SEGGER_RTT_Write(0, "", 0);
 
     ddr_init();
 

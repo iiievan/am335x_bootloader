@@ -10,12 +10,18 @@
 */
 void OnProjectLoad (void) 
 {
+  Edit.SysVar (VAR_ALLOW_BMA_EMULATION, 1);
   Project.SetDevice ("AM3359");
   Project.SetHostIF ("USB", "");
   Project.SetTargetIF ("JTAG");
   Project.SetTIFSpeed ("4 MHz");
   Project.AddSvdFile("Cortex-A8.svd");
   File.Open("../cmake-build-debug/app/am335x_boot.elf");
+}
+
+void OnProjectStart(void) 
+{
+    RTT.SetControlBlockAddress(0x402f25fc);
 }
 
 /*********************************************************************

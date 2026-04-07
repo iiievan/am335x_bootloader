@@ -11,7 +11,11 @@ set(SIZE arm-none-eabi-size)
 
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
-set(CMAKE_COMMON_FLAGS_INIT "-mcpu=cortex-a8 -mtune=cortex-a8 -mfloat-abi=hard -mfpu=neon")
-set(CMAKE_C_FLAGS_INIT "-mcpu=cortex-a8 -mtune=cortex-a8 -mfloat-abi=hard -mfpu=neon -mlong-calls -fdata-sections -funsigned-char -ffunction-sections -Wall -Wextra -g -ffreestanding -nostdlib")
-set(CMAKE_CXX_FLAGS_INIT "-mcpu=cortex-a8 -mtune=cortex-a8 -mfloat-abi=hard -mfpu=neon -mlong-calls -fdata-sections -funsigned-char -ffunction-sections -Wall -Wextra -g -ffreestanding -nostdlib -fno-exceptions -fno-rtti -fno-use-cxa-atexit")
-set(CMAKE_ASM_FLAGS_INIT "-mcpu=cortex-a8 -mtune=cortex-a8 -mfloat-abi=hard -mfpu=neon -x assembler-with-cpp -g")
+set(ARCH_BASE_FLAGS "-mcpu=cortex-a8 -mtune=cortex-a8 -mfloat-abi=hard -mfpu=neon")
+
+set(CMAKE_C_FLAGS_INIT "${ARCH_BASE_FLAGS} -mlong-calls -fdata-sections -funsigned-char -ffunction-sections -Wall -Wextra -g -ffreestanding")
+set(CMAKE_CXX_FLAGS_INIT "${ARCH_BASE_FLAGS} -mlong-calls -fdata-sections -funsigned-char -ffunction-sections -Wall -Wextra -g -ffreestanding -fno-exceptions -fno-rtti -fno-use-cxa-atexit")
+set(CMAKE_ASM_FLAGS_INIT "${ARCH_BASE_FLAGS} -x assembler-with-cpp -g")
+
+# Флаги линковщика - здесь указываем specs
+set(CMAKE_EXE_LINKER_FLAGS_INIT "--specs=nano.specs --specs=nosys.specs")

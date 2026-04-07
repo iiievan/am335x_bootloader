@@ -16,7 +16,9 @@ IRQ_STACK_SIZE  = 0x1000;   /* 4KB */
 FIQ_STACK_SIZE  = 0x8;
 UND_STACK_SIZE  = 0x8;
 ABT_STACK_SIZE  = 0x8;
-HEAP_SIZE       = 0x0;      /* Как в IAR - 0 */
+HEAP_SIZE       = 0x0;      /* 0b */
+
+RTT_BUFFER_SIZE = 0x1000;   /* 4KB */
 
 __SRAM_START = ORIGIN(SRAM);
 __SRAM_END = ORIGIN(SRAM) + LENGTH(SRAM);

@@ -2,10 +2,11 @@ add_executable(${APP}.elf main.cpp ${INIT_SRC})
 
 target_link_libraries(${APP}.elf
         am335x_regs
+        RTT
         ${TARGET_C_FLAGS}
         -nostartfiles
-        -nostdlib
         -Wl,--no-warn-rwx-segments
+        -lc
         -lgcc
 )
 
