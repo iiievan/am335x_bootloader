@@ -17,6 +17,9 @@ void OnProjectLoad (void)
   Edit.SysVar (VAR_ALLOW_BMA_EMULATION, 1);
   Project.AddSvdFile("Cortex-A8.svd");
   File.Open("../cmake-build-debug/app/am335x_boot.elf");
+
+  // Используем числовое значение 1 для режима "Halt after reset"
+  Debug.SetResetMode(1);
 }
 
 /*********************************************************************
@@ -31,10 +34,19 @@ void OnProjectLoad (void)
 void DisableWatchdog(void) 
 {
    Util.Log("Disable watchdog");
-   
+
+   // ВАЖНО: Отключаем RTT перед остановкой ядра
+   // Это ключевое решение проблемы
+   Project.SetRTT(0);
+
+   // Небольшая пауза не нужна, SetRTT выполняется синхронно
+
    Debug.Halt();
    Target.WriteU32(0x44E35048, 0x0000AAAA);
    Target.WriteU32(0x44E35048, 0x00005555);
+
+   // Включаем RTT обратно после записи
+   Project.SetRTT(1);
 }
 
 /*********************************************************************
@@ -112,7 +124,7 @@ void TargetDownload (void)
    Util.Log("TargetDownload");
    Util.Log("Loading Bootloader application");
    
-   Edit.SysVar(VAR_RESET_MODE, RM_RESET_AND_RUN); 
+   Edit.SysVar(VAR_RESET_MODE, RM_RESET_HALT);
    Exec.Download("../cmake-build-debug/app/am335x_boot.hex");
 }
 
@@ -133,6 +145,9 @@ void TargetReset(void)
    DisableWatchdog();
    SetExecModeARM();
    SetPCtoBootloaderEntry();
+
+   // Используем числовое значение 1 для режима "Halt after reset"
+   Debug.SetResetMode(1);
 }   
 
 /*********************************************************************
@@ -165,7 +180,7 @@ void AfterMainImageDownload (void)
    Debug.SetResetMode(RM_BREAK_AT_SYMBOL);
    SetPCtoMainImageEntry();
    Break.SetOnSrc("main");
-   Window.Close("Disassembly"); 
+   Window.Close("Disassembly");
    Debug.Continue();
 }
 

@@ -370,6 +370,21 @@ static bool ddr_check(void)
     CP15ICacheFlush();
     CP15TlbInvalidate();
 
+    // 1. ISB (Instruction Synchronization Barrier) - самый "легкий"
+    //__asm__ volatile ("isb" : : : "memory");
+    // Очищает конвейер инструкций, заставляет перечитать их из памяти
+    // Нужен после изменения кода или таблицы векторов
+
+    // 2. DMB (Data Memory Barrier) - средний
+    //__asm__ volatile ("dmb" : : : "memory");
+    // Ждет завершения всех обращений к памяти до определенной точки
+    // Не останавливает выполнение следующих инструкций, только их доступ к памяти
+
+    // 3. DSB (Data Synchronization Barrier) - самый "строгий"
+    //__asm__ volatile ("dsb" : : : "memory");
+    // Ждет ПОЛНОГО завершения ВСЕХ операций с памятью
+    // Останавливает выполнение следующих инструкций
+
     __asm__ volatile ("dsb" : : : "memory");
     __asm__ volatile ("isb");
 
