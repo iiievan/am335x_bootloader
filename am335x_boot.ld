@@ -3,6 +3,7 @@
 MEMORY
 {
     SRAM (rwx) : ORIGIN = 0x402F0400, LENGTH = 0x1FBFF
+    RTT_RAM (rw) : ORIGIN = 0x40300000, LENGTH = 0x10000   /* 64KB as in segger documentation */
 }
 
 OUTPUT_FORMAT("elf32-littlearm")
@@ -120,6 +121,14 @@ SECTIONS
         . += HEAP_SIZE;
         __heap_end = .;
     } > SRAM
+
+    .rtt (NOLOAD) : ALIGN(64) {  /* Выравнивание по 64 байта (размер кэш-линии) */
+        __rtt_start = .;
+        KEEP(*(.rtt))
+        KEEP(*(.rtt.*))
+        . = ALIGN(64);
+        __rtt_end = .;
+    } > RTT_RAM
 
     /* Конец используемой памяти */
     __end_of_memory = .;

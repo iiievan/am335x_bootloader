@@ -31,6 +31,8 @@ extern "C"
     void CP15TlbInvalidate(void);
     void CP15MMUDisable(void);
     void CP15BranchPredictionDisable(void);
+    void CP15DCacheEnable(void);
+    void CP15ICacheEnable(void);
 }
 
 static uint32_t const vec_tbl[14] =
@@ -73,6 +75,16 @@ static void copy_vector_table(void)
     }
 }
 
+static void rtt_cache_clean(void)
+{
+    // Очищаем и инвалидируем кэш для RTT области
+    // RTT область: 0x40300000 - 0x40310000 (64KB)
+    CP15DCacheCleanFlushBuff(0x40300000, 0x10000);
+    CP15ICacheFlushBuff(0x40300000, 0x10000);
+    __asm__ volatile ("dsb" : : : "memory");
+    __asm__ volatile ("isb");
+}
+
 bool init_board()
 {
     copy_vector_table();
@@ -83,12 +95,20 @@ bool init_board()
     ddr_pll_init();
     interface_clocks_init();
 
+    CP15MMUDisable();
+    CP15DCacheDisable();
+    CP15ICacheDisable();
+    CP15DCacheCleanFlush();
+    CP15ICacheFlush();
+
     SEGGER_RTT_Init();
     SEGGER_RTT_WriteString(0, "\n\n=== AM335x Boot Loader Starting ===\n");
     SEGGER_RTT_WriteString(0, "RTT Test: If you see this, RTT works!\n");
 
+    rtt_cache_clean();
 
-    SEGGER_RTT_Write(0, "", 0);
+    // CP15DCacheEnable();
+    // CP15ICacheEnable();
 
     ddr_init();
 
@@ -101,6 +121,8 @@ bool init_board()
     {
         return false;
     }
+
+    SEGGER_RTT_WriteString(0, "DDR initialization successful!\n");
 
   return true;
 }
