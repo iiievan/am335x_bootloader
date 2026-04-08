@@ -2,7 +2,7 @@
 #define _EMIF_H_
 
 #include <stdint.h>
-#include "am335x_regs.h"
+#include "REGS.hpp"
 
 namespace REGS
 {
