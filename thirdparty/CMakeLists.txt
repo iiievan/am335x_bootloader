@@ -30,12 +30,15 @@ target_compile_options(${PROJECT_NAME} PRIVATE
         -ffreestanding
 )
 
-target_compile_definitions(${PROJECT_NAME} PUBLIC
-        BUFFER_SIZE_DOWN=64
-        BUFFER_SIZE_UP=4096
-        RTT_USE_ASM=0
-        SEGGER_RTT_CPU_CACHE_LINE_SIZE=0
-        SEGGER_RTT_MEMCPY_USE_BYTELOOP=1
+# Все определения для RTT
+target_compile_definitions(${PROJECT_NAME} PUBLIC   BUFFER_SIZE_DOWN=64
+                                                    BUFFER_SIZE_UP=4096
+                                                    RTT_USE_ASM=0
+                                                    SEGGER_RTT_CPU_CACHE_LINE_SIZE=0
+                                                    SEGGER_RTT_MEMCPY_USE_BYTELOOP=1
+                                                    SEGGER_RTT_SECTION=".rtt"
+                                                    SEGGER_RTT_BUFFER_SECTION=".rtt"
+                                                    SEGGER_RTT_UNCACHED_OFF=0
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC

@@ -1,12 +1,10 @@
 cmake_minimum_required(VERSION 3.24)
 project(startup LANGUAGES ASM CXX)
 
-set(STARTUP_SOURCES
-        startup.s
-        cp15.s
-        exceptionhandlers.s
-        init.cpp
-        cxx_support.cpp
+set(STARTUP_SOURCES startup.s
+                    cp15.s
+                    exceptionhandlers.s
+                    cxx_support.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${STARTUP_SOURCES})

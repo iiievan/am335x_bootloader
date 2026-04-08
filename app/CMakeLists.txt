@@ -1,4 +1,8 @@
-add_executable(${APP}.elf main.cpp)
+set(APP_SOURCES init.cpp
+                main.cpp
+)
+
+add_executable(${APP}.elf ${APP_SOURCES})
 
 target_link_libraries(${APP}.elf
         startup
