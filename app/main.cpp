@@ -1,23 +1,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "init.h"
-#include "SEGGER_RTT.h"
+#include "rtt_log.h"
 
-#define SVC_PUTCHAR    0
-#define SVC_GETCHAR    1
 
-inline void svc_putchar(char c)
-{
-    __asm__ volatile(
-        "mov r0, %0\n\t"
-        "svc %1\n\t"
-        :
-        : "r"(c), "I"(SVC_PUTCHAR)
-        : "r0"
-    );
-}
+#define TAG "main"
 
-int main (void)
+int main ()
 {
     bool init_sts = false;
 
@@ -25,10 +14,11 @@ int main (void)
 
     if (!init_sts)
     {
-        SEGGER_RTT_printf(0, "Board initialization failed!\n");
+        RTT_LOG_E(TAG, "Board initialization failed!");
         while (1);
     }
-    SEGGER_RTT_printf(0, "Board initialization seccess!\n");
+
+    RTT_LOG_I(TAG, "Board initialization seccess!");
     while(true)
     {
 

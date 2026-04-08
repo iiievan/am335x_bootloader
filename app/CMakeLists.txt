@@ -7,7 +7,7 @@ add_executable(${APP}.elf ${APP_SOURCES})
 target_link_libraries(${APP}.elf
         startup
         am335x_regs
-        RTT
+        rtt_log
 )
 
 target_link_options(${APP}.elf PRIVATE
@@ -16,7 +16,6 @@ target_link_options(${APP}.elf PRIVATE
         -lgcc
         -Wl,--no-warn-rwx-segments
 )
-
 
 set(HEX_FILE ${APP}.hex)
 set(BIN_FILE ${APP}.bin)

@@ -10,9 +10,10 @@
 #include"include/emif.h"
 #include"include/prcm.h"
 #include"include/control.h"
-#include "SEGGER_RTT.h"
+#include "rtt_log.h"
 
 #define DDR_TEST_SIZE            (32 * 1024 * 1024)
+#define TAG "brd_ini"
 
 extern "C"
 {
@@ -103,8 +104,8 @@ bool init_board()
     __asm__ volatile ("dsb" : : : "memory");
     __asm__ volatile ("isb");
 
-    SEGGER_RTT_Init();
-    SEGGER_RTT_printf(0, "\n\n=== AM335x Boot Loader Starting ===\n");
+    rtt_log_init();
+    RTT_LOG_I(TAG, "=== AM335x Boot Loader Starting ===");
 
     rtt_cache_clean();
 
@@ -115,17 +116,17 @@ bool init_board()
 
     if(!emif.is_phy_ready())
     {
-        SEGGER_RTT_printf(0,"EMIF PHY initialization failed!\n");
+        RTT_LOG_E(TAG,"EMIF PHY initialization failed!");
         return false;
     }
 
     if (!ddr_check())
     {
-        SEGGER_RTT_printf(0,"DDR check failed!\n");
+        RTT_LOG_E(TAG,"DDR check failed!");
         return false;
     }
 
-    SEGGER_RTT_printf(0, "DDR initialization successful!\n");
+    RTT_LOG_I(TAG, "DDR initialization successful!");
 
     return true;
 }
