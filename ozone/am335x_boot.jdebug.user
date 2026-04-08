@@ -3,8 +3,8 @@
 OpenDocument="init.cpp", FilePath="/home/mbokastnev/code/am335x_bootloader/startup/init.cpp", Line=75
 OpenDocument="main.cpp", FilePath="/home/mbokastnev/code/am335x_bootloader/app/main.cpp", Line=0
 OpenToolbar="Debug", Floating=0, x=0, y=0
-OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=0, w=719, h=439, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
-OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=1, w=719, h=485, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=0, w=719, h=440, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
+OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=1, w=719, h=484, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Memory 1", DockArea=BOTTOM, x=2, y=0, w=728, h=370, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, EditorAddress=0x0
 OpenWindow="Functions", DockArea=LEFT, x=0, y=0, w=300, h=930, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Terminal", DockArea=BOTTOM, x=0, y=0, w=873, h=370, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0

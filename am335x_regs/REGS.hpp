@@ -1,4 +1,3 @@
-
 #ifndef __AM335X_REGS_H
 #define __AM335X_REGS_H
 

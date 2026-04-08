@@ -87,9 +87,6 @@ static void rtt_cache_clean(void)
 
 bool init_board()
 {
-    using namespace REGS::EMIF;
-    volatile const STATUS_reg_t *emif_sts = &AM335x_EMIF0->STATUS;
-
     copy_vector_table();
 
     mpu_pll_init();
@@ -101,18 +98,22 @@ bool init_board()
     CP15MMUDisable();
     CP15DCacheDisable();
     CP15ICacheDisable();
-    CP15DCacheCleanFlush();
-    CP15ICacheFlush();
+
+    // memory barier for wait full clean and invalidate I and D caches
+    __asm__ volatile ("dsb" : : : "memory");
+    __asm__ volatile ("isb");
 
     SEGGER_RTT_Init();
-    SEGGER_RTT_WriteString(0, "\n\n=== AM335x Boot Loader Starting ===\n");
-    SEGGER_RTT_WriteString(0, "RTT Test: If you see this, RTT works!\n");
+    SEGGER_RTT_printf(0, "\n\n=== AM335x Boot Loader Starting ===\n");
 
     rtt_cache_clean();
 
     ddr_init();
 
-    if(emif_sts->b.PHY_DLL_READY == false)
+    using namespace REGS::EMIF;
+    const auto& emif = *AM335x_EMIF0;
+
+    if(!emif.is_phy_ready())
     {
         SEGGER_RTT_printf(0,"EMIF PHY initialization failed!\n");
         return false;
@@ -124,12 +125,12 @@ bool init_board()
         return false;
     }
 
-    SEGGER_RTT_WriteString(0, "DDR initialization successful!\n");
+    SEGGER_RTT_printf(0, "DDR initialization successful!\n");
 
     return true;
 }
 
-static void mpu_pll_init(void)
+static void mpu_pll_init()
 {
   uint32_t x;
 
@@ -163,7 +164,7 @@ static void mpu_pll_init(void)
 // Core PLL Configuration based on AM335x TRM 8.1.6.7.1
 // All values based on AM335x TRM Table 8-22 Core PLL Typical Frequencies OPP100
 // clock source is 24MHz crystal on OSC0-IN (BBB schematic page 3)
-static void core_pll_init(void)
+static void core_pll_init()
 {
   uint32_t x;
 
@@ -205,7 +206,7 @@ static void core_pll_init(void)
 // PER PLL Configuration based on AM335x TRM 8.1.6.8.1
 // All values based on AM335x TRM Table 8-24 PER PLL Typical Frequencies OPP100
 // clock source is 24MHz crystal on OSC0-IN (BBB schematic page 3)
-static void per_pll_init(void)
+static void per_pll_init()
 {
   uint32_t x;
 
@@ -239,7 +240,7 @@ static void per_pll_init(void)
 // DDR PLL Configuration based on AM335x TRM 8.1.6.11.1
 // 400MHz based on Table 5-5 of AM335x datasheet DDR3L max frequency
 // clock source is 24MHz crystal on OSC0-IN (BBB schematic page 3)
-static void ddr_pll_init(void)
+static void ddr_pll_init()
 {
   uint32_t x;
 
@@ -271,7 +272,7 @@ static void ddr_pll_init(void)
 }
 
 // initialize all the interface clocks and prcm domains we will be using
-static void interface_clocks_init(void)
+static void interface_clocks_init()
 {
   // WKUP domain enable
   REG(CM_WKUP_CONTROL_CLKCTRL) = 0x2;
@@ -292,7 +293,7 @@ static void interface_clocks_init(void)
   REG(CM_PER_L3_CLKSTCTRL) = 0x2;
 }
 
-static void ddr_init(void)
+static void ddr_init()
 {
   // enable functional clock PD_PER_EMIF_GCLK
   REG(CM_PER_EMIF_CLKCTRL) = 0x2;
@@ -362,15 +363,17 @@ static void ddr_init(void)
 }
 
 // read and write to some addresses in DDR, returns 0 on sucess
-static bool ddr_check(void)
+static bool ddr_check()
 {
     uint32_t i;
 
     CP15DCacheDisable();
     CP15ICacheDisable();
-    CP15DCacheCleanFlush();
-    CP15ICacheFlush();
     CP15TlbInvalidate();
+
+    // memory barier for wait full clean and invalidate I and D caches
+    __asm__ volatile ("dsb" : : : "memory");
+    __asm__ volatile ("isb");
 
     // 1. ISB (Instruction Synchronization Barrier) - самый "легкий"
     //__asm__ volatile ("isb" : : : "memory");
@@ -387,27 +390,25 @@ static bool ddr_check(void)
     // Ждет ПОЛНОГО завершения ВСЕХ операций с памятью
     // Останавливает выполнение следующих инструкций
 
-    __asm__ volatile ("dsb" : : : "memory");
-    __asm__ volatile ("isb");
-
     volatile uint32_t* ddr = (uint32_t*)DDR_START;
 
-    // Паттерн 0x55555555
     for (i = 0; i < DDR_TEST_SIZE / 4; i += 1024)
     {
         ddr[i] = 0x55555555;
     }
+
     __asm__ volatile ("dsb" : : : "memory");
     for (i = 0; i < DDR_TEST_SIZE / 4; i += 1024)
     {
         if (ddr[i] != 0x55555555) return false;
     }
 
-    // Паттерн 0xAAAAAAAA
+
     for (i = 0; i < DDR_TEST_SIZE / 4; i += 1024)
     {
         ddr[i] = 0xAAAAAAAA;
     }
+
     __asm__ volatile ("dsb" : : : "memory");
     for (i = 0; i < DDR_TEST_SIZE / 4; i += 1024)
     {
@@ -419,6 +420,7 @@ static bool ddr_check(void)
     {
         ddr[i] = i;
     }
+
     __asm__ volatile ("dsb" : : : "memory");
     for (i = 0; i < DDR_TEST_SIZE / 4; i += 1024)
     {

@@ -1378,7 +1378,9 @@ namespace REGS
             __RW   CONNID_TO_COS_1_MAPPING_reg_t      CONNID_TO_COS_1_MAPPING;    // (0x104)
             __RW   CONNID_TO_COS_2_MAPPING_reg_t      CONNID_TO_COS_2_MAPPING;    // (0x108)
             __R    uint32_t                           RESERVED13[5]; 
-            __RW   READ_WRITE_EXEC_THRESHOLD_reg_t    READ_WRITE_EXEC_THRESHOL;   // (0x120)  
+            __RW   READ_WRITE_EXEC_THRESHOLD_reg_t    READ_WRITE_EXEC_THRESHOL;   // (0x120)
+
+             bool is_phy_ready() const { return STATUS.b.PHY_DLL_READY; }
         };
 
         struct AM335x_DDR23mPHY_Type
@@ -1441,7 +1443,6 @@ namespace REGS
 
         inline const AM335x_DDR23mPHY_Type  *AM335x_DDR23mPHY = reinterpret_cast<AM335x_DDR23mPHY_Type *>(AM335x_DDR23mPHY_BASE);
         inline const AM335x_EMIF4D_Type     *AM335x_EMIF0     = reinterpret_cast<AM335x_EMIF4D_Type *>(AM335x_EMIF0_BASE);
-        
 
     } // namespace EMIF
 } // namespace REGS

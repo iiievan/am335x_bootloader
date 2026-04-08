@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "init.h"
+#include "SEGGER_RTT.h"
 
 #define SVC_PUTCHAR    0
 #define SVC_GETCHAR    1
@@ -24,9 +25,10 @@ int main (void)
 
     if (!init_sts)
     {
+        SEGGER_RTT_printf(0, "Board initialization failed!\n");
         while (1);
     }
-
+    SEGGER_RTT_printf(0, "Board initialization seccess!\n");
     while(true)
     {
 
