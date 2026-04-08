@@ -87,6 +87,9 @@ static void rtt_cache_clean(void)
 
 bool init_board()
 {
+    using namespace REGS::EMIF;
+    volatile const STATUS_reg_t *emif_sts = &AM335x_EMIF0->STATUS;
+
     copy_vector_table();
 
     mpu_pll_init();
@@ -107,24 +110,23 @@ bool init_board()
 
     rtt_cache_clean();
 
-    // CP15DCacheEnable();
-    // CP15ICacheEnable();
-
     ddr_init();
 
-    if ((REG(EMIF0_STATUS) & 0x4) == false)
+    if(emif_sts->b.PHY_DLL_READY == false)
     {
+        SEGGER_RTT_printf(0,"EMIF PHY initialization failed!\n");
         return false;
     }
 
     if (!ddr_check())
     {
+        SEGGER_RTT_printf(0,"DDR check failed!\n");
         return false;
     }
 
     SEGGER_RTT_WriteString(0, "DDR initialization successful!\n");
 
-  return true;
+    return true;
 }
 
 static void mpu_pll_init(void)

@@ -250,7 +250,7 @@ namespace REGS
             struct 
             {                                      
                 uint32_t                    : 2;      // bits 0..1   (R) Reserved
-                uint32_t    PHY_DLL_READY   : 1;      // bit  2      (R) DDR PHY Ready [0x0 = ready; 0x1 = not ready]
+                uint32_t    PHY_DLL_READY   : 1;      // bit  2      (R) DDR PHY Ready [0x0 = not ready; 0x1 = ready]
                 uint32_t                    :26;      // bits 3..28  (R) Reserved
                 uint32_t    FAST_INIT       : 1;      // bit  29     (R) Fast Init enabled [0x0 = disabled; 0x1 = enabled]
                 uint32_t    DUAL_CLK_MODE   : 1;      // bit  30     (R) Dual Clock mode [0x0 = synchronous; 0x1 = asynchronous]

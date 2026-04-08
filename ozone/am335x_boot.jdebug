@@ -10,7 +10,6 @@
 */
 void OnProjectLoad (void) 
 {
-  Edit.SysVar (VAR_RTT_ENABLED, 1);
   Project.SetDevice ("AM3359");
   Project.SetHostIF ("USB", "941000024");
   Project.SetTargetIF ("JTAG");
