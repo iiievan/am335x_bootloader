@@ -1441,8 +1441,8 @@ namespace REGS
         constexpr uint32_t AM335x_DDR23mPHY_BASE = 0x44E12000; 
         constexpr uint32_t AM335x_EMIF0_BASE     = 0x4C000000;
 
-        inline const AM335x_DDR23mPHY_Type  *AM335x_DDR23mPHY = reinterpret_cast<AM335x_DDR23mPHY_Type *>(AM335x_DDR23mPHY_BASE);
-        inline const AM335x_EMIF4D_Type     *AM335x_EMIF0     = reinterpret_cast<AM335x_EMIF4D_Type *>(AM335x_EMIF0_BASE);
+        inline AM335x_DDR23mPHY_Type  *AM335x_DDR23mPHY = reinterpret_cast<AM335x_DDR23mPHY_Type *>(AM335x_DDR23mPHY_BASE);
+        inline AM335x_EMIF4D_Type     *AM335x_EMIF0     = reinterpret_cast<AM335x_EMIF4D_Type *>(AM335x_EMIF0_BASE);
 
     } // namespace EMIF
 } // namespace REGS

@@ -3010,23 +3010,23 @@ namespace REGS
     
         /******************************** ALL POINTERS ON PRCM MODULE BLOCKS ***********************************************/
     
-        inline const AM335x_CM_PER_Type        *AM335x_CM_PER      = reinterpret_cast<AM335x_CM_PER_Type*>(AM335x_CM_PER_BASE);
-        inline const AM335x_CM_WKUP_Type       *AM335x_CM_WKUP     = reinterpret_cast<AM335x_CM_WKUP_Type*>(AM335x_CM_WKUP_BASE);
-        inline const AM335x_CM_DPLL_Type       *AM335x_CM_DPLL     = reinterpret_cast<AM335x_CM_DPLL_Type*>(AM335x_CM_DPLL_BASE);
-        inline const AM335x_CM_MPU_Type        *AM335x_CM_MPU      = reinterpret_cast<AM335x_CM_MPU_Type*>(AM335x_CM_MPU_BASE);
-        inline const AM335x_CM_DEVICE_Type     *AM335x_CM_DEVICE   = reinterpret_cast<AM335x_CM_DEVICE_Type*>(AM335x_CM_DEVICE_BASE);
-        inline const AM335x_CM_RTC_Type        *AM335x_CM_RTC      = reinterpret_cast<AM335x_CM_RTC_Type*>(AM335x_CM_RTC_BASE);
-        inline const AM335x_CM_GFX_Type        *AM335x_CM_GFX      = reinterpret_cast<AM335x_CM_GFX_Type*>(AM335x_CM_GFX_BASE);
-        inline const AM335x_CM_CEFUSE_Type     *AM335x_CM_CEFUSE   = reinterpret_cast<AM335x_CM_CEFUSE_Type*>(AM335x_CM_CEFUSE_BASE);
+        inline AM335x_CM_PER_Type        *AM335x_CM_PER      = reinterpret_cast<AM335x_CM_PER_Type*>(AM335x_CM_PER_BASE);
+        inline AM335x_CM_WKUP_Type       *AM335x_CM_WKUP     = reinterpret_cast<AM335x_CM_WKUP_Type*>(AM335x_CM_WKUP_BASE);
+        inline AM335x_CM_DPLL_Type       *AM335x_CM_DPLL     = reinterpret_cast<AM335x_CM_DPLL_Type*>(AM335x_CM_DPLL_BASE);
+        inline AM335x_CM_MPU_Type        *AM335x_CM_MPU      = reinterpret_cast<AM335x_CM_MPU_Type*>(AM335x_CM_MPU_BASE);
+        inline AM335x_CM_DEVICE_Type     *AM335x_CM_DEVICE   = reinterpret_cast<AM335x_CM_DEVICE_Type*>(AM335x_CM_DEVICE_BASE);
+        inline AM335x_CM_RTC_Type        *AM335x_CM_RTC      = reinterpret_cast<AM335x_CM_RTC_Type*>(AM335x_CM_RTC_BASE);
+        inline AM335x_CM_GFX_Type        *AM335x_CM_GFX      = reinterpret_cast<AM335x_CM_GFX_Type*>(AM335x_CM_GFX_BASE);
+        inline AM335x_CM_CEFUSE_Type     *AM335x_CM_CEFUSE   = reinterpret_cast<AM335x_CM_CEFUSE_Type*>(AM335x_CM_CEFUSE_BASE);
         
-        inline const AM335x_PRM_IRQ_Type       *AM335x_PRM_IRQ     = reinterpret_cast<AM335x_PRM_IRQ_Type*>(AM335x_PRM_IRQ_BASE);
-        inline const AM335x_PRM_PER_Type       *AM335x_PRM_PER     = reinterpret_cast<AM335x_PRM_PER_Type*>(AM335x_PRM_PER_BASE);
-        inline const AM335x_PRM_WKUP_Type      *AM335x_PRM_WKUP    = reinterpret_cast<AM335x_PRM_WKUP_Type*>(AM335x_PRM_WKUP_BASE);
-        inline const AM335x_PRM_MPU_Type       *AM335x_PRM_MPU     = reinterpret_cast<AM335x_PRM_MPU_Type*>(AM335x_PRM_MPU_BASE);
-        inline const AM335x_PRM_DEVICE_Type    *AM335x_PRM_DEVICE  = reinterpret_cast<AM335x_PRM_DEVICE_Type*>(AM335x_PRM_DEVICE_BASE);
-        inline const AM335x_PRM_RTC_Type       *AM335x_PRM_RTC     = reinterpret_cast<AM335x_PRM_RTC_Type*>(AM335x_PRM_RTC_BASE);
-        inline const AM335x_PRM_GFX_Type       *AM335x_PRM_GFX     = reinterpret_cast<AM335x_PRM_GFX_Type*>(AM335x_PRM_GFX_BASE);
-        inline const AM335x_PRM_CEFUSE_Type    *AM335x_PRM_CEFUSE  = reinterpret_cast<AM335x_PRM_CEFUSE_Type*>(AM335x_PRM_CEFUSE_BASE);
+        inline AM335x_PRM_IRQ_Type       *AM335x_PRM_IRQ     = reinterpret_cast<AM335x_PRM_IRQ_Type*>(AM335x_PRM_IRQ_BASE);
+        inline AM335x_PRM_PER_Type       *AM335x_PRM_PER     = reinterpret_cast<AM335x_PRM_PER_Type*>(AM335x_PRM_PER_BASE);
+        inline AM335x_PRM_WKUP_Type      *AM335x_PRM_WKUP    = reinterpret_cast<AM335x_PRM_WKUP_Type*>(AM335x_PRM_WKUP_BASE);
+        inline AM335x_PRM_MPU_Type       *AM335x_PRM_MPU     = reinterpret_cast<AM335x_PRM_MPU_Type*>(AM335x_PRM_MPU_BASE);
+        inline AM335x_PRM_DEVICE_Type    *AM335x_PRM_DEVICE  = reinterpret_cast<AM335x_PRM_DEVICE_Type*>(AM335x_PRM_DEVICE_BASE);
+        inline AM335x_PRM_RTC_Type       *AM335x_PRM_RTC     = reinterpret_cast<AM335x_PRM_RTC_Type*>(AM335x_PRM_RTC_BASE);
+        inline AM335x_PRM_GFX_Type       *AM335x_PRM_GFX     = reinterpret_cast<AM335x_PRM_GFX_Type*>(AM335x_PRM_GFX_BASE);
+        inline AM335x_PRM_CEFUSE_Type    *AM335x_PRM_CEFUSE  = reinterpret_cast<AM335x_PRM_CEFUSE_Type*>(AM335x_PRM_CEFUSE_BASE);
 
     } // namespace PRCM
 

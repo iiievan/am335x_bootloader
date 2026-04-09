@@ -90,12 +90,8 @@ bool init_board()
 {
     copy_vector_table();
 
-    mpu_pll_init();
-    core_pll_init();
-    per_pll_init();
-    ddr_pll_init();
-    interface_clocks_init();
-
+    rtt_log_init();
+    RTT_LOG_I(TAG, "=== AM335x Boot Loader Starting ===");
     CP15MMUDisable();
     CP15DCacheDisable();
     CP15ICacheDisable();
@@ -104,10 +100,13 @@ bool init_board()
     __asm__ volatile ("dsb" : : : "memory");
     __asm__ volatile ("isb");
 
-    rtt_log_init();
-    RTT_LOG_I(TAG, "=== AM335x Boot Loader Starting ===");
-
     rtt_cache_clean();
+
+    mpu_pll_init();
+    core_pll_init();
+    per_pll_init();
+    ddr_pll_init();
+    interface_clocks_init();
 
     ddr_init();
 
@@ -275,23 +274,43 @@ static void ddr_pll_init()
 // initialize all the interface clocks and prcm domains we will be using
 static void interface_clocks_init()
 {
-  // WKUP domain enable
-  REG(CM_WKUP_CONTROL_CLKCTRL) = 0x2;
+    using namespace REGS::PRCM;
+    auto& per = *AM335x_CM_PER;
+    auto& wkup = *AM335x_CM_WKUP;
 
-  // PER domain enable
-  REG(CM_PER_L4LS_CLKCTRL) = 0x2;
+    //RTT_LOG_W(TAG,"interface_clocks_init BEFORE modification");
+    //RTT_LOG_REG(CM_WKUP, CONTROL_CLKCTRL, wkup.CONTROL_CLKCTRL.reg);
+    //RTT_LOG_REG(CM_PER, L4LS_CLKCTRL, per.L4LS_CLKCTRL.reg);
+    //RTT_LOG_REG(CM_PER, L3_CLKCTRL, per.L3_CLKCTRL.reg);
+    //RTT_LOG_REG(CM_WKUP, CLKSTCTRL, wkup.CLKSTCTRL.reg);
+    //RTT_LOG_REG(CM_PER, L4LS_CLKSTCTRL, per.L4LS_CLKSTCTRL.reg);
+    //RTT_LOG_REG(CM_PER, L3_CLKSTCTRL, per.L3_CLKSTCTRL.reg);
 
-  // L3 interconnect clocks enable
-  REG(CM_PER_L3_CLKCTRL) = 0x2;
+    wkup.CONTROL_CLKCTRL.b.MODULEMODE = MODULEMODE_ENABLE;
+    //REG(CM_WKUP_CONTROL_CLKCTRL) = 0x2;
 
-  // WKUP domain force wakeup
-  REG(CM_WKUP_CLKSTCTRL) = 0x2;
+    per.L4LS_CLKCTRL.b.MODULEMODE = MODULEMODE_ENABLE;
+    //REG(CM_PER_L4LS_CLKCTRL) = 0x2;
 
-  // PER domain force wakeup
-  REG(CM_PER_L4LS_CLKSTCTRL) = 0x2;
+    per.L3_CLKCTRL.b.MODULEMODE = MODULEMODE_ENABLE;
+    //REG(CM_PER_L3_CLKCTRL) = 0x2;
 
-  // L3 interconnect force wakeup
-  REG(CM_PER_L3_CLKSTCTRL) = 0x2;
+    wkup.CLKSTCTRL.b.CLKTRCTRL = SW_WKUP;
+    //REG(CM_WKUP_CLKSTCTRL) = 0x2;
+
+    per.L4LS_CLKSTCTRL.b.CLKTRCTRL = SW_WKUP;
+    //REG(CM_PER_L4LS_CLKSTCTRL) = 0x2;
+
+    per.L3S_CLKSTCTRL.b.CLKTRCTRL = SW_WKUP;
+    //REG(CM_PER_L3_CLKSTCTRL) = 0x2;
+
+    //RTT_LOG_W(TAG,"interface_clocks_init AFTER modification");
+    //RTT_LOG_REG(CM_WKUP, CONTROL_CLKCTRL, wkup.CONTROL_CLKCTRL.reg);
+    //RTT_LOG_REG(CM_PER, L4LS_CLKCTRL, per.L4LS_CLKCTRL.reg);
+    //RTT_LOG_REG(CM_PER, L3_CLKSTCTRL, per.L3_CLKSTCTRL.reg);
+    //RTT_LOG_REG(CM_WKUP, CLKSTCTRL, wkup.CLKSTCTRL.reg);
+    //RTT_LOG_REG(CM_PER, L4LS_CLKSTCTRL, per.L4LS_CLKSTCTRL.reg);
+    //RTT_LOG_REG(CM_PER, L3_CLKSTCTRL, per.L3_CLKSTCTRL.reg);
 }
 
 static void ddr_init()

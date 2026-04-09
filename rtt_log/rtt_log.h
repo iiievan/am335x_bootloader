@@ -31,11 +31,14 @@ void rtt_log_exclude_tag(char* tag);
 
 void rtt_log_unexclude_tag(char* tag);
 
-#define RTT_LOG_E(tag, format, ...) rtt_log_print_format(RTTLogLevelError, tag, format, ##__VA_ARGS__)
-#define RTT_LOG_W(tag, format, ...) rtt_log_print_format(RTTLogLevelWarn, tag, format, ##__VA_ARGS__)
-#define RTT_LOG_I(tag, format, ...) rtt_log_print_format(RTTLogLevelInfo, tag, format, ##__VA_ARGS__)
-#define RTT_LOG_D(tag, format, ...) rtt_log_print_format(RTTLogLevelDebug, tag, format, ##__VA_ARGS__)
-#define RTT_LOG_T(tag, format, ...) rtt_log_print_format(RTTLogLevelTrace, tag, format, ##__VA_ARGS__)
+#define RTT_LOG_E(tag, format, ...) rtt_log_print_format(RTTLogLevelError, tag, format, ##__VA_ARGS__)  // RED
+#define RTT_LOG_W(tag, format, ...) rtt_log_print_format(RTTLogLevelWarn, tag, format, ##__VA_ARGS__)   // BROWN
+#define RTT_LOG_I(tag, format, ...) rtt_log_print_format(RTTLogLevelInfo, tag, format, ##__VA_ARGS__)   // GREEN
+#define RTT_LOG_D(tag, format, ...) rtt_log_print_format(RTTLogLevelDebug, tag, format, ##__VA_ARGS__)  // BLUE
+#define RTT_LOG_T(tag, format, ...) rtt_log_print_format(RTTLogLevelTrace, tag, format, ##__VA_ARGS__)  // PURPLE
+
+#define RTT_LOG_REG(module_name, reg_name, reg_value) \
+    RTT_LOG_D(#module_name,"%s = 0x%08X",#reg_name, (unsigned int)(reg_value))
 
 #ifdef __cplusplus
 }
