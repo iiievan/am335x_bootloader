@@ -374,8 +374,8 @@ namespace REGS
             {                                       /* This register allows monitoring the master clock activity. This register is read only and automatically updated */
                 uint32_t    DPLL              :1;   // bit: 0       (RW)DPLL clock activity [0x0 = in bypass or in stop mode; 0x1= locked]              
                 uint32_t                      :7;   // bit: 1..7    Reserved
-                uint32_t    ST_MN_BYPASS      :8;   // bit: 8       (RW)DPLL MN_BYPASS status [0x0 = not bypass; 0x1= bypass]            
-                uint32_t                      :16;  // bit: 9..31   Reserved
+                uint32_t    ST_MN_BYPASS      :1;   // bit: 8       (RW)DPLL MN_BYPASS status [0x0 = not bypass; 0x1= bypass]
+                uint32_t                      :23;  // bit: 9..31   Reserved
             } b;                                      
             uint32_t  reg;                           
         } IDLEST_DPLL_MPU_reg_t;

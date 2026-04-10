@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<device schemaVersion="1.3" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="CMSIS-SVD_Schema_1_3.xsd">
+  <vendor>Texas Instruments</vendor>
+  <name>AM335x</name>
+  <series>Sitara AM335x</series>
+  <version>1.0</version>
+  <description>AM335x EMIF Registers for DDR Initialization (Ozone)</description>
+
+  <cpu>
+    <name>Cortex-A8</name>
+    <revision>r0p0</revision>
+    <endian>little</endian>
+  </cpu>
+
+  <addressUnitBits>8</addressUnitBits>
+  <width>32</width>
+  <size>32</size>
+  <resetValue>0x00000000</resetValue>
+  <resetMask>0xFFFFFFFF</resetMask>
+
+  <peripherals>
+
+    <!-- ====================== EMIF0 ====================== -->
+    <peripheral>
+      <name>EMIF0</name>
+      <description>External Memory Interface (EMIF) - DDR Controller</description>
+      <baseAddress>0x4C000000</baseAddress>
+      <groupName>Memory</groupName>
+
+      <registers>
+
+        <!-- STATUS -->
+        <register>
+          <name>STATUS</name>
+          <description>EMIF Status Register</description>
+          <addressOffset>0x04</addressOffset>
+          <size>32</size>
+          <access>read-only</access>
+          <resetValue>0x40000000</resetValue>
+          <fields>
+            <field>
+              <name>PHY_DLL_READY</name>
+              <description>PHY DLL Ready</description>
+              <bitOffset>2</bitOffset>
+              <bitWidth>1</bitWidth>
+            </field>
+          </fields>
+        </register>
+
+        <!-- SDRAM_CONFIG -->
+        <register>
+          <name>SDRAM_CONFIG</name>
+          <description>SDRAM Configuration Register</description>
+          <addressOffset>0x08</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x4104BAB2</resetValue>
+          <fields>
+            <field>
+              <name>SDRAM_TYPE</name>
+              <description>SDRAM Type</description>
+              <bitOffset>29</bitOffset>
+              <bitWidth>3</bitWidth>
+            </field>
+            <field>
+              <name>IBANK</name>
+              <description>Internal Banks</description>
+              <bitOffset>4</bitOffset>
+              <bitWidth>3</bitWidth>
+            </field>
+            <field>
+              <name>PAGESIZE</name>
+              <description>Page Size</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>3</bitWidth>
+            </field>
+          </fields>
+        </register>
+
+        <!-- DDR_PHY_CTRL_1 -->
+        <register>
+          <name>DDR_PHY_CTRL_1</name>
+          <description>DDR PHY Control 1 Register</description>
+          <addressOffset>0xE4</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>READ_LATENCY</name>
+              <description>Read Latency</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>5</bitWidth>
+            </field>
+            <field>
+              <name>PHY_RST_N</name>
+              <description>PHY Reset (active low)</description>
+              <bitOffset>15</bitOffset>
+              <bitWidth>1</bitWidth>
+            </field>
+            <field>
+              <name>ENABLE_DYNAMIC_PWRDN</name>
+              <description>Dynamic IO Power Down</description>
+              <bitOffset>20</bitOffset>
+              <bitWidth>1</bitWidth>
+            </field>
+          </fields>
+        </register>
+
+        <!-- DDR_PHY_CTRL_1_SHDW -->
+        <register>
+          <name>DDR_PHY_CTRL_1_SHDW</name>
+          <description>DDR PHY Control 1 Shadow Register</description>
+          <addressOffset>0xE8</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+        </register>
+
+        <!-- DDR_PHY_CTRL_2 -->
+        <register>
+          <name>DDR_PHY_CTRL_2</name>
+          <description>DDR PHY Control 2 Register</description>
+          <addressOffset>0xEC</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+        </register>
+
+        <!-- SDRAM_TIM_1 -->
+        <register>
+          <name>SDRAM_TIM_1</name>
+          <description>SDRAM Timing 1 Register</description>
+          <addressOffset>0x18</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x08891599</resetValue>
+        </register>
+
+        <!-- SDRAM_TIM_1_SHDW -->
+        <register>
+          <name>SDRAM_TIM_1_SHDW</name>
+          <description>SDRAM Timing 1 Shadow Register</description>
+          <addressOffset>0x1C</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+        </register>
+
+        <!-- SDRAM_TIM_2 -->
+        <register>
+          <name>SDRAM_TIM_2</name>
+          <description>SDRAM Timing 2 Register</description>
+          <addressOffset>0x20</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x148B31CA</resetValue>
+        </register>
+
+        <!-- SDRAM_TIM_2_SHDW -->
+        <register>
+          <name>SDRAM_TIM_2_SHDW</name>
+          <description>SDRAM Timing 2 Shadow Register</description>
+          <addressOffset>0x24</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+        </register>
+
+        <!-- SDRAM_TIM_3 -->
+        <register>
+          <name>SDRAM_TIM_3</name>
+          <description>SDRAM Timing 3 Register</description>
+          <addressOffset>0x28</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00FFE82F</resetValue>
+        </register>
+
+        <!-- SDRAM_TIM_3_SHDW -->
+        <register>
+          <name>SDRAM_TIM_3_SHDW</name>
+          <description>SDRAM Timing 3 Shadow Register</description>
+          <addressOffset>0x2C</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+        </register>
+
+        <!-- SDRAM_REF_CTRL -->
+        <register>
+          <name>SDRAM_REF_CTRL</name>
+          <description>SDRAM Refresh Control Register</description>
+          <addressOffset>0x10</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x80001388</resetValue>
+          <fields>
+            <field>
+              <name>REFRESH_RATE</name>
+              <description>Refresh Rate</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+            </field>
+          </fields>
+        </register>
+
+        <!-- SDRAM_REF_CTRL_SHDW -->
+        <register>
+          <name>SDRAM_REF_CTRL_SHDW</name>
+          <description>SDRAM Refresh Control Shadow Register</description>
+          <addressOffset>0x14</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+        </register>
+
+        <!-- ZQ_CONFIG -->
+        <register>
+          <name>ZQ_CONFIG</name>
+          <description>ZQ Calibration Configuration Register</description>
+          <addressOffset>0xC8</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+        </register>
+
+      </registers>
+    </peripheral>
+
+  </peripherals>
+</device>

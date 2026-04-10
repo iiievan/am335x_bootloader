@@ -136,33 +136,53 @@ bool init_board()
 
 static void mpu_pll_init()
 {
-  uint32_t x;
+    using namespace REGS::PRCM;
+    auto& wkup = *AM335x_CM_WKUP;
 
-  // Switch PLL to bypass mode
-  x = REG(CM_CLKMODE_DPLL_MPU);
-  x &= ~0x7;
-  x |= 0x4;
-  REG(CM_CLKMODE_DPLL_MPU) = x;
+    // Switch PLL to bypass mode
+    uint32_t dpll_mpu = wkup.CLKMODE_DPLL_MPU.reg;
+    dpll_mpu &= ~0x7;
+    dpll_mpu |= 0x4;
+    wkup.CLKMODE_DPLL_MPU.reg = dpll_mpu;
 
-  // wait for bypass status
-  while (!(REG(CM_IDLEST_DPLL_MPU) & 0x100)) {}
+    // wait for bypass status
+    while (wkup.IDLEST_DPLL_MPU.b.ST_MN_BYPASS == 0){}
 
-  // configure divider and multipler
-  // DPLL_MULT = 1000, DPLL_DIV = 23 (actual division factor is N+1)
-  // 24MHz*1000/24 = 1GHz
-  REG(CM_CLKSEL_DPLL_MPU) = (1000 << 8) | (23);
+    // configure divider and multipler
+    // DPLL_MULT = 1000, DPLL_DIV = 23 (actual division factor is N+1)
+    // 24MHz*1000/24 = 1GHz
+    wkup.CLKSEL_DPLL_MPU.reg = (1000 << 8) | (23);
 
-  // Set M2 Divider
-  REG(CM_DIV_M2_DPLL_MPU) &= ~0x1F;
-  REG(CM_DIV_M2_DPLL_MPU) |= 1;
+    wkup.DIV_M2_DPLL_MPU.reg &= ~0x1F;
+    wkup.DIV_M2_DPLL_MPU.reg |= 1;
 
-  // Enable, locking PLL
-  x = REG(CM_CLKMODE_DPLL_MPU);
-  x |= 0x7;
-  REG(CM_CLKMODE_DPLL_MPU) = x;
+    // Enable, locking PLL
+    dpll_mpu = wkup.CLKMODE_DPLL_MPU.reg;
+    dpll_mpu |=0X7;
+    wkup.CLKMODE_DPLL_MPU.reg = dpll_mpu;
 
-  // wait for locking to finish
-  while (!(REG(CM_IDLEST_DPLL_MPU) & 0x1)) {}
+    // wait for locking to finish
+    while (wkup.IDLEST_DPLL_MPU.b.DPLL == 0){}
+
+    /*
+    uint32_t x = REG(CM_CLKMODE_DPLL_MPU);
+    x &= ~0x7;
+    x |= 0x4;
+    REG(CM_CLKMODE_DPLL_MPU) = x;
+    while (!(REG(CM_IDLEST_DPLL_MPU) & 0x100)) {}
+
+    REG(CM_CLKSEL_DPLL_MPU) = (1000 << 8) | (23);
+
+    // Set M2 Divider
+    REG(CM_DIV_M2_DPLL_MPU) &= ~0x1F;
+    REG(CM_DIV_M2_DPLL_MPU) |= 1;
+
+    x = REG(CM_CLKMODE_DPLL_MPU);
+    x |= 0x7;
+    REG(CM_CLKMODE_DPLL_MPU) = x;
+    while (!(REG(CM_IDLEST_DPLL_MPU) & 0x1)) {}
+    */
+
 }
 
 // Core PLL Configuration based on AM335x TRM 8.1.6.7.1
