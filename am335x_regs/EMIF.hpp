@@ -1200,6 +1200,44 @@ namespace REGS
             } b;                                                // bit access
             uint32_t reg;                                       // raw register
         } DDR_PHY_CTRL_1_SHDW_reg_t;
+
+        /* (offset = 0xEC) [reset = 0x0] */
+        typedef union
+        {
+                                                             /* DDR_PHY_CTRL_1
+                                                              */
+            struct
+            {
+                uint32_t    READ_LATENCY            : 5;      // bits 0..4   (RW) This field defines the latency for read data from DDR SDRAM in
+                                                              //                  number of DDR clock cycles.
+                                                              //                  The value applied should be equal to the required value minus one.
+                                                              //                  The maximum read latency supported by the DDR PHY is equal to
+                                                              //                  CAS latency plus 7 clock cycles.
+                                                              //                  The minimum read latency must be equal to CAS latency plus 2
+                                                              //                  clock cycle.
+                uint32_t                            : 3;      // bits 5..7   (R)  Reserved
+                uint32_t    RD_LOCAL_ODT            : 2;      // bits 8..9   (RW) Read local ODT value [see e_LOCAL_ODT]
+                uint32_t    WR_LOCAL_ODT            : 2;      // bits 10..11 (RW) This bit controls the value assigned to the reg_phy_wr_local_odt
+                                                              //                  input on the data macros.
+                                                              //                  Always set to 00.
+                uint32_t    IDLE_LOCAL_ODT          : 2;      // bits 12..13 (RW) Value to drive on the
+                                                              //                  2-bit local_odt (On-Die Termination) PHY outputs when
+                                                              //                  reg_phy_dynamic_pwrdn_enable is asserted and a read is not in
+                                                              //                  progress and reg_phy_dynamic_pwrdn_enable.
+                                                              //                  Typically this is the value required to disable termination (00) to save
+                                                              //                  power when idle.
+                uint32_t                            : 1;      // bit  14     (R)  Reserved
+                uint32_t    PHY_RST_N               : 1;      // bit  15     (RW) PHY reset control
+                                                              //                  [ 0x0 = reset;
+                                                              //                    0x1 = normal ]
+                uint32_t                            : 4;      // bits 16..19 (R)  Reserved
+                uint32_t    ENABLE_DYNAMIC_PWRDN    : 1;      // bit  20     (RW) Dynamic IO power down
+                                                              //                  [ 0x0 = always on;
+                                                              //                    0x1 = dynamic ]
+                uint32_t                            :11;      // bits 21..31 (R)  Reserved
+            } b;                                              // bit access
+            uint32_t reg;                                     // raw register
+        } DDR_PHY_CTRL_2_reg_t;
         
         /* (offset = 0x100) [reset = 0x0] */ 
         typedef union 
@@ -1373,13 +1411,14 @@ namespace REGS
             __R    uint32_t                           RESERVED11[1];
             __RW   DDR_PHY_CTRL_1_reg_t               DDR_PHY_CTRL_1;             // (0xE4)
             __RW   DDR_PHY_CTRL_1_SHDW_reg_t          DDR_PHY_CTRL_1_SHDW;        // (0xE8)
-            __R    uint32_t                           RESERVED12[5];
+            __RW   DDR_PHY_CTRL_2_reg_t               DDR_PHY_CTRL_2;             // (0xEC)
+            __R    uint32_t                           RESERVED12[4];
             __RW   PRIORITY_TO_COS_MAPPING_reg_t      PRIORITY_TO_COS_MAPPING;    // (0x100)
             __RW   CONNID_TO_COS_1_MAPPING_reg_t      CONNID_TO_COS_1_MAPPING;    // (0x104)
             __RW   CONNID_TO_COS_2_MAPPING_reg_t      CONNID_TO_COS_2_MAPPING;    // (0x108)
             __R    uint32_t                           RESERVED13[5]; 
             __RW   READ_WRITE_EXEC_THRESHOLD_reg_t    READ_WRITE_EXEC_THRESHOL;   // (0x120)
-
+                                                                                  // actual module size from RTT_CHECK_MODULE_SIZE - 0x124
              bool is_phy_ready() const { return STATUS.b.PHY_DLL_READY; }
         };
 
@@ -1436,14 +1475,14 @@ namespace REGS
             __R   uint32_t              RESERVED19[4];
             __W   DELAY_SEL_reg_t       DATA1_USE_RANK0_DELAYS;           // (0x1D8)  DDR PHY Data Macro 1 Delay Selection Register
             __W   DLL_LOCK_DIFF_reg_t   DATA1_DLL_LOCK_DIFF_0;            // (0x1DC)  DDR PHY Data Macro 1 DLL Lock Difference Register
+                                                                          // actual module size from RTT_CHECK_MODULE_SIZE - 0x1E0
         };
 
         constexpr uint32_t AM335x_DDR23mPHY_BASE = 0x44E12000; 
         constexpr uint32_t AM335x_EMIF0_BASE     = 0x4C000000;
 
-        inline AM335x_DDR23mPHY_Type  *AM335x_DDR23mPHY = reinterpret_cast<AM335x_DDR23mPHY_Type *>(AM335x_DDR23mPHY_BASE);
         inline AM335x_EMIF4D_Type     *AM335x_EMIF0     = reinterpret_cast<AM335x_EMIF4D_Type *>(AM335x_EMIF0_BASE);
-
+        inline AM335x_DDR23mPHY_Type  *AM335x_DDR23mPHY = reinterpret_cast<AM335x_DDR23mPHY_Type *>(AM335x_DDR23mPHY_BASE);
     } // namespace EMIF
 } // namespace REGS
 

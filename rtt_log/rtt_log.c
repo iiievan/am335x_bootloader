@@ -93,7 +93,9 @@ void rtt_log_print_format(rtt_log_level_t level, const char* tag, const char* fo
 
 void rtt_log_exclude_tag(char* tag)
 {
-    //rtt_assert(tag);
+    RTT_LOG_ASSERT(tag != NULL);
+    RTT_LOG_ASSERT(strlen(tag) < MAX_TAG_LENGTH);
+
     for (uint8_t i = 0; i < MAX_TAG_COUNT; i++)
     {
         if (m_exclude_tag[i] == NULL)
@@ -107,7 +109,9 @@ void rtt_log_exclude_tag(char* tag)
 
 void rtt_log_unexclude_tag(char* tag)
 {
-    //rtt_assert(tag);
+    RTT_LOG_ASSERT(tag != NULL);
+    RTT_LOG_ASSERT(strlen(tag) < MAX_TAG_LENGTH);
+
     for (uint8_t i = 0; i < MAX_TAG_COUNT; i++)
     {
         if ((m_exclude_tag[i] != NULL) && (strcmp(m_exclude_tag[i], tag) == 0))
@@ -121,7 +125,7 @@ void rtt_log_unexclude_tag(char* tag)
 
 void rtt_log_set_level(rtt_log_level_t level)
 {
-    //rtt_assert(level <= RHSLogLevelTrace);
+    RTT_LOG_ASSERT(level <= RTTLogLevelTrace);
 
     if (level == RTTLogLevelDefault)
     {
