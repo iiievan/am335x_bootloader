@@ -163,26 +163,6 @@ static void mpu_pll_init()
 
     // wait for locking to finish
     while (wkup.IDLEST_DPLL_MPU.b.DPLL == 0){}
-
-    /*
-    uint32_t x = REG(CM_CLKMODE_DPLL_MPU);
-    x &= ~0x7;
-    x |= 0x4;
-    REG(CM_CLKMODE_DPLL_MPU) = x;
-    while (!(REG(CM_IDLEST_DPLL_MPU) & 0x100)) {}
-
-    REG(CM_CLKSEL_DPLL_MPU) = (1000 << 8) | (23);
-
-    // Set M2 Divider
-    REG(CM_DIV_M2_DPLL_MPU) &= ~0x1F;
-    REG(CM_DIV_M2_DPLL_MPU) |= 1;
-
-    x = REG(CM_CLKMODE_DPLL_MPU);
-    x |= 0x7;
-    REG(CM_CLKMODE_DPLL_MPU) = x;
-    while (!(REG(CM_IDLEST_DPLL_MPU) & 0x1)) {}
-    */
-
 }
 
 // Core PLL Configuration based on AM335x TRM 8.1.6.7.1
@@ -190,41 +170,67 @@ static void mpu_pll_init()
 // clock source is 24MHz crystal on OSC0-IN (BBB schematic page 3)
 static void core_pll_init()
 {
-  uint32_t x;
+    using namespace REGS::PRCM;
+    auto& wkup = *AM335x_CM_WKUP;
 
-  // Switch PLL to bypass mode
-  x = REG(CM_CLKMODE_DPLL_CORE);
-  x &= ~0x7;
-  x |= 0x4;
-  REG(CM_CLKMODE_DPLL_CORE) = x;
+    // Switch PLL to bypass mode and wait to baypass status
+    uint32_t dpll_core = wkup.CLKMODE_DPLL_CORE.reg;
+    dpll_core&= ~0x7;
+    dpll_core |= 0x4;
+    wkup.CLKMODE_DPLL_CORE.reg = dpll_core;
+    while (wkup.IDLEST_DPLL_CORE.b.ST_MN_BYPASS == 0){}
 
-  // wait for bypass status
-  while (!(REG(CM_IDLEST_DPLL_CORE) & 0x100)) {}
+    // configure divider and multipler
+    // DPLL_MULT = 500, DPLL_DIV = 23 (actual division factor is N+1)
+    // 24MHz*500/24 = 0.5GHz
+    wkup.CLKSEL_DPLL_CORE.reg = (500 << 8) | (23);
 
-  // configure divider and multipler
-  // DPLL_MULT = 1000, DPLL_DIV = 23 (actual division factor is N+1)
-  // 24MHz*1000/24 = 1GHz
-  REG(CM_CLKSEL_DPLL_CORE) = (500 << 8) | (23);
+    // Set M4,M5,M6 diveders
+    wkup.DIV_M4_DPLL_CORE.reg &= ~0x1F;
+    wkup.DIV_M4_DPLL_CORE.reg |= 10;
+    wkup.DIV_M5_DPLL_CORE.reg &= ~0x1F;
+    wkup.DIV_M5_DPLL_CORE.reg |= 8;
+    wkup.DIV_M6_DPLL_CORE.reg &= ~0x1F;
+    wkup.DIV_M6_DPLL_CORE.reg |= 4;
 
-  // Set M4 Divider
-  REG(CM_DIV_M4_DPLL_CORE) &= ~0x1F;
-  REG(CM_DIV_M4_DPLL_CORE) |= 10;
+    // Lock PLL and wait locking status
+    dpll_core = wkup.CLKMODE_DPLL_CORE.reg;
+    dpll_core |= 0x7;
+    wkup.CLKMODE_DPLL_CORE.reg = dpll_core;
+    while (wkup.IDLEST_DPLL_CORE.b.ST_DPLL_CLK == 0){}
 
-  // Set the M5 Divider
-  REG(CM_DIV_M5_DPLL_CORE) &= ~0x1F;
-  REG(CM_DIV_M5_DPLL_CORE) |= 8;
+    /*
+    // Switch PLL to bypass mode
+    uint32_t x = REG(CM_CLKMODE_DPLL_CORE);
+    x &= ~0x7;
+    x |= 0x4;
+    REG(CM_CLKMODE_DPLL_CORE) = x;
 
-  // Set the M6 Divider
-  REG(CM_DIV_M6_DPLL_CORE) &= ~0x1F;
-  REG(CM_DIV_M6_DPLL_CORE) |= 4;
+    // wait for bypass status
+    while (!(REG(CM_IDLEST_DPLL_CORE) & 0x100)) {}
 
-  // Enable, locking PLL
-  x = REG(CM_CLKMODE_DPLL_CORE);
-  x |= 0x7;
-  REG(CM_CLKMODE_DPLL_CORE) = x;
+    REG(CM_CLKSEL_DPLL_CORE) = (500 << 8) | (23);
 
-  // wait for locking to finish
-  while (!(REG(CM_IDLEST_DPLL_CORE) & 0x1)) {}
+    // Set M4 Divider
+    REG(CM_DIV_M4_DPLL_CORE) &= ~0x1F;
+    REG(CM_DIV_M4_DPLL_CORE) |= 10;
+
+    // Set the M5 Divider
+    REG(CM_DIV_M5_DPLL_CORE) &= ~0x1F;
+    REG(CM_DIV_M5_DPLL_CORE) |= 8;
+
+    // Set the M6 Divider
+    REG(CM_DIV_M6_DPLL_CORE) &= ~0x1F;
+    REG(CM_DIV_M6_DPLL_CORE) |= 4;
+
+    // Enable, locking PLL
+    x = REG(CM_CLKMODE_DPLL_CORE);
+    x |= 0x7;
+    REG(CM_CLKMODE_DPLL_CORE) = x;
+
+    // wait for locking to finish
+    while (!(REG(CM_IDLEST_DPLL_CORE) & 0x1)) {}
+    */
 }
 
 // PER PLL Configuration based on AM335x TRM 8.1.6.8.1
@@ -295,7 +301,7 @@ static void ddr_pll_init()
   while (!(REG(CM_IDLEST_DPLL_DDR) & 0x1)) {}
 }
 
-//#define INTERFACE_CLK_INI_DBG
+
 static void interface_clocks_init()
 {
     using namespace REGS::PRCM;
@@ -305,33 +311,15 @@ static void interface_clocks_init()
     RTT_CHECK_MODULE_SIZE(AM335x_CM_PER_Type,0x150);
     RTT_CHECK_MODULE_SIZE(AM335x_CM_WKUP_Type,0xD8);
 
-#ifdef INTERFACE_CLK_INI_DBG
-    RTT_LOG_REG(D,CM_WKUP, CONTROL_CLKCTRL, wkup.CONTROL_CLKCTRL.reg);
-    RTT_LOG_REG(D,CM_PER, L4LS_CLKCTRL, per.L4LS_CLKCTRL.reg);
-    RTT_LOG_REG(D,CM_PER, L3_CLKCTRL, per.L3_CLKCTRL.reg);
-    RTT_LOG_REG(D,CM_WKUP, CLKSTCTRL, wkup.CLKSTCTRL.reg);
-    RTT_LOG_REG(D,CM_PER, L4LS_CLKSTCTRL, per.L4LS_CLKSTCTRL.reg);
-    RTT_LOG_REG(D,CM_PER, L3_CLKSTCTRL, per.L3_CLKSTCTRL.reg);
-#endif
-
     wkup.CONTROL_CLKCTRL.b.MODULEMODE = MODULEMODE_ENABLE;
     per.L4LS_CLKCTRL.b.MODULEMODE = MODULEMODE_ENABLE;
     per.L3_CLKCTRL.b.MODULEMODE = MODULEMODE_ENABLE;
     wkup.CLKSTCTRL.b.CLKTRCTRL = SW_WKUP;
     per.L4LS_CLKSTCTRL.b.CLKTRCTRL = SW_WKUP;
     per.L3S_CLKSTCTRL.b.CLKTRCTRL = SW_WKUP;
-
-#ifdef INTERFACE_CLK_INI_DBG
-    RTT_LOG_REG(E,CM_WKUP, CONTROL_CLKCTRL, wkup.CONTROL_CLKCTRL.reg);
-    RTT_LOG_REG(E,CM_PER, L4LS_CLKCTRL, per.L4LS_CLKCTRL.reg);
-    RTT_LOG_REG(E,CM_PER, L3_CLKSTCTRL, per.L3_CLKSTCTRL.reg);
-    RTT_LOG_REG(E,CM_WKUP, CLKSTCTRL, wkup.CLKSTCTRL.reg);
-    RTT_LOG_REG(E,CM_PER, L4LS_CLKSTCTRL, per.L4LS_CLKSTCTRL.reg);
-    RTT_LOG_REG(E,CM_PER, L3_CLKSTCTRL, per.L3_CLKSTCTRL.reg);
-#endif
 }
 
-//#define DDR_INI_DBG
+
 static void ddr_init()
 {
     using namespace REGS::CONTROL_MODULE;
@@ -344,25 +332,12 @@ static void ddr_init()
 
     RTT_CHECK_MODULE_SIZE(AM335x_CTRL_MODULE_Type,0x1444);
 
-#ifdef DDR_INI_DBG
-    RTT_LOG_REG(D,CM_PER,EMIF_CLKCTRL,per.EMIF_CLKCTRL.reg);
-    RTT_LOG_REG(D,CM_PER,EMIF_FW_CLKCTRL,per.EMIF_FW_CLKCTRL.reg);
-#endif
-
     per.EMIF_CLKCTRL.reg = MODULEMODE_ENABLE;
     per.EMIF_FW_CLKCTRL.reg = MODULEMODE_ENABLE;
-
-#ifdef DDR_INI_DBG
-    RTT_LOG_REG(E,CM_PER,EMIF_CLKCTRL,per.EMIF_CLKCTRL.reg);
-    RTT_LOG_REG(E,CM_PER,EMIF_FW_CLKCTRL,per.EMIF_FW_CLKCTRL.reg);
-#endif
 
     while (!(per.L3_CLKSTCTRL.b.CLKACTIVITY_EMIF_GCLK == CLK_ACT &&
              per.L3_CLKSTCTRL.b.CLKACTIVITY_MMC_FCLK == CLK_ACT)) {}
 
-#ifdef DDR_INI_DBG
-    RTT_LOG_REG(D,CTRL_MOD,vtp_ctrl, cm.vtp_ctrl.reg);
-#endif
     // Note beaglebone black does not have VTT termination
     // initialize virtual temperature process compensation
     cm.vtp_ctrl.reg |= 0x40;
@@ -370,25 +345,6 @@ static void ddr_init()
     cm.vtp_ctrl.reg |= 0x1;
 
     while (cm.vtp_ctrl.b.ready != 0x1) {}
-
-#ifdef DDR_INI_DBG
-    RTT_LOG_REG(E,CTRL_MOD,vtp_ctrl, cm.vtp_ctrl.reg);
-
-    RTT_LOG_REG(D, DDR23mPHY, CMD0_CTRL_SLAVE_RATIO_0, phy.CMD0_CTRL_SLAVE_RATIO_0.reg);
-    RTT_LOG_REG(D, DDR23mPHY, CMD0_INVERT_CLKOUT_0, phy.CMD0_INVERT_CLKOUT_0.reg);
-    RTT_LOG_REG(D, DDR23mPHY, CMD1_CTRL_SLAVE_RATIO_0, phy.CMD1_CTRL_SLAVE_RATIO_0.reg);
-    RTT_LOG_REG(D, DDR23mPHY, CMD1_INVERT_CLKOUT_0, phy.CMD1_INVERT_CLKOUT_0.reg);
-    RTT_LOG_REG(D, DDR23mPHY, CMD2_CTRL_SLAVE_RATIO_0, phy.CMD2_CTRL_SLAVE_RATIO_0.reg);
-    RTT_LOG_REG(D, DDR23mPHY, CMD2_INVERT_CLKOUT_0, phy.CMD2_INVERT_CLKOUT_0.reg);
-    RTT_LOG_REG(D, DDR23mPHY, DATA0_RD_DQS_SLAVE_RATIO_0, phy.DATA0_RD_DQS_SLAVE_RATIO_0.reg);
-    RTT_LOG_REG(D, DDR23mPHY, DATA0_WR_DQS_SLAVE_RATIO_0, phy.DATA0_WR_DQS_SLAVE_RATIO_0.reg);
-    RTT_LOG_REG(D, DDR23mPHY, DATA0_FIFO_WE_SLAVE_RATIO_0, phy.DATA0_FIFO_WE_SLAVE_RATIO_0.reg);
-    RTT_LOG_REG(D, DDR23mPHY, DATA0_WR_DATA_SLAVE_RATIO_0, phy.DATA0_WR_DATA_SLAVE_RATIO_0.reg);
-    RTT_LOG_REG(D, DDR23mPHY, DATA1_RD_DQS_SLAVE_RATIO_0, phy.DATA1_RD_DQS_SLAVE_RATIO_0.reg);
-    RTT_LOG_REG(D, DDR23mPHY, DATA1_WR_DQS_SLAVE_RATIO_0, phy.DATA1_WR_DQS_SLAVE_RATIO_0.reg);
-    RTT_LOG_REG(D, DDR23mPHY, DATA1_FIFO_WE_SLAVE_RATIO_0, phy.DATA1_FIFO_WE_SLAVE_RATIO_0.reg);
-    RTT_LOG_REG(D, DDR23mPHY, DATA1_WR_DATA_SLAVE_RATIO_0, phy.DATA1_WR_DATA_SLAVE_RATIO_0.reg);
-#endif
 
     phy.CMD0_CTRL_SLAVE_RATIO_0.reg = DDR3_CMD_SLAVE_RATIO;
     phy.CMD0_INVERT_CLKOUT_0.reg = DDR3_CMD_INVERT_CLKOUT; // Core clock not inverted
@@ -406,31 +362,6 @@ static void ddr_init()
     phy.DATA1_FIFO_WE_SLAVE_RATIO_0.reg = DDR3_DATA0_FIFO_WE_SLAVE_RATIO;
     phy.DATA1_WR_DATA_SLAVE_RATIO_0.reg = DDR3_DATA0_WR_DATA_SLAVE_RATIO;
 
-#ifdef DDR_INI_DBG
-    RTT_LOG_REG(E, DDR23mPHY, CMD0_CTRL_SLAVE_RATIO_0, phy.CMD0_CTRL_SLAVE_RATIO_0.reg);
-    RTT_LOG_REG(E, DDR23mPHY, CMD0_INVERT_CLKOUT_0, phy.CMD0_INVERT_CLKOUT_0.reg);
-    RTT_LOG_REG(E, DDR23mPHY, CMD1_CTRL_SLAVE_RATIO_0, phy.CMD1_CTRL_SLAVE_RATIO_0.reg);
-    RTT_LOG_REG(E, DDR23mPHY, CMD1_INVERT_CLKOUT_0, phy.CMD1_INVERT_CLKOUT_0.reg);
-    RTT_LOG_REG(E, DDR23mPHY, CMD2_CTRL_SLAVE_RATIO_0, phy.CMD2_CTRL_SLAVE_RATIO_0.reg);
-    RTT_LOG_REG(E, DDR23mPHY, CMD2_INVERT_CLKOUT_0, phy.CMD2_INVERT_CLKOUT_0.reg);
-    RTT_LOG_REG(E, DDR23mPHY, DATA0_RD_DQS_SLAVE_RATIO_0, phy.DATA0_RD_DQS_SLAVE_RATIO_0.reg);
-    RTT_LOG_REG(E, DDR23mPHY, DATA0_WR_DQS_SLAVE_RATIO_0, phy.DATA0_WR_DQS_SLAVE_RATIO_0.reg);
-    RTT_LOG_REG(E, DDR23mPHY, DATA0_FIFO_WE_SLAVE_RATIO_0, phy.DATA0_FIFO_WE_SLAVE_RATIO_0.reg);
-    RTT_LOG_REG(E, DDR23mPHY, DATA0_WR_DATA_SLAVE_RATIO_0, phy.DATA0_WR_DATA_SLAVE_RATIO_0.reg);
-    RTT_LOG_REG(E, DDR23mPHY, DATA1_RD_DQS_SLAVE_RATIO_0, phy.DATA1_RD_DQS_SLAVE_RATIO_0.reg);
-    RTT_LOG_REG(E, DDR23mPHY, DATA1_WR_DQS_SLAVE_RATIO_0, phy.DATA1_WR_DQS_SLAVE_RATIO_0.reg);
-    RTT_LOG_REG(E, DDR23mPHY, DATA1_FIFO_WE_SLAVE_RATIO_0, phy.DATA1_FIFO_WE_SLAVE_RATIO_0.reg);
-    RTT_LOG_REG(E, DDR23mPHY, DATA1_WR_DATA_SLAVE_RATIO_0, phy.DATA1_WR_DATA_SLAVE_RATIO_0.reg);
-
-    RTT_LOG_REG(D, CTRL_MOD, ddr_cmd0_ioctrl, cm.ddr_cmd0_ioctrl.reg);
-    RTT_LOG_REG(D, CTRL_MOD, ddr_cmd1_ioctrl, cm.ddr_cmd1_ioctrl.reg);
-    RTT_LOG_REG(D, CTRL_MOD, ddr_cmd2_ioctrl, cm.ddr_cmd2_ioctrl.reg);
-    RTT_LOG_REG(D, CTRL_MOD, ddr_data0_ioctrl, cm.ddr_data0_ioctrl.reg);
-    RTT_LOG_REG(D, CTRL_MOD, ddr_data1_ioctrl, cm.ddr_data1_ioctrl.reg);
-    RTT_LOG_REG(D, CTRL_MOD, ddr_io_ctrl, cm.ddr_io_ctrl.reg);
-    RTT_LOG_REG(D, CTRL_MOD, ddr_cke_ctrl, cm.ddr_cke_ctrl.reg);
-#endif
-
     cm.ddr_cmd0_ioctrl.reg = DDR3_IOCTRL_VALUE;
     cm.ddr_cmd1_ioctrl.reg = DDR3_IOCTRL_VALUE;
     cm.ddr_cmd2_ioctrl.reg = DDR3_IOCTRL_VALUE;
@@ -439,31 +370,6 @@ static void ddr_init()
 
     cm.ddr_io_ctrl.reg &= ~0x10000000;;
     cm.ddr_cke_ctrl.reg |= 0x1;
-
-#ifdef DDR_INI_DBG
-    RTT_LOG_REG(E, CTRL_MOD, ddr_cmd0_ioctrl, cm.ddr_cmd0_ioctrl.reg);
-    RTT_LOG_REG(E, CTRL_MOD, ddr_cmd1_ioctrl, cm.ddr_cmd1_ioctrl.reg);
-    RTT_LOG_REG(E, CTRL_MOD, ddr_cmd2_ioctrl, cm.ddr_cmd2_ioctrl.reg);
-    RTT_LOG_REG(E, CTRL_MOD, ddr_data0_ioctrl, cm.ddr_data0_ioctrl.reg);
-    RTT_LOG_REG(E, CTRL_MOD, ddr_data1_ioctrl, cm.ddr_data1_ioctrl.reg);
-    RTT_LOG_REG(E, CTRL_MOD, ddr_io_ctrl, cm.ddr_io_ctrl.reg);
-    RTT_LOG_REG(E, CTRL_MOD, ddr_cke_ctrl, cm.ddr_cke_ctrl.reg);
-
-    RTT_LOG_REG(D, EMIF4D, DDR_PHY_CTRL_1, emif.DDR_PHY_CTRL_1.reg);
-    RTT_LOG_REG(D, EMIF4D, DDR_PHY_CTRL_1_SHDW, emif.DDR_PHY_CTRL_1_SHDW.reg);
-    RTT_LOG_REG(D, EMIF4D, DDR_PHY_CTRL_2, emif.DDR_PHY_CTRL_2.reg);
-    RTT_LOG_REG(D, EMIF4D, SDRAM_TIM_1, emif.SDRAM_TIM_1.reg);
-    RTT_LOG_REG(D, EMIF4D, SDRAM_TIM_1_SHDW, emif.SDRAM_TIM_1_SHDW.reg);
-    RTT_LOG_REG(D, EMIF4D, SDRAM_TIM_2, emif.SDRAM_TIM_2.reg);
-    RTT_LOG_REG(D, EMIF4D, SDRAM_TIM_2_SHDW, emif.SDRAM_TIM_2_SHDW.reg);
-    RTT_LOG_REG(D, EMIF4D, SDRAM_TIM_3, emif.SDRAM_TIM_3.reg);
-    RTT_LOG_REG(D, EMIF4D, SDRAM_TIM_3_SHDW, emif.SDRAM_TIM_3_SHDW.reg);
-    RTT_LOG_REG(D, EMIF4D, SDRAM_REF_CTRL, emif.SDRAM_REF_CTRL.reg);
-    RTT_LOG_REG(D, EMIF4D, SDRAM_REF_CTRL_SHDW, emif.SDRAM_REF_CTRL_SHDW.reg);
-    RTT_LOG_REG(D, EMIF4D, SDRAM_REF_CTRL, emif.SDRAM_REF_CTRL.reg);
-    RTT_LOG_REG(D, EMIF4D, ZQ_CONFIG, emif.ZQ_CONFIG.reg);
-    RTT_LOG_REG(D, EMIF4D, SDRAM_CONFIG, emif.SDRAM_CONFIG.reg);
-#endif
 
     emif.DDR_PHY_CTRL_1.reg = DDR3_READ_LATENCY;
     emif.DDR_PHY_CTRL_1_SHDW.reg = DDR3_READ_LATENCY;
@@ -478,22 +384,6 @@ static void ddr_init()
     emif.SDRAM_REF_CTRL_SHDW.reg = DDR3_REF_CTRL;
     emif.ZQ_CONFIG.reg = DDR3_ZQ_CONFIG;
     emif.SDRAM_CONFIG.reg = DDR3_SDRAM_CONFIG;
-
-#ifdef DDR_INI_DBG
-    RTT_LOG_REG(E, EMIF4D, DDR_PHY_CTRL_1, emif.DDR_PHY_CTRL_1.reg);
-    RTT_LOG_REG(E, EMIF4D, DDR_PHY_CTRL_1_SHDW, emif.DDR_PHY_CTRL_1_SHDW.reg);
-    RTT_LOG_REG(E, EMIF4D, DDR_PHY_CTRL_2, emif.DDR_PHY_CTRL_2.reg);
-    RTT_LOG_REG(E, EMIF4D, SDRAM_TIM_1, emif.SDRAM_TIM_1.reg);
-    RTT_LOG_REG(E, EMIF4D, SDRAM_TIM_1_SHDW, emif.SDRAM_TIM_1_SHDW.reg);
-    RTT_LOG_REG(E, EMIF4D, SDRAM_TIM_2, emif.SDRAM_TIM_2.reg);
-    RTT_LOG_REG(E, EMIF4D, SDRAM_TIM_2_SHDW, emif.SDRAM_TIM_2_SHDW.reg);
-    RTT_LOG_REG(E, EMIF4D, SDRAM_TIM_3, emif.SDRAM_TIM_3.reg);
-    RTT_LOG_REG(E, EMIF4D, SDRAM_TIM_3_SHDW, emif.SDRAM_TIM_3_SHDW.reg);
-    RTT_LOG_REG(E, EMIF4D, SDRAM_REF_CTRL, emif.SDRAM_REF_CTRL.reg);
-    RTT_LOG_REG(E, EMIF4D, SDRAM_REF_CTRL_SHDW, emif.SDRAM_REF_CTRL_SHDW.reg);
-    RTT_LOG_REG(E, EMIF4D, ZQ_CONFIG, emif.ZQ_CONFIG.reg);
-    RTT_LOG_REG(E, EMIF4D, SDRAM_CONFIG, emif.SDRAM_CONFIG.reg);
-#endif
 }
 
 

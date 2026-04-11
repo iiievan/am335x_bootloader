@@ -10,12 +10,22 @@
 */
 void OnProjectLoad (void) 
 {
+  Project.SetRTT(0);
+
+  // Вот эти две строки решают проблему неработающего Reset с открытой вкладкой Peripherals
+  Edit.SysVar("PERIPHERAL_UPDATE_INTERVAL", 0);       // полностью отключает авто-обновление
+  Edit.SysVar("PERIPHERAL_UPDATE_ON_HALT", 0);        // не обновлять при halt/reset
+
   Project.SetDevice ("AM3359");
   Project.SetHostIF ("USB", "941000024");
   Project.SetTargetIF ("JTAG");
   Project.SetTIFSpeed ("12 MHz");
+
   Edit.SysVar (VAR_ALLOW_BMA_EMULATION, 1);
+
   Project.AddSvdFile("Cortex-A8.svd");
+  Project.AddSvdFile ("AM335x_PRCM.svd");
+
   File.Open("../cmake-build-debug/app/am335x_boot.elf");
 
   // Используем числовое значение 1 для режима "Halt after reset"

@@ -1,228 +1,2108 @@
-<?xml version="1.0" encoding="utf-8"?>
-<device schemaVersion="1.3" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="CMSIS-SVD_Schema_1_3.xsd">
+<?xml version="1.0" ?>
+<device xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="1.3" xs:noNamespaceSchemaLocation="CMSIS-SVD_Schema_1_3.xsd">
   <vendor>Texas Instruments</vendor>
   <name>AM335x</name>
   <series>Sitara AM335x</series>
-  <version>1.0</version>
-  <description>AM335x EMIF Registers for DDR Initialization (Ozone)</description>
-
+  <version>1.1</version>
+  <description>AM335x EMIF4D and DDR PHY generated from EMIF.hpp</description>
   <cpu>
     <name>Cortex-A8</name>
     <revision>r0p0</revision>
     <endian>little</endian>
   </cpu>
-
   <addressUnitBits>8</addressUnitBits>
   <width>32</width>
   <size>32</size>
   <resetValue>0x00000000</resetValue>
   <resetMask>0xFFFFFFFF</resetMask>
-
   <peripherals>
-
-    <!-- ====================== EMIF0 ====================== -->
     <peripheral>
       <name>EMIF0</name>
-      <description>External Memory Interface (EMIF) - DDR Controller</description>
+      <description>External Memory Interface 4D (EMIF) - DDR Controller</description>
       <baseAddress>0x4C000000</baseAddress>
       <groupName>Memory</groupName>
-
       <registers>
-
-        <!-- STATUS -->
+        <register>
+          <name>EMIF_MOD_ID_REV</name>
+          <addressOffset>0x0</addressOffset>
+          <description>EMIF_MOD_ID_REV Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>MINOR_REV</name>
+              <description>bits 0..5 (R) Minor Revision</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>6</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>MAJOR_REV</name>
+              <description>bits 8..10 (R) Major Revision</description>
+              <bitOffset>6</bitOffset>
+              <bitWidth>3</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RTL_VERSION</name>
+              <description>bits 11..15 (R) RTL Version</description>
+              <bitOffset>9</bitOffset>
+              <bitWidth>5</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>MODULE_ID</name>
+              <description>bits 16..27 (R) EMIF module ID</description>
+              <bitOffset>14</bitOffset>
+              <bitWidth>12</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>SCHEME</name>
+              <description>bits 30..31 (R) Scheme indicator [0x1 = old scheme; 0x2 = current scheme]</description>
+              <bitOffset>26</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
         <register>
           <name>STATUS</name>
-          <description>EMIF Status Register</description>
-          <addressOffset>0x04</addressOffset>
+          <addressOffset>0x4</addressOffset>
+          <description>STATUS Register</description>
           <size>32</size>
-          <access>read-only</access>
-          <resetValue>0x40000000</resetValue>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
           <fields>
             <field>
               <name>PHY_DLL_READY</name>
-              <description>PHY DLL Ready</description>
+              <description>bit 2 (R) DDR PHY Ready [0x0 = not ready; 0x1 = ready]</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>FAST_INIT</name>
+              <description>bit 29 (R) Fast Init enabled [0x0 = disabled; 0x1 = enabled]</description>
+              <bitOffset>1</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>DUAL_CLK_MODE</name>
+              <description>bit 30 (R) Dual Clock mode [0x0 = synchronous; 0x1 = asynchronous]</description>
               <bitOffset>2</bitOffset>
               <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>BE</name>
+              <description>bit 31 (R) Big Endian mode [0x0 = little endian; 0x1 = big endian]</description>
+              <bitOffset>3</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
             </field>
           </fields>
         </register>
-
-        <!-- SDRAM_CONFIG -->
         <register>
           <name>SDRAM_CONFIG</name>
-          <description>SDRAM Configuration Register</description>
-          <addressOffset>0x08</addressOffset>
+          <addressOffset>0x8</addressOffset>
+          <description>SDRAM_CONFIG Register</description>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0x4104BAB2</resetValue>
+          <resetValue>0x00000000</resetValue>
           <fields>
             <field>
-              <name>SDRAM_TYPE</name>
-              <description>SDRAM Type</description>
-              <bitOffset>29</bitOffset>
+              <name>PAGESIZE</name>
+              <description>bits 0..2 (RW) Page Size [see e_PAGESIZE]</description>
+              <bitOffset>0</bitOffset>
               <bitWidth>3</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>EBANK</name>
+              <description>bit 3 (RW) External chip select [0x0 = CS0 only; 0x1 = CS0 and CS1]</description>
+              <bitOffset>3</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
             </field>
             <field>
               <name>IBANK</name>
-              <description>Internal Banks</description>
+              <description>bits 4..6 (RW) Internal Bank setup [see e_IBANK]</description>
               <bitOffset>4</bitOffset>
               <bitWidth>3</bitWidth>
+              <access>read-write</access>
             </field>
             <field>
-              <name>PAGESIZE</name>
-              <description>Page Size</description>
-              <bitOffset>0</bitOffset>
+              <name>ROWSIZE</name>
+              <description>bits 7..9 (RW) Row Size [see e_ROWSIZE]</description>
+              <bitOffset>7</bitOffset>
               <bitWidth>3</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CL</name>
+              <description>bits 10..13 (RW) CAS Latency [see e_CL]</description>
+              <bitOffset>10</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>NARROW_MODE</name>
+              <description>bits 14..15 (RW) Data bus width [0x0 = 32-bit; 0x1 = 16-bit]</description>
+              <bitOffset>14</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CWL</name>
+              <description>bits 16..17 (RW) DDR3 CAS Write latency [see e_CWL]</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>SDRAM_DRIVE</name>
+              <description>bits 18..19 (RW) Drive strength [see e_SDRAM_DRIVE]</description>
+              <bitOffset>18</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>DDR_DISABLE_DLL</name>
+              <description>bit 20 (RW) Disable DLL select [0x0 = enabled; 0x1 = disabled]</description>
+              <bitOffset>20</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>DYN_ODT</name>
+              <description>bits 21..22 (RW) DDR3 Dynamic ODT [see e_DYN_ODT]</description>
+              <bitOffset>21</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>DDR2_DDQS</name>
+              <description>bit 23 (RW) DDR2 diff DQS enable [0x0 = single ended; 0x1 = differential]</description>
+              <bitOffset>23</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>DDR_TERM</name>
+              <description>bits 24..26 (RW) Termination resistor [see e_DDR_TERM]</description>
+              <bitOffset>24</bitOffset>
+              <bitWidth>3</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>IBANK_POS</name>
+              <description>bits 27..28 (RW) Internal bank position [see e_IBANK_POS]</description>
+              <bitOffset>27</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>SDRAM_TYPE</name>
+              <description>bits 29..31 (RW) SDRAM Type selection [see e_SDRAM_TYPE]</description>
+              <bitOffset>29</bitOffset>
+              <bitWidth>3</bitWidth>
+              <access>read-write</access>
             </field>
           </fields>
         </register>
-
-        <!-- DDR_PHY_CTRL_1 -->
+        <register>
+          <name>SDRAM_CONFIG_2</name>
+          <addressOffset>0xC</addressOffset>
+          <description>SDRAM_CONFIG_2 Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>EBANK_POS</name>
+              <description>bit 27 (RW) External bank position [0x0 = lower OCP address; 0x1 = higher OCP address]</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SDRAM_REF_CTRL</name>
+          <addressOffset>0x10</addressOffset>
+          <description>SDRAM_REF_CTRL Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>REFRESH_RATE</name>
+              <description>bits 0..15 (RW) Refresh Rate</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PASR</name>
+              <description>bits 24..26 (RW) Partial Array Self Refresh [see e_PASR]</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>3</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ASR</name>
+              <description>bit 28 (RW) Auto Self Refresh enable</description>
+              <bitOffset>19</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>SRT</name>
+              <description>bit 29 (RW) Self-refresh temperature range</description>
+              <bitOffset>20</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>INITREF_DIS</name>
+              <description>bit 31 (RW) Initialization and Refresh disable</description>
+              <bitOffset>21</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SDRAM_REF_CTRL_SHDW</name>
+          <addressOffset>0x14</addressOffset>
+          <description>SDRAM_REF_CTRL_SHDW Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>REFRESH_RATE_SHADOW</name>
+              <description>bits 0..15 (RW) Shadow field for reg_refresh_rate</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SDRAM_TIM_1</name>
+          <addressOffset>0x18</addressOffset>
+          <description>SDRAM_TIM_1 Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>WTR</name>
+              <description>bits 0..2 (RW) Write to Read delay</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>3</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RRD</name>
+              <description>bits 3..5 (RW) Activate to Activate delay for different bank</description>
+              <bitOffset>3</bitOffset>
+              <bitWidth>3</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RC</name>
+              <description>bits 6..11 (RW) Activate to Activate</description>
+              <bitOffset>6</bitOffset>
+              <bitWidth>6</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RAS</name>
+              <description>bits 12..16 (RW) Activate to Pre-charge</description>
+              <bitOffset>12</bitOffset>
+              <bitWidth>5</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>WR</name>
+              <description>bits 17..20 (RW) Write to Pre-charge</description>
+              <bitOffset>17</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RCD</name>
+              <description>bits 21..24 (RW) Activate to Read/Write</description>
+              <bitOffset>21</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RP</name>
+              <description>bits 25..28 (RW) Precharge to Activate</description>
+              <bitOffset>25</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SDRAM_TIM_1_SHDW</name>
+          <addressOffset>0x1C</addressOffset>
+          <description>SDRAM_TIM_1_SHDW Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>WTR_SHADOW</name>
+              <description>bits 0..2 (RW) Shadow field for WTR</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>3</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RRD_SHADOW</name>
+              <description>bits 3..5 (RW) Shadow field for RRD</description>
+              <bitOffset>3</bitOffset>
+              <bitWidth>3</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RC_SHADOW</name>
+              <description>bits 6..11 (RW) Shadow field for RC</description>
+              <bitOffset>6</bitOffset>
+              <bitWidth>6</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RAS_SHADOW</name>
+              <description>bits 12..16 (RW) Shadow field for RAS</description>
+              <bitOffset>12</bitOffset>
+              <bitWidth>5</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>WR_SHADOW</name>
+              <description>bits 17..20 (RW) Shadow field for WR</description>
+              <bitOffset>17</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RCD_SHADOW</name>
+              <description>bits 21..24 (RW) Shadow field for RCD</description>
+              <bitOffset>21</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RP_SHADOW</name>
+              <description>bits 25..28 (RW) Shadow field for RP</description>
+              <bitOffset>25</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SDRAM_TIM_2</name>
+          <addressOffset>0x20</addressOffset>
+          <description>SDRAM_TIM_2 Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>CKE</name>
+              <description>bits 0..2 (RW) CKE changes delay</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>3</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RTP</name>
+              <description>bits 3..5 (RW) Read to Precharge</description>
+              <bitOffset>3</bitOffset>
+              <bitWidth>3</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>XSRD</name>
+              <description>bits 6..15 (RW) Self-Refresh exit to Read</description>
+              <bitOffset>6</bitOffset>
+              <bitWidth>10</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>XSNR</name>
+              <description>bits 16..24 (RW) Self-Refresh exit delay</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>9</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>XP</name>
+              <description>bits 28..30 (RW) Powerdown exit delay</description>
+              <bitOffset>25</bitOffset>
+              <bitWidth>3</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SDRAM_TIM_2_SHDW</name>
+          <addressOffset>0x24</addressOffset>
+          <description>SDRAM_TIM_2_SHDW Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>CKE_SHADOW</name>
+              <description>bits 0..2 (RW) Shadow field for CKE</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>3</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RTP_SHADOW</name>
+              <description>bits 3..5 (RW) Shadow field for RTP</description>
+              <bitOffset>3</bitOffset>
+              <bitWidth>3</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>XSRD_SHADOW</name>
+              <description>bits 6..15 (RW) Shadow field for XSRD</description>
+              <bitOffset>6</bitOffset>
+              <bitWidth>10</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>XSNR_SHADOW</name>
+              <description>bits 16..24 (RW) Shadow field for XSNR</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>9</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>XP_SHADOW</name>
+              <description>bits 28..30 (RW) Shadow field for XP</description>
+              <bitOffset>25</bitOffset>
+              <bitWidth>3</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SDRAM_TIM_3</name>
+          <addressOffset>0x28</addressOffset>
+          <description>SDRAM_TIM_3 Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>RAS_MAX</name>
+              <description>bits 0..3 (RW) Max Activate to Precharge</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RFC</name>
+              <description>bits 4..12 (RW) Refresh/Activate delay</description>
+              <bitOffset>4</bitOffset>
+              <bitWidth>9</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ZQ_ZQCS</name>
+              <description>bits 15..20 (RW) ZQCS command cycles</description>
+              <bitOffset>13</bitOffset>
+              <bitWidth>6</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PDLL_UL</name>
+              <description>bits 28..31 (RW) PHY DLL unlock cycles</description>
+              <bitOffset>19</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SDRAM_TIM_3_SHDW</name>
+          <addressOffset>0x2C</addressOffset>
+          <description>SDRAM_TIM_3_SHDW Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>RAS_MAX_SHADOW</name>
+              <description>bits 0..3 (RW) Shadow field for RAS_MAX</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RFC_SHADOW</name>
+              <description>bits 4..12 (RW) Shadow field for RFC</description>
+              <bitOffset>4</bitOffset>
+              <bitWidth>9</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ZQ_ZQCS_SHADOW</name>
+              <description>bits 15..20 (RW) Shadow field for ZQ_ZQCS</description>
+              <bitOffset>13</bitOffset>
+              <bitWidth>6</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PDLL_UL_SHADOW</name>
+              <description>bits 28..31 (RW) Shadow field for PDLL_UL</description>
+              <bitOffset>19</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PWR_MGMT_CTRL</name>
+          <addressOffset>0x38</addressOffset>
+          <description>PWR_MGMT_CTRL Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>CS_TIM</name>
+              <description>bits 0..3 (RW) Clock Stop timer [see e_PWR_TIMER]</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>SR_TIM</name>
+              <description>bits 4..7 (RW) Self Refresh timer [see e_PWR_TIMER]</description>
+              <bitOffset>4</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>LP_MODE</name>
+              <description>bits 8..10 (RW) Power Management mode [see e_LP_MODE]</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>3</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>DPD_EN</name>
+              <description>bit 11 (RW) Deep Power Down enable</description>
+              <bitOffset>11</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PD_TIM</name>
+              <description>bits 12..15 (RW) Power-Down timer [see e_PWR_TIMER]</description>
+              <bitOffset>12</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PWR_MGMT_CTRL_SHDW</name>
+          <addressOffset>0x3C</addressOffset>
+          <description>PWR_MGMT_CTRL_SHDW Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>CS_TIM_SHADOW</name>
+              <description>bits 0..3 (RW) Shadow field for CS_TIM</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>SR_TIM_SHADOW</name>
+              <description>bits 4..7 (RW) Shadow field for SR_TIM</description>
+              <bitOffset>4</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PD_TIM_SHADOW</name>
+              <description>bits 8..11 (RW) Shadow field for PD_TIM</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>OCP_CONFIG</name>
+          <addressOffset>0x54</addressOffset>
+          <description>OCP_CONFIG Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>PR_OLD_COUNT</name>
+              <description>bits 0..7 (RW) Priority Raise Old Counter</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>COS_COUNT_2</name>
+              <description>bits 8..15 (RW) Priority Counter COS 2</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>COS_COUNT_1</name>
+              <description>bits 16..23 (RW) Priority Counter COS 1</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>OCP_CFG_VAL_1</name>
+          <addressOffset>0x58</addressOffset>
+          <description>OCP_CFG_VAL_1 Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>CMD_FIFO_DEPTH</name>
+              <description>bits 0..7 (R) Command FIFO depth</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>WR_FIFO_DEPTH</name>
+              <description>bits 8..15 (R) Write Data FIFO depth</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>SYS_BUS_WIDTH</name>
+              <description>bits 30..31 (R) L3 OCP data bus width [see e_SYS_BUS_WIDTH]</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>OCP_CFG_VAL_2</name>
+          <addressOffset>0x5C</addressOffset>
+          <description>OCP_CFG_VAL_2 Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>RCMD_FIFO_DEPTH</name>
+              <description>bits 0..7 (R) Read Command FIFO depth</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RSD_FIFO_DEPTH</name>
+              <description>bits 8..15 (R) SDRAM Read Data FIFO depth</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RREG_FIFO_DEPTH</name>
+              <description>bits 16..23 (R) Register Read FIFO depth</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PERF_CNT_1</name>
+          <addressOffset>0x80</addressOffset>
+          <description>PERF_CNT_1 Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>COUNTER1</name>
+              <description>bits 0..31 (R) Performance counter 1</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>32</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PERF_CNT_2</name>
+          <addressOffset>0x84</addressOffset>
+          <description>PERF_CNT_2 Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>COUNTER2</name>
+              <description>bits 0..31 (R) Performance counter 2</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>32</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PERF_CNT_CFG</name>
+          <addressOffset>0x88</addressOffset>
+          <description>PERF_CNT_CFG Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>CNTR1_CFG</name>
+              <description>bits 0..3 (RW) Counter 1 config</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CNTR1_REGION_EN</name>
+              <description>bit 14 (RW) Counter 1 region enable</description>
+              <bitOffset>4</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CNTR1_MCONNID_EN</name>
+              <description>bit 15 (RW) Counter 1 MConnID enable</description>
+              <bitOffset>5</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CNTR2_CFG</name>
+              <description>bits 16..19 (RW) Counter 2 config</description>
+              <bitOffset>6</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CNTR2_REGION_EN</name>
+              <description>bit 30 (RW) Counter 2 region enable</description>
+              <bitOffset>10</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CNTR2_MCONNID_EN</name>
+              <description>bit 31 (RW) Counter 2 MConnID enable</description>
+              <bitOffset>11</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PERF_CNT_SEL</name>
+          <addressOffset>0x8C</addressOffset>
+          <description>PERF_CNT_SEL Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>REGION_SEL1</name>
+              <description>bits 0..1 (RW) MMddrSpace for Counter 1</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>MCONNID1</name>
+              <description>bits 8..15 (RW) MConnID for Counter 1</description>
+              <bitOffset>2</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>REGION_SEL2</name>
+              <description>bits 16..17 (RW) MMddrSpace for Counter 2</description>
+              <bitOffset>10</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>MCONNID2</name>
+              <description>bits 24..31 (RW) MConnID for Counter 2</description>
+              <bitOffset>12</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PERF_CNT_TIM</name>
+          <addressOffset>0x90</addressOffset>
+          <description>PERF_CNT_TIM Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>TOTAL_TIME</name>
+              <description>bits 0..31 (R) Total m_clk cycles counter</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>32</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>READ_IDLE_CTRL</name>
+          <addressOffset>0x98</addressOffset>
+          <description>READ_IDLE_CTRL Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>READ_IDLE_INTERVAL</name>
+              <description>bits 0..8 (RW) Read idle interval</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>9</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>READ_IDLE_LEN</name>
+              <description>bits 16..19 (RW) Read idle length</description>
+              <bitOffset>9</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>READ_IDLE_CTRL_SHDW</name>
+          <addressOffset>0x9C</addressOffset>
+          <description>READ_IDLE_CTRL_SHDW Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>READ_IDLE_INTERVAL_SHADOW</name>
+              <description>bits 0..8 (RW) Shadow field for read idle interval</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>9</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>READ_IDLE_LEN_SHADOW</name>
+              <description>bits 16..19 (RW) Shadow field for read idle length</description>
+              <bitOffset>9</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>IRQSTATUS_RAW_SYS</name>
+          <addressOffset>0xA4</addressOffset>
+          <description>IRQSTATUS_RAW_SYS Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>ERR_SYS</name>
+              <description>bit 0 (RW) Raw status of system OCP interrupt.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>TA_SYS</name>
+              <description>bit 1 (RW) Raw status of system OCP interrupt.</description>
+              <bitOffset>1</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>IRQSTATUS_SYS</name>
+          <addressOffset>0xAC</addressOffset>
+          <description>IRQSTATUS_SYS Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>ERR_SYS</name>
+              <description>bit 0 (RW) Enabled status of system OCP interrupt.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>TA_SYS</name>
+              <description>bit 1 (RW) Enabled status of system OCP interrupt.</description>
+              <bitOffset>1</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>IRQENABLE_SET_SYS</name>
+          <addressOffset>0xB4</addressOffset>
+          <description>IRQENABLE_SET_SYS Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>EN_ERR_SYS</name>
+              <description>bit 0 (RW) Enable set for system OCP interrupt.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>EN_TA_SYS</name>
+              <description>bit 1 (RW) Enable set for system OCP interrupt.</description>
+              <bitOffset>1</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>IRQENABLE_CLR_SYS</name>
+          <addressOffset>0xBC</addressOffset>
+          <description>IRQENABLE_CLR_SYS Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>EN_ERR_SYS</name>
+              <description>bit 0 (RW) Enable clear for system OCP interrupt.r</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>EN_TA_SYS</name>
+              <description>bit 1 (RW) Enable clear for system OCP interrupt.</description>
+              <bitOffset>1</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>ZQ_CONFIG</name>
+          <addressOffset>0xC8</addressOffset>
+          <description>ZQ_CONFIG Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>REFINTERVAL</name>
+              <description>bits 0..15 (RW) Refresh periods between ZQCS</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ZQCL_MULT</name>
+              <description>bits 16..17 (RW) Determines number of ZQCS intervals that make up ZQCL/ZQINIT intervals</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ZQINIT_MULT</name>
+              <description>bits 18..19 (RW) Indicates the number of ZQCL intervals that make up a ZQINIT</description>
+              <bitOffset>18</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>SFEXITEN</name>
+              <description>bit 28 (RW) ZQCL on power-down exit</description>
+              <bitOffset>20</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>DUALCALEN</name>
+              <description>bit 29 (RW) Dual Calibration enable</description>
+              <bitOffset>21</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CS0EN</name>
+              <description>bit 30 (RW) ZQ cal for CS0 enable</description>
+              <bitOffset>22</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CS1EN</name>
+              <description>bit 31 (RW) ZQ cal for CS1 enable</description>
+              <bitOffset>23</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>RDWRLVL_RAMP_WIN</name>
+          <addressOffset>0xD4</addressOffset>
+          <description>RDWRLVL_RAMP_WIN Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>RDWRLVLINC_RMP_WIN</name>
+              <description>bits 0..12 (R) Incremental leveling ramp window</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>13</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>RDWRLVL_RAMP_CTRL</name>
+          <addressOffset>0xD8</addressOffset>
+          <description>RDWRLVL_RAMP_CTRL Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>WRLVLINC_RMP_INT</name>
+              <description>bits 0..7 (RW) Incremental write leveling interval</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RDLVLGATEINC_RMP_INT</name>
+              <description>bits 8..15 (RW) Incremental read DQS gate training interval</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RDLVLINC_RMP_INT</name>
+              <description>bits 16..23 (RW) Incremental read data eye training interval</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RDWRLVLINC_RMP_PRE</name>
+              <description>bits 24..30 (RW) Incremental leveling pre-scalar</description>
+              <bitOffset>24</bitOffset>
+              <bitWidth>7</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RDWRLVL_EN</name>
+              <description>bit 31 (RW) Read-Write Leveling enable</description>
+              <bitOffset>31</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>RDWRLVL_CTRL</name>
+          <addressOffset>0xDC</addressOffset>
+          <description>RDWRLVL_CTRL Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>WRLVLINC_INT</name>
+              <description>bits 0..7 (RW) Incremental write leveling interval</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RDLVLGATEINC_INT</name>
+              <description>bits 8..15 (RW) Incremental read DQS gate training interval</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RDLVLINC_INT</name>
+              <description>bits 16..23 (RW) Incremental read data eye training interval</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RDWRLVLINC_PRE</name>
+              <description>bits 24..30 (RW) Incremental leveling pre-scalar</description>
+              <bitOffset>24</bitOffset>
+              <bitWidth>7</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RDWRLVLFULL_START</name>
+              <description>bit 31 (RW) Full leveling trigger</description>
+              <bitOffset>31</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
         <register>
           <name>DDR_PHY_CTRL_1</name>
-          <description>DDR PHY Control 1 Register</description>
           <addressOffset>0xE4</addressOffset>
+          <description>DDR_PHY_CTRL_1 Register</description>
           <size>32</size>
           <access>read-write</access>
           <resetValue>0x00000000</resetValue>
           <fields>
             <field>
               <name>READ_LATENCY</name>
-              <description>Read Latency</description>
+              <description>bits 0..4 (RW) This field defines the latency for read data from DDR SDRAM in</description>
               <bitOffset>0</bitOffset>
               <bitWidth>5</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RD_LOCAL_ODT</name>
+              <description>bits 8..9 (RW) Read local ODT value [see e_LOCAL_ODT]</description>
+              <bitOffset>5</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>WR_LOCAL_ODT</name>
+              <description>bits 10..11 (RW) This bit controls the value assigned to the reg_phy_wr_local_odt</description>
+              <bitOffset>7</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>IDLE_LOCAL_ODT</name>
+              <description>bits 12..13 (RW) Value to drive on the</description>
+              <bitOffset>9</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
             </field>
             <field>
               <name>PHY_RST_N</name>
-              <description>PHY Reset (active low)</description>
-              <bitOffset>15</bitOffset>
+              <description>bit 15 (RW) PHY reset control</description>
+              <bitOffset>11</bitOffset>
               <bitWidth>1</bitWidth>
+              <access>read-write</access>
             </field>
             <field>
               <name>ENABLE_DYNAMIC_PWRDN</name>
-              <description>Dynamic IO Power Down</description>
-              <bitOffset>20</bitOffset>
+              <description>bit 20 (RW) Dynamic IO power down</description>
+              <bitOffset>12</bitOffset>
               <bitWidth>1</bitWidth>
+              <access>read-write</access>
             </field>
           </fields>
         </register>
-
-        <!-- DDR_PHY_CTRL_1_SHDW -->
         <register>
           <name>DDR_PHY_CTRL_1_SHDW</name>
-          <description>DDR PHY Control 1 Shadow Register</description>
           <addressOffset>0xE8</addressOffset>
+          <description>DDR_PHY_CTRL_1_SHDW Register</description>
           <size>32</size>
           <access>read-write</access>
           <resetValue>0x00000000</resetValue>
-        </register>
-
-        <!-- DDR_PHY_CTRL_2 -->
-        <register>
-          <name>DDR_PHY_CTRL_2</name>
-          <description>DDR PHY Control 2 Register</description>
-          <addressOffset>0xEC</addressOffset>
-          <size>32</size>
-          <access>read-write</access>
-          <resetValue>0x00000000</resetValue>
-        </register>
-
-        <!-- SDRAM_TIM_1 -->
-        <register>
-          <name>SDRAM_TIM_1</name>
-          <description>SDRAM Timing 1 Register</description>
-          <addressOffset>0x18</addressOffset>
-          <size>32</size>
-          <access>read-write</access>
-          <resetValue>0x08891599</resetValue>
-        </register>
-
-        <!-- SDRAM_TIM_1_SHDW -->
-        <register>
-          <name>SDRAM_TIM_1_SHDW</name>
-          <description>SDRAM Timing 1 Shadow Register</description>
-          <addressOffset>0x1C</addressOffset>
-          <size>32</size>
-          <access>read-write</access>
-        </register>
-
-        <!-- SDRAM_TIM_2 -->
-        <register>
-          <name>SDRAM_TIM_2</name>
-          <description>SDRAM Timing 2 Register</description>
-          <addressOffset>0x20</addressOffset>
-          <size>32</size>
-          <access>read-write</access>
-          <resetValue>0x148B31CA</resetValue>
-        </register>
-
-        <!-- SDRAM_TIM_2_SHDW -->
-        <register>
-          <name>SDRAM_TIM_2_SHDW</name>
-          <description>SDRAM Timing 2 Shadow Register</description>
-          <addressOffset>0x24</addressOffset>
-          <size>32</size>
-          <access>read-write</access>
-        </register>
-
-        <!-- SDRAM_TIM_3 -->
-        <register>
-          <name>SDRAM_TIM_3</name>
-          <description>SDRAM Timing 3 Register</description>
-          <addressOffset>0x28</addressOffset>
-          <size>32</size>
-          <access>read-write</access>
-          <resetValue>0x00FFE82F</resetValue>
-        </register>
-
-        <!-- SDRAM_TIM_3_SHDW -->
-        <register>
-          <name>SDRAM_TIM_3_SHDW</name>
-          <description>SDRAM Timing 3 Shadow Register</description>
-          <addressOffset>0x2C</addressOffset>
-          <size>32</size>
-          <access>read-write</access>
-        </register>
-
-        <!-- SDRAM_REF_CTRL -->
-        <register>
-          <name>SDRAM_REF_CTRL</name>
-          <description>SDRAM Refresh Control Register</description>
-          <addressOffset>0x10</addressOffset>
-          <size>32</size>
-          <access>read-write</access>
-          <resetValue>0x80001388</resetValue>
           <fields>
             <field>
-              <name>REFRESH_RATE</name>
-              <description>Refresh Rate</description>
+              <name>READ_LATENCY_SHADOW</name>
+              <description>bits 0..4 (RW) This field defines the latency for read data from DDR SDRAM in</description>
               <bitOffset>0</bitOffset>
-              <bitWidth>16</bitWidth>
+              <bitWidth>5</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RD_LOCAL_ODT_SHADOW</name>
+              <description>bits 8..9 (RW) Value to drive on the</description>
+              <bitOffset>5</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>WR_LOCAL_ODT_SHADOW</name>
+              <description>bits 10..11 (RW) This bit controls the value assigned to the reg_phy_wr_local_odt</description>
+              <bitOffset>7</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>IDLE_LOCAL_ODT_SHADOW</name>
+              <description>bits 12..13 (RW) Value to drive on the</description>
+              <bitOffset>9</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PHY_RST_N_SHADOW</name>
+              <description>bit 15 (RW) Writing a 1 to this bit will hold the PHY macros in reset.</description>
+              <bitOffset>11</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ENABLE_DYNAMIC_PWRDN_SHADOW</name>
+              <description>bit 20 (RW) Dynamically enables powering down the IO receiver when not</description>
+              <bitOffset>12</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
             </field>
           </fields>
         </register>
-
-        <!-- SDRAM_REF_CTRL_SHDW -->
         <register>
-          <name>SDRAM_REF_CTRL_SHDW</name>
-          <description>SDRAM Refresh Control Shadow Register</description>
-          <addressOffset>0x14</addressOffset>
-          <size>32</size>
-          <access>read-write</access>
-        </register>
-
-        <!-- ZQ_CONFIG -->
-        <register>
-          <name>ZQ_CONFIG</name>
-          <description>ZQ Calibration Configuration Register</description>
-          <addressOffset>0xC8</addressOffset>
+          <name>DDR_PHY_CTRL_2</name>
+          <addressOffset>0xEC</addressOffset>
+          <description>DDR_PHY_CTRL_2 Register</description>
           <size>32</size>
           <access>read-write</access>
           <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>READ_LATENCY</name>
+              <description>bits 0..4 (RW) This field defines the latency for read data from DDR SDRAM in</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>5</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RD_LOCAL_ODT</name>
+              <description>bits 8..9 (RW) Read local ODT value [see e_LOCAL_ODT]</description>
+              <bitOffset>5</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>WR_LOCAL_ODT</name>
+              <description>bits 10..11 (RW) This bit controls the value assigned to the reg_phy_wr_local_odt</description>
+              <bitOffset>7</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>IDLE_LOCAL_ODT</name>
+              <description>bits 12..13 (RW) Value to drive on the</description>
+              <bitOffset>9</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PHY_RST_N</name>
+              <description>bit 15 (RW) PHY reset control</description>
+              <bitOffset>11</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ENABLE_DYNAMIC_PWRDN</name>
+              <description>bit 20 (RW) Dynamic IO power down</description>
+              <bitOffset>12</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
         </register>
-
+        <register>
+          <name>PRIORITY_TO_COS_MAPPING</name>
+          <addressOffset>0x100</addressOffset>
+          <description>PRIORITY_TO_COS_MAPPING Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>PRI_0_COS</name>
+              <description>bits 0..1 (RW) Priority 0 COS mapping [see e_COS_MAPPING]</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PRI_1_COS</name>
+              <description>bits 2..3 (RW) Priority 1 COS mapping [see e_COS_MAPPING]</description>
+              <bitOffset>2</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PRI_2_COS</name>
+              <description>bits 4..5 (RW) Priority 2 COS mapping [see e_COS_MAPPING]</description>
+              <bitOffset>4</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PRI_3_COS</name>
+              <description>bits 6..7 (RW) Priority 3 COS mapping [see e_COS_MAPPING]</description>
+              <bitOffset>6</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PRI_4_COS</name>
+              <description>bits 8..9 (RW) Priority 4 COS mapping [see e_COS_MAPPING]</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PRI_5_COS</name>
+              <description>bits 10..11 (RW) Priority 5 COS mapping [see e_COS_MAPPING]</description>
+              <bitOffset>10</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PRI_6_COS</name>
+              <description>bits 12..13 (RW) Priority 6 COS mapping [see e_COS_MAPPING]</description>
+              <bitOffset>12</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PRI_7_COS</name>
+              <description>bits 14..15 (RW) Priority 7 COS mapping [see e_COS_MAPPING]</description>
+              <bitOffset>14</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PRI_COS_MAP_EN</name>
+              <description>bit 31 (RW) Priority mapping enable</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CONNID_TO_COS_1_MAPPING</name>
+          <addressOffset>0x104</addressOffset>
+          <description>CONNID_TO_COS_1_MAPPING Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>MSK_3_COS_1</name>
+              <description>bits 0..1 (RW) Mask for ConnID 3 COS 1 [see e_CONNID_MASK]</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CONNID_3_COS_1</name>
+              <description>bits 2..9 (RW) ConnID value 3 COS 1</description>
+              <bitOffset>2</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>MSK_2_COS_1</name>
+              <description>bits 10..11 (RW) Mask for ConnID 2 COS 1 [see e_CONNID_MASK]</description>
+              <bitOffset>10</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CONNID_2_COS_1</name>
+              <description>bits 12..19 (RW) ConnID value 2 COS 1</description>
+              <bitOffset>12</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>MSK_1_COS_1</name>
+              <description>bits 20..22 (RW) Mask for ConnID 1 COS 1 [see e_CONNID_MASK_EXT]</description>
+              <bitOffset>20</bitOffset>
+              <bitWidth>3</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CONNID_1_COS_1</name>
+              <description>bits 23..30 (RW) ConnID value 1 COS 1</description>
+              <bitOffset>23</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CONNID_COS_1_MAP_EN</name>
+              <description>bit 31 (RW) ConnID mapping enable</description>
+              <bitOffset>31</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CONNID_TO_COS_2_MAPPING</name>
+          <addressOffset>0x108</addressOffset>
+          <description>CONNID_TO_COS_2_MAPPING Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>MSK_3_COS_2</name>
+              <description>bits 0..1 (RW) Mask for ConnID 3 COS 2 [see e_CONNID_MASK]</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CONNID_3_COS_2</name>
+              <description>bits 2..9 (RW) ConnID value 3 COS 2</description>
+              <bitOffset>2</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>MSK_2_COS_2</name>
+              <description>bits 10..11 (RW) Mask for ConnID 2 COS 2 [see e_CONNID_MASK]</description>
+              <bitOffset>10</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CONNID_2_COS_2</name>
+              <description>bits 12..19 (RW) ConnID value 2 COS 2</description>
+              <bitOffset>12</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>MSK_1_COS_2</name>
+              <description>bits 20..22 (RW) Mask for ConnID 1 COS 2 [see e_CONNID_MASK_EXT]</description>
+              <bitOffset>20</bitOffset>
+              <bitWidth>3</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CONNID_1_COS_2</name>
+              <description>bits 23..30 (RW) ConnID value 1 COS 2</description>
+              <bitOffset>23</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CONNID_COS_2_MAP_EN</name>
+              <description>bit 31 (RW) ConnID mapping enable</description>
+              <bitOffset>31</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>READ_WRITE_EXEC_THRESHOL</name>
+          <addressOffset>0x120</addressOffset>
+          <description>READ_WRITE_EXEC_THRESHOLD Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>RD_THRSH</name>
+              <description>bits 0..4 (RW) Read threshold</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>5</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>WR_THRSH</name>
+              <description>bits 8..12 (RW) Write threshold</description>
+              <bitOffset>5</bitOffset>
+              <bitWidth>5</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
       </registers>
     </peripheral>
-
+    <peripheral>
+      <name>DDR23mPHY</name>
+      <description>DDR PHY Control Registers</description>
+      <baseAddress>0x44E12000</baseAddress>
+      <groupName>Memory</groupName>
+      <registers>
+        <register>
+          <name>CMD0_CTRL_SLAVE_RATIO_0</name>
+          <addressOffset>0x01C</addressOffset>
+          <description>CSR0 Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>CMD_SLAVE_RATIO</name>
+              <description>Ratio value for address/command launch timing in DDR PHY macro. This is the fraction of a</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>10</bitWidth>
+              <access>write-only</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CMD0_DLL_LOCK_DIFF_0</name>
+          <addressOffset>0x028</addressOffset>
+          <description>DLD0 Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>DLL_LOCK_DIFF</name>
+              <description>The max number of delay line taps variation allowed while maintaining the master DLL lock.This is</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>write-only</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CMD0_INVERT_CLKOUT_0</name>
+          <addressOffset>0x02C</addressOffset>
+          <description>ICLK0 Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>INVERT_CLK_SEL</name>
+              <description>bit: 0 (W) Inverts the polarity of DRAM clock.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CMD1_CTRL_SLAVE_RATIO_0</name>
+          <addressOffset>0x050</addressOffset>
+          <description>CSR0 Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>CMD_SLAVE_RATIO</name>
+              <description>Ratio value for address/command launch timing in DDR PHY macro. This is the fraction of a</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>10</bitWidth>
+              <access>write-only</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CMD1_DLL_LOCK_DIFF_0</name>
+          <addressOffset>0x05C</addressOffset>
+          <description>DLD0 Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>DLL_LOCK_DIFF</name>
+              <description>The max number of delay line taps variation allowed while maintaining the master DLL lock.This is</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>write-only</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CMD1_INVERT_CLKOUT_0</name>
+          <addressOffset>0x060</addressOffset>
+          <description>ICLK0 Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>INVERT_CLK_SEL</name>
+              <description>bit: 0 (W) Inverts the polarity of DRAM clock.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CMD2_CTRL_SLAVE_RATIO_0</name>
+          <addressOffset>0x084</addressOffset>
+          <description>CSR0 Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>CMD_SLAVE_RATIO</name>
+              <description>Ratio value for address/command launch timing in DDR PHY macro. This is the fraction of a</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>10</bitWidth>
+              <access>write-only</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CMD2_DLL_LOCK_DIFF_0</name>
+          <addressOffset>0x090</addressOffset>
+          <description>DLD0 Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>DLL_LOCK_DIFF</name>
+              <description>The max number of delay line taps variation allowed while maintaining the master DLL lock.This is</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>write-only</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CMD2_INVERT_CLKOUT_0</name>
+          <addressOffset>0x094</addressOffset>
+          <description>ICLK0 Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>INVERT_CLK_SEL</name>
+              <description>bit: 0 (W) Inverts the polarity of DRAM clock.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA0_RD_DQS_SLAVE_RATIO_0</name>
+          <addressOffset>0x0C8</addressOffset>
+          <description>RDQSSR0 Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>RD_DQS_SLAVE_RATIO_CS0</name>
+              <description>Ratio value for Read DQS slave DLL for CS0.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>10</bitWidth>
+              <access>write-only</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA0_WR_DQS_SLAVE_RATIO_0</name>
+          <addressOffset>0x0DC</addressOffset>
+          <description>WDQSSR0 Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>WR_DQS_SLAVE_RATIO_CS0</name>
+              <description>Ratio value for Write DQS slave DLL for CS0.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>10</bitWidth>
+              <access>write-only</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA0_WRLVL_INIT_RATIO_0</name>
+          <addressOffset>0x0F0</addressOffset>
+          <description>MWRLVLINI_RATIO Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>WRLVL_INIT_RATIO_CS0</name>
+              <description>The user programmable init ratio used by Write Leveling FSM when</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>10</bitWidth>
+              <access>write-only</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA0_WRLVL_INIT_MODE_0</name>
+          <addressOffset>0x0F8</addressOffset>
+          <description>MWRLVLINI_MODE Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>WRLVL_INIT_MODE_SEL</name>
+              <description>bit: 0 (W) The user programmable init ratio selection mode for Write Leveling FSM.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA0_GATELVL_INIT_RATIO_0</name>
+          <addressOffset>0x0FC</addressOffset>
+          <description>DQSGTI_RATIO Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>GATELVL_INIT_RATIO_CS0</name>
+              <description>The user programmable init ratio used by DQS Gate Training FSM when</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>10</bitWidth>
+              <access>write-only</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA0_GATELVL_INIT_MODE_0</name>
+          <addressOffset>0x104</addressOffset>
+          <description>DQS_GTI_MODE Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>GATELVL_INIT_MODE_SEL</name>
+              <description>bit: 0 (W) User programmable init ratio selection mode for DQS Gate Training FSM.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA0_FIFO_WE_SLAVE_RATIO_0</name>
+          <addressOffset>0x108</addressOffset>
+          <description>DQS_GS_RATIO Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>FIFO_WE_SLAVE_RATIO_CS0</name>
+              <description>Ratio value for fifo we for CS0.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>10</bitWidth>
+              <access>write-only</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA0_DQ_OFFSET_0</name>
+          <addressOffset>0x11C</addressOffset>
+          <description>DQS_T_DQ_OFFSET Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>OFFSET</name>
+              <description>Default value 40 equates to a 90 degree shift.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>7</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA0_WR_DATA_SLAVE_RATIO_0</name>
+          <addressOffset>0x120</addressOffset>
+          <description>WDS_RATIO Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>WR_DATA_SLAVE_RATIO_CS0</name>
+              <description>Ratio value for write data slave DLL for CS0.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>10</bitWidth>
+              <access>write-only</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA0_USE_RANK0_DELAYS</name>
+          <addressOffset>0x134</addressOffset>
+          <description>DELAY_SEL Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>RANK0_DELAY</name>
+              <description>bit: 0 (W) Delay Selection</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA0_DLL_LOCK_DIFF_0</name>
+          <addressOffset>0x138</addressOffset>
+          <description>DLL_LOCK_DIFF Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>DLL_LOCK_DIFF</name>
+              <description>The max number of delay line taps variation allowed while maintaining the master DLL lock.This is</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>write-only</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA1_RD_DQS_SLAVE_RATIO_0</name>
+          <addressOffset>0x16C</addressOffset>
+          <description>RDQSSR0 Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>RD_DQS_SLAVE_RATIO_CS0</name>
+              <description>Ratio value for Read DQS slave DLL for CS0.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>10</bitWidth>
+              <access>write-only</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA1_WR_DQS_SLAVE_RATIO_0</name>
+          <addressOffset>0x180</addressOffset>
+          <description>WDQSSR0 Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>WR_DQS_SLAVE_RATIO_CS0</name>
+              <description>Ratio value for Write DQS slave DLL for CS0.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>10</bitWidth>
+              <access>write-only</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA1_WRLVL_INIT_RATIO_0</name>
+          <addressOffset>0x194</addressOffset>
+          <description>MWRLVLINI_RATIO Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>WRLVL_INIT_RATIO_CS0</name>
+              <description>The user programmable init ratio used by Write Leveling FSM when</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>10</bitWidth>
+              <access>write-only</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA1_WRLVL_INIT_MODE_0</name>
+          <addressOffset>0x19C</addressOffset>
+          <description>MWRLVLINI_MODE Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>WRLVL_INIT_MODE_SEL</name>
+              <description>bit: 0 (W) The user programmable init ratio selection mode for Write Leveling FSM.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA1_GATELVL_INIT_RATIO_0</name>
+          <addressOffset>0x1A0</addressOffset>
+          <description>DQSGTI_RATIO Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>GATELVL_INIT_RATIO_CS0</name>
+              <description>The user programmable init ratio used by DQS Gate Training FSM when</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>10</bitWidth>
+              <access>write-only</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA1_GATELVL_INIT_MODE_0</name>
+          <addressOffset>0x1A8</addressOffset>
+          <description>DQS_GTI_MODE Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>GATELVL_INIT_MODE_SEL</name>
+              <description>bit: 0 (W) User programmable init ratio selection mode for DQS Gate Training FSM.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA1_FIFO_WE_SLAVE_RATIO_0</name>
+          <addressOffset>0x1AC</addressOffset>
+          <description>DQS_GS_RATIO Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>FIFO_WE_SLAVE_RATIO_CS0</name>
+              <description>Ratio value for fifo we for CS0.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>10</bitWidth>
+              <access>write-only</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA1_DQ_OFFSET_0</name>
+          <addressOffset>0x1C0</addressOffset>
+          <description>DQS_T_DQ_OFFSET Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>OFFSET</name>
+              <description>Default value 40 equates to a 90 degree shift.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>7</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA1_WR_DATA_SLAVE_RATIO_0</name>
+          <addressOffset>0x1C4</addressOffset>
+          <description>WDS_RATIO Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>WR_DATA_SLAVE_RATIO_CS0</name>
+              <description>Ratio value for write data slave DLL for CS0.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>10</bitWidth>
+              <access>write-only</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA1_USE_RANK0_DELAYS</name>
+          <addressOffset>0x1D8</addressOffset>
+          <description>DELAY_SEL Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>RANK0_DELAY</name>
+              <description>bit: 0 (W) Delay Selection</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA1_DLL_LOCK_DIFF_0</name>
+          <addressOffset>0x1DC</addressOffset>
+          <description>DLL_LOCK_DIFF Register</description>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>DLL_LOCK_DIFF</name>
+              <description>The max number of delay line taps variation allowed while maintaining the master DLL lock.This is</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>write-only</access>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
   </peripherals>
 </device>

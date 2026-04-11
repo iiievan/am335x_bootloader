@@ -2121,7 +2121,7 @@ namespace REGS
             __RW   GFX_L3_CLKSTCTRL_reg_t       GFX_L3_CLKSTCTRL;       // (0x00)  
             __RW   CM_STBY_CLKCTRL_reg_t        GFX_CLKCTRL;            // (0x04)
             __R    uint32_t                     RESERVED[1];            // (0x08) 
-            __RW   L4LS_GFX_CLKSTCTRL_reg_t     L4LS_GFX_CLKSTCTRL;     // (0x0�)  
+            __RW   L4LS_GFX_CLKSTCTRL_reg_t     L4LS_GFX_CLKSTCTRL;     // (0x0C)
             __RW   CM_CLKCTRL_reg_t             GFX_MMUCFG_CLKCTRL;     // (0x10)
             __RW   CM_CLKCTRL_reg_t             CLKSTCTRL;              // (0x14)
         };
