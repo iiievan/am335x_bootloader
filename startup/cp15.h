@@ -4,7 +4,7 @@
  *  \brief  CP15 related function prototypes
  *
  *  This file contains the API prototypes for configuring CP15
-*/
+ */
 
 /*
 * Copyright (C) 2010 Texas Instruments Incorporated - http://www.ti.com/
@@ -40,7 +40,6 @@
 *
 */
 
-
 #ifndef __CP15_H
 #define __CP15_H
 
@@ -50,11 +49,11 @@ extern "C" {
 
 /*****************************************************************************/
 /*
-** Macros which can be passed to CP15ControlFeatureDisable/Enable APIs 
+** Macros which can be passed to cp15_control_feature_disable/enable APIs
 ** as 'features'. Any, or an OR combination of the below macros can be
 ** passed to disable/enable the corresponding feature.
 */
-#define CP15_CONTROL_TEXREMAP                  (0x10000000) 
+#define CP15_CONTROL_TEXREMAP                  (0x10000000)
 #define CP15_CONTROL_ACCESSFLAG                (0x20000000)
 #define CP15_CONTROL_ALIGN_CHCK                (0x00000002)
 #define CP15_CONTROL_MMU                       (0x00000001)
@@ -64,33 +63,41 @@ extern "C" {
 /*
 ** API prototypes
 */
-extern void CP15AuxControlFeatureEnable(unsigned int enFlag);
-extern void CP15AuxControlFeatureDisable(unsigned int disFlag);
-extern void CP15DCacheCleanBuff(unsigned int bufPtr, unsigned int size);
-extern void CP15DCacheCleanFlushBuff(unsigned int bufPtr, unsigned int size);
-extern void CP15DCacheFlushBuff(unsigned int bufPtr, unsigned int size);
-extern void CP15ICacheFlushBuff(unsigned int bufPtr, unsigned int size);
-extern void CP15ICacheDisable(void);
-extern void CP15DCacheDisable(void);
-extern void CP15ICacheEnable(void);
-extern void CP15DCacheEnable(void);
-extern void CP15DCacheCleanFlush(void);
-extern void CP15DCacheClean(void);
-extern void CP15DCacheFlush(void);
-extern void CP15ICacheFlush(void);
-extern void CP15Ttb0Set(unsigned int ttb);
-extern void CP15TlbInvalidate(void);
-extern void CP15MMUDisable(void);
-extern void CP15MMUEnable(void);
-extern void CP15VectorBaseAddrSet(unsigned int addr);
-extern void CP15BranchPredictorInvalidate(void);
-extern void CP15BranchPredictionEnable(void);
-extern void CP15BranchPredictionDisable(void);
-extern void CP15DomainAccessClientSet(void);
-extern void CP15ControlFeatureDisable(unsigned int features);
-extern void CP15ControlFeatureEnable(unsigned int features);
-extern void CP15TtbCtlTtb0Config(void);
-extern unsigned int CP15MainIdPrimPartNumGet(void);
+extern void cp15_aux_control_feature_enable(unsigned int enFlag);
+extern void cp15_aux_control_feature_disable(unsigned int disFlag);
+extern void cp15_D_cache_clean_buff(unsigned int bufPtr, unsigned int size);
+extern void cp15_D_cache_clean_flush_buff(unsigned int bufPtr, unsigned int size);
+extern void cp15_D_cache_flush_buff(unsigned int bufPtr, unsigned int size);
+extern void cp15_I_cache_flush_buff(unsigned int bufPtr, unsigned int size);
+extern void cp15_I_cache_disable(void);
+extern void cp15_D_cache_disable(void);
+extern void cp15_I_cache_enable(void);
+extern void cp15_D_cache_enable(void);
+extern void cp15_D_cache_clean_flush(void);
+extern void cp15_D_cache_clean(void);
+extern void cp15_D_cache_flush(void);
+extern void cp15_I_cache_flush(void);
+extern void cp15_TTB0_set(unsigned int ttb);
+extern void cp15_TLB_invalidate(void);
+extern void cp15_MMU_disable(void);
+extern void cp15_MMU_enable(void);
+extern void cp15_vector_base_addr_set(unsigned int addr);
+extern void cp15_branch_predictor_invalidate(void);
+extern void cp15_branch_prediction_enable(void);
+extern void cp15_branch_prediction_disable(void);
+extern void cp15_domain_access_client_set(void);
+extern void cp15_control_feature_disable(unsigned int features);
+extern void cp15_control_feature_enable(unsigned int features);
+extern void cp15_TTB_ctl_TTB0_config(void);
+extern unsigned int cp15_main_id_prim_part_num_get(void);
+
+/*
+** Memory Barrier API prototypes
+*/
+extern void cp15_ISB_barrier(void);              /* Instruction Synchronization Barrier */
+extern void cp15_DMB_barrier(void);              /* Data Memory Barrier */
+extern void cp15_DSB_barrier(void);              /* Data Synchronization Barrier */
+extern void cp15_DSB_ISB_sync_barrier(void);     /* DSB + ISB combined */
 
 #ifdef __cplusplus
 }

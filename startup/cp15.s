@@ -4,22 +4,22 @@
 @
 @******************************************************************************
 @
-@ Copyright (C) 2010 Texas InSTRuments Incorporated - http://www.ti.com/
+@ Copyright (C) 2010 Texas Instruments Incorporated - http://www.ti.com/
 @
 @
-@  RediSTRibution and use in source and binary forms, with or without
+@  Redistribution and use in source and binary forms, with or without
 @  modification, are permitted provided that the following conditions
 @  are met:
 @
-@    RediSTRibutions of source code must retain the above copyright
+@    Redistributions of source code must retain the above copyright
 @    notice, this list of conditions and the following disclaimer.
 @
-@    RediSTRibutions in binary form must reproduce the above copyright
+@    Redistributions in binary form must reproduce the above copyright
 @    notice, this list of conditions and the following disclaimer in the
 @    documentation and/or other materials provided with the
-@    diSTRibution.
+@    distribution.
 @
-@    Neither the name of Texas InSTRuments Incorporated nor the names of
+@    Neither the name of Texas Instruments Incorporated nor the names of
 @    its contributors may be used to endorse or promote products derived
 @    from this software without specific prior written permission.
 @
@@ -38,33 +38,37 @@
 @******************************************************************************
 
 @****************************** Global Symbols*********************************
-        .global CP15ICacheDisable
-        .global CP15DCacheDisable
-        .global CP15ICacheEnable
-        .global CP15DCacheEnable
-        .global CP15ICacheFlush
-        .global CP15DCacheCleanFlush
-        .global CP15DCacheClean
-        .global CP15DCacheFlush
-        .global CP15DCacheCleanBuff
-        .global CP15DCacheCleanFlushBuff
-        .global CP15DCacheFlushBuff
-        .global CP15ICacheFlushBuff
-        .global CP15Ttb0Set
-        .global CP15TlbInvalidate
-        .global CP15MMUDisable
-        .global CP15MMUEnable
-        .global CP15VectorBaseAddrSet
-        .global CP15BranchPredictorInvalidate
-        .global CP15BranchPredictionEnable
-        .global CP15BranchPredictionDisable
-        .global CP15DomainAccessClientSet
-        .global CP15ControlFeatureDisable
-        .global CP15ControlFeatureEnable
-        .global CP15TtbCtlTtb0Config
-        .global CP15AuxControlFeatureEnable
-        .global CP15AuxControlFeatureDisable
-        .global CP15MainIdPrimPartNumGet
+        .global cp15_I_cache_disable
+        .global cp15_D_cache_disable
+        .global cp15_I_cache_enable
+        .global cp15_D_cache_enable
+        .global cp15_I_cache_flush
+        .global cp15_D_cache_clean_flush
+        .global cp15_D_cache_clean
+        .global cp15_D_cache_flush
+        .global cp15_D_cache_clean_buff
+        .global cp15_D_cache_clean_flush_buff
+        .global cp15_D_cache_flush_buff
+        .global cp15_I_cache_flush_buff
+        .global cp15_TTB0_set
+        .global cp15_TLB_invalidate
+        .global cp15_MMU_disable
+        .global cp15_MMU_enable
+        .global cp15_vector_base_addr_set
+        .global cp15_branch_predictor_invalidate
+        .global cp15_branch_prediction_enable
+        .global cp15_branch_prediction_disable
+        .global cp15_domain_access_client_set
+        .global cp15_control_feature_disable
+        .global cp15_control_feature_enable
+        .global cp15_TTB_ctl_TTB0_config
+        .global cp15_aux_control_feature_enable
+        .global cp15_aux_control_feature_disable
+        .global cp15_main_id_prim_part_num_get
+        .global cp15_ISB_barrier
+        .global cp15_DMB_barrier
+        .global cp15_DSB_barrier
+        .global cp15_DSB_ISB_sync_barrier
 
 @**************************** Code section ************************************
         .text
@@ -74,43 +78,43 @@
 
 
 @*****************************************************************************
-@ This API disable the InSTRuction cache.
+@ This API disable the Instruction cache.
 @*****************************************************************************
-CP15ICacheDisable:
+cp15_I_cache_disable:
     PUSH    {lr}
     MRC     p15, #0, r0, c1, c0, #0
     BIC     r0,  r0, #0x00001000
     MCR     p15, #0, r0, c1, c0, #0
-    BL      CP15ICacheFlush
+    BL      cp15_I_cache_flush
     POP     {lr}
     BX      lr
 
 @*****************************************************************************
 @ This API disable the Data cache.
 @*****************************************************************************
-CP15DCacheDisable:
+cp15_D_cache_disable:
     PUSH    {r4-r11, lr}
     MRC     p15, #0, r0, c1, c0, #0
     BIC     r0,  r0, #0x00000004
     MCR     p15, #0, r0, c1, c0, #0
-    BL      CP15DCacheCleanFlush
+    BL      cp15_D_cache_clean_flush
     POP     {r4-r11, lr}
     BX      lr
 
 @*****************************************************************************
 @ This API enables I-cache
 @*****************************************************************************
-CP15ICacheEnable:
+cp15_I_cache_enable:
     MRC     p15, #0, r0, c1, c0, #0
     ORR     r0,  r0, #0x00001000
-    MCR     p15, #0, r0, c1, c0, #0 
+    MCR     p15, #0, r0, c1, c0, #0
     BX      lr
 
 @*****************************************************************************
 @ This API enable the Data cache.
 @*****************************************************************************
-CP15DCacheEnable:
-    MRC     p15, #0, r0, c1, c0, #0 
+cp15_D_cache_enable:
+    MRC     p15, #0, r0, c1, c0, #0
     ORR     r0,  r0, #0x00000004
     MCR     p15, #0, r0, c1, c0, #0
     BX      lr
@@ -118,7 +122,7 @@ CP15DCacheEnable:
 @*****************************************************************************
 @ This API Invalidates the entire Data/Unified Cache
 @*****************************************************************************
-CP15DCacheFlush:
+cp15_D_cache_flush:
     PUSH    {r4-r11}
     DMB
     MRC     p15, #1, r0, c0, c0, #1  @ Read CLID register
@@ -167,7 +171,7 @@ ffinished:
 @*****************************************************************************
 @ This API cleans the entire D Cache to PoC
 @*****************************************************************************
-CP15DCacheClean:
+cp15_D_cache_clean:
     PUSH    {r4-r11}
     DMB
     MRC     p15, #1, r0, c0, c0, #1  @ Read CLID register
@@ -215,67 +219,67 @@ cfinished:
 @*****************************************************************************
 @ This API cleans and invalidates the entire D Cache to PoC
 @*****************************************************************************
-CP15DCacheCleanFlush:
-    PUSH    {r4-r11} 
+cp15_D_cache_clean_flush:
+    PUSH    {r4-r11}
     DMB
     MRC     p15, #1, r0, c0, c0, #1  @ Read CLID register
     ANDS    r3, r0, #0x7000000       @ Get Level of Coherency
-    MOV     r3, r3, lsr #23  
-    BEQ     finished  
-    MOV     r10, #0 
+    MOV     r3, r3, lsr #23
+    BEQ     finished
+    MOV     r10, #0
 loop1:
-    ADD     r2, r10, r10, lsr #1 
+    ADD     r2, r10, r10, lsr #1
     MOV     r1, r0, lsr r2
-    AND     r1, r1, #7 
-    CMP     r1, #2  
-    BLT     skip 
-    MCR     p15, #2, r10, c0, c0, #0 
-    ISB 
-    MRC     p15, #1, r1, c0, c0, #0 
-    AND     r2, r1, #7 
-    ADD     r2, r2, #4   
-    LDR     r4, _FLD_MAX_WAY 
+    AND     r1, r1, #7
+    CMP     r1, #2
+    BLT     skip
+    MCR     p15, #2, r10, c0, c0, #0
+    ISB
+    MRC     p15, #1, r1, c0, c0, #0
+    AND     r2, r1, #7
+    ADD     r2, r2, #4
+    LDR     r4, _FLD_MAX_WAY
     ANDS    r4, r4, r1, lsr #3
     CLZ     r5, r4
     LDR     r7, _FLD_MAX_IDX
-    ANDS    r7, r7, r1, lsr #13 
+    ANDS    r7, r7, r1, lsr #13
 loop2:
-    MOV     r9, r4   
+    MOV     r9, r4
 loop3:
-    ORR     r11, r10, r9, lsl r5  
-    ORR     r11, r11, r7, lsl r2 
-    MCR     p15, #0, r11, c7, c14, #2 
-    SUBS    r9, r9, #1 
-    BGE     loop3 
-    SUBS    r7, r7, #1 
-    BGE     loop2 
-skip: 
-    ADD     r10, r10, #2 
-    CMP     r3, r10 
-    BGT     loop1 
+    ORR     r11, r10, r9, lsl r5
+    ORR     r11, r11, r7, lsl r2
+    MCR     p15, #0, r11, c7, c14, #2
+    SUBS    r9, r9, #1
+    BGE     loop3
+    SUBS    r7, r7, #1
+    BGE     loop2
+skip:
+    ADD     r10, r10, #2
+    CMP     r3, r10
+    BGT     loop1
 
 finished:
     DSB
-    ISB                        
-    POP     {r4-r11} 
+    ISB
+    POP     {r4-r11}
     BX      lr
 
 @*****************************************************************************
 @ This API invalidates entire I Cache
 @*****************************************************************************
-CP15ICacheFlush:
+cp15_I_cache_flush:
     MOV     r0, #0
     MCR     p15, #0, r0, c7, c5, #0
     DSB
     BX      lr
 
 @*****************************************************************************
-@ This API cleans the D-cache/Unified  lines corresponding to the buffer 
+@ This API cleans the D-cache/Unified  lines corresponding to the buffer
 @ pointer upto the specified length to PoC.
-@ r0 - Start Address 
+@ r0 - Start Address
 @ r1 - Number of bytes to be cleaned
 @*****************************************************************************
-CP15DCacheCleanBuff:
+cp15_D_cache_clean_buff:
     PUSH    {r14}
     ADD     r14, r0, r1               @ Calculate the end address
     DMB
@@ -285,30 +289,30 @@ CP15DCacheCleanBuff:
     ADD     r3, r3, r2
     MOV     r2, #1
     LSL     r2, r2, r3                @ Calculate the line size
-   
+
     SUB     r3, r2, #1                @ Calculate the mask
-    BIC     r0, r0, r3                @ Align to cache line boundary   
+    BIC     r0, r0, r3                @ Align to cache line boundary
     TST     r3, r14
     BIC     r14, r14, r3
     MCRNE   p15, #0, r14, c7, c10, #1 @ Clean D/Unified to PoC by MVA
 
-cleanloop:    
+cleanloop:
     MCR     p15, #0, r0 , c7, c10, #1 @ Clean D/Unified to PoC by MVA
     ADDS    r0, r0, r2                @ Go to next line
-    CMP     r0, r14 
+    CMP     r0, r14
     BLT     cleanloop
- 
+
     POP     {r14}
     DSB
     BX      lr
 
 @*****************************************************************************
-@ This API cleans and invalidates the D-cache/Unified  lines corresponding to 
+@ This API cleans and invalidates the D-cache/Unified  lines corresponding to
 @ the buffer pointer upto the specified length to PoC.
-@ r0 - Start Address 
+@ r0 - Start Address
 @ r1 - Number of bytes to be cleaned and flushed
 @*****************************************************************************
-CP15DCacheCleanFlushBuff:
+cp15_D_cache_clean_flush_buff:
     PUSH    {r14}
     ADD     r14, r0, r1               @ Calculate the end address
     DMB
@@ -318,30 +322,30 @@ CP15DCacheCleanFlushBuff:
     ADD     r3, r3, r2
     MOV     r2, #1
     LSL     r2, r2, r3                @ Calculate the line size
-   
+
     SUB     r3, r2, #1                @ Calculate the mask
-    BIC     r0, r0, r3                @ Align to cache line boundary   
+    BIC     r0, r0, r3                @ Align to cache line boundary
     TST     r3, r14
     BIC     r14, r14, r3
     MCRNE   p15, #0, r14, c7, c14, #1 @ Clean and Flush D/U line to PoC
 
-cleanflushloop:    
-    MCR     p15, #0, r0 , c7, c14, #1 @ Clean and Flush D/U line to PoC 
+cleanflushloop:
+    MCR     p15, #0, r0 , c7, c14, #1 @ Clean and Flush D/U line to PoC
     ADDS    r0, r0, r2                @ Go to next line
-    CMP     r0, r14 
+    CMP     r0, r14
     BLT     cleanflushloop
- 
+
     POP     {r14}
     DSB
     BX      lr
 
 @*****************************************************************************
-@ This API invalidates the D-cache/Unified  lines corresponding to 
+@ This API invalidates the D-cache/Unified  lines corresponding to
 @ the buffer pointer upto the specified length to PoC.
-@ r0 - Start Address 
+@ r0 - Start Address
 @ r1 - Number of bytes to be flushed
 @*****************************************************************************
-CP15DCacheFlushBuff:
+cp15_D_cache_flush_buff:
     PUSH    {r14}
     ADD     r14, r0, r1               @ Calculate the end address
     DMB
@@ -351,19 +355,19 @@ CP15DCacheFlushBuff:
     ADD     r3, r3, r2
     MOV     r2, #1
     LSL     r2, r2, r3                @ Calculate the line size
-   
+
     SUB     r3, r2, #1                @ Calculate the mask
-    TST     r3, r0 
-    BIC     r0, r0, r3                @ Align to cache line boundary   
-    MCRNE   p15, #0, r0, c7, c14, #1  @ Clean and Flush D/U line to PoC 
+    TST     r3, r0
+    BIC     r0, r0, r3                @ Align to cache line boundary
+    MCRNE   p15, #0, r0, c7, c14, #1  @ Clean and Flush D/U line to PoC
     ADDNE   r0, r0, r2
-    TST     r3, r14 
-    BIC     r14, r14, r3              
-    MCRNE   p15, #0, r14, c7, c14, #1 @ Clean and Flush D/U line to PoC 
+    TST     r3, r14
+    BIC     r14, r14, r3
+    MCRNE   p15, #0, r14, c7, c14, #1 @ Clean and Flush D/U line to PoC
     B       dflushcmp
 
 dflushloop:
-    MCR     p15, #0, r0 , c7, c6, #1  @ Flush D/U line to PoC    
+    MCR     p15, #0, r0 , c7, c6, #1  @ Flush D/U line to PoC
     ADDS    r0, r0, r2                @ Go to next line
 
 dflushcmp:
@@ -374,12 +378,12 @@ dflushcmp:
     BX      lr
 
 @*****************************************************************************
-@ This API invlidates I-cache lines from the star address till the length   
+@ This API invlidates I-cache lines from the star address till the length
 @ specified to PoU.
-@ r0 - Start Address 
+@ r0 - Start Address
 @ r1 - Number of bytes to be cleaned
 @*****************************************************************************
-CP15ICacheFlushBuff:
+cp15_I_cache_flush_buff:
     PUSH    {r14}
     ADD     r14, r0, r1               @ Calculate the end address
     DMB
@@ -389,19 +393,19 @@ CP15ICacheFlushBuff:
     ADD     r3, r3, r2
     MOV     r2, #1
     LSL     r2, r2, r3                @ Calculate the line size
-   
+
     SUB     r3, r2, #1                @ Calculate the mask
-    BIC     r0, r0, r3                @ Align to cache line boundary   
+    BIC     r0, r0, r3                @ Align to cache line boundary
     TST     r3, r14
     BIC     r14, r14, r3
     MCRNE   p15, #0, r14, c7, c5, #1  @ Invalidate by MVA to PoU
 
-iflushloop:    
+iflushloop:
     MCR     p15, #0, r0, c7, c5, #1   @ Invalidate by MVA to PoU
     ADDS    r0, r0, r2                @ Go to next line
-    CMP     r0, r14 
+    CMP     r0, r14
     BLT     iflushloop
- 
+
     POP     {r14}
     DSB
     BX      lr
@@ -410,7 +414,7 @@ iflushloop:
 @ Sets TTB0 Register
 @ r0 - Translation Table Base Address
 @*****************************************************************************
-CP15Ttb0Set:
+cp15_TTB0_set:
     MCR     p15, #0, r0, c2, c0, #0
     DMB
     BX      lr
@@ -418,26 +422,26 @@ CP15Ttb0Set:
 @*****************************************************************************
 @ This API Invalidates the TLB
 @*****************************************************************************
-CP15TlbInvalidate:
+cp15_TLB_invalidate:
     MCR     p15, #0, r0, c8, c7, #0    @ r0 value will be ignored
     DSB
     BX      lr
 
 @*****************************************************************************
-@ This API Disables MMU. 
+@ This API Disables MMU.
 @*****************************************************************************
-CP15MMUDisable:
-    MCR     p15, #0, r0, c8, c7, #0    @ Invalidate TLB  
-    MRC     p15, #0, r0, c1, c0, #0    
-    BIC     r0, r0, #1      
+cp15_MMU_disable:
+    MCR     p15, #0, r0, c8, c7, #0    @ Invalidate TLB
+    MRC     p15, #0, r0, c1, c0, #0
+    BIC     r0, r0, #1
     MCR     p15, #0, r0, c1, c0, #0    @ Clear MMU bit
-    DSB  
+    DSB
     BX      lr
 
 @*****************************************************************************
-@ This API Enables MMU. 
+@ This API Enables MMU.
 @*****************************************************************************
-CP15MMUEnable:
+cp15_MMU_enable:
     MRC     p15, #0, r0, c1, c0, #0
     ORR     r0, r0, #0x001
     MCR     p15, #0, r0, c1, c0, #0    @ Set MMU Enable bit
@@ -445,45 +449,45 @@ CP15MMUEnable:
     BX      lr
 
 @*****************************************************************************
-@ This API sets the interrupt vector table base address 
+@ This API sets the interrupt vector table base address
 @ r0 - Interrput Vector Base Address
 @*****************************************************************************
-CP15VectorBaseAddrSet:
+cp15_vector_base_addr_set:
     MCR     p15, #0, r0, c12, c0, #0
     DSB
     BX      lr
 
 @*****************************************************************************
-@ This API invalidates the branch predictor 
+@ This API invalidates the branch predictor
 @*****************************************************************************
-CP15BranchPredictorInvalidate:
+cp15_branch_predictor_invalidate:
     MCR     p15, #0, r0, c7, c5, #6
     ISB
     BX      lr
 
 @*****************************************************************************
-@ This API enables the branch predictor 
+@ This API enables the branch predictor
 @*****************************************************************************
-CP15BranchPredictionEnable:
+cp15_branch_prediction_enable:
     MRC     p15, #0, r0, c1, c0, #0
     ORR     r0, r0, #0x00000800
     MCR     p15, #0, r0, c1, c0, #0
     BX      lr
 
 @*****************************************************************************
-@ This API disables the branch predictor 
+@ This API disables the branch predictor
 @*****************************************************************************
-CP15BranchPredictionDisable:
+cp15_branch_prediction_disable:
     MRC     p15, #0, r0, c1, c0, #0
     BIC     r0, r0, #0x00000800
     MCR     p15, #0, r0, c1, c0, #0
     BX      lr
 
 @*****************************************************************************
-@ This API sets the domain access to 'client' 
+@ This API sets the domain access to 'client'
 @*****************************************************************************
-CP15DomainAccessClientSet:
-    LDR     r0, _CLIENTD 
+cp15_domain_access_client_set:
+    LDR     r0, _CLIENTD
     MCR     p15, #0, r0, c3, c0, #0
     DSB
     BX      lr
@@ -492,22 +496,22 @@ CP15DomainAccessClientSet:
 @*****************************************************************************
 @ This API Disables specified features in CP15 control register
 @  r0 -  features   Features to disable in Coprocessor 15 control
-@                       register. 
+@                       register.
 @               'features' can take any OR a combination of the
-@               below  values. 
-@                CP15_CONTROL_TEXREMAP - TEX remap flag 
-@                CP15_CONTROL_ACCESSFLAG - Access flag Control 
-@                CP15_CONTROL_ALIGN_CHCK - Alignment Fault Checking 
-@                CP15_CONTROL_MMU - To enable MMU 
-@ 
+@               below  values.
+@                CP15_CONTROL_TEXREMAP - TEX remap flag
+@                CP15_CONTROL_ACCESSFLAG - Access flag Control
+@                CP15_CONTROL_ALIGN_CHCK - Alignment Fault Checking
+@                CP15_CONTROL_MMU - To enable MMU
+@
 @ Note: Other fields of the CP15 c1 control register are not given here
 @       as they are not of importance for StarterWare. However, optionally
 @       they can also be ADDed.
 @
 @*****************************************************************************
-CP15ControlFeatureDisable:
-    MRC     p15, #0, r1, c1, c0, #0 
-    BIC     r0, r1, r0  
+cp15_control_feature_disable:
+    MRC     p15, #0, r1, c1, c0, #0
+    BIC     r0, r1, r0
     MCR     p15, #0, r0, c1, c0, #0
     DSB
     BX      lr
@@ -515,22 +519,22 @@ CP15ControlFeatureDisable:
 @*****************************************************************************
 @ This API Enables specified features in CP15 control register
 @  r0 -  features   Features to disable in Coprocessor 15 control
-@                       register. 
+@                       register.
 @               'features' can take any OR a combination of the
-@               below  values. 
-@                CP15_CONTROL_TEXREMAP - TEX remap flag 
-@                CP15_CONTROL_ACCESSFLAG - Access flag Control 
-@                CP15_CONTROL_ALIGN_CHCK - Alignment Fault Checking 
-@                CP15_CONTROL_MMU - To enable MMU 
-@ 
+@               below  values.
+@                CP15_CONTROL_TEXREMAP - TEX remap flag
+@                CP15_CONTROL_ACCESSFLAG - Access flag Control
+@                CP15_CONTROL_ALIGN_CHCK - Alignment Fault Checking
+@                CP15_CONTROL_MMU - To enable MMU
+@
 @ Note: Other fields of the CP15 c1 control register are not given here
 @       as they are not of importance for StarterWare. However, optionally
 @       they can also be ADDed.
 @
 @*****************************************************************************
-CP15ControlFeatureEnable:
-    MRC     p15, #0, r1, c1, c0, #0 
-    ORR     r0, r1, r0  
+cp15_control_feature_enable:
+    MRC     p15, #0, r1, c1, c0, #0
+    ORR     r0, r1, r0
     MCR     p15, #0, r0, c1, c0, #0
     DSB
     BX      lr
@@ -538,7 +542,7 @@ CP15ControlFeatureEnable:
 @*****************************************************************************
 @ This API Configures the TTB control register to use only TTB0
 @*****************************************************************************
-CP15TtbCtlTtb0Config:
+cp15_TTB_ctl_TTB0_config:
     MOV     r0, #0x0
     MCR     p15, #0, r0, c2, c0, #2
     DSB
@@ -548,8 +552,8 @@ CP15TtbCtlTtb0Config:
 @ This API Sets the specified fields in Auxiliary Control Register
 @ r0 - Bit Mask for the bits to be set in Auxiliary Control Register
 @*****************************************************************************
-CP15AuxControlFeatureEnable:
-    MRC     p15, #0, r1, c1, c0, #1 
+cp15_aux_control_feature_enable:
+    MRC     p15, #0, r1, c1, c0, #1
     ORR     r0,  r0, r1
     MCR     p15, #0, r0, c1, c0, #1
     DSB
@@ -559,8 +563,8 @@ CP15AuxControlFeatureEnable:
 @ This API Clears the specified fields in Auxiliary Control Register
 @ r0 - Bit Mask for the bits to be cleared in Auxiliary Control Register
 @*****************************************************************************
-CP15AuxControlFeatureDisable:
-    MRC     p15, #0, r1, c1, c0, #1 
+cp15_aux_control_feature_disable:
+    MRC     p15, #0, r1, c1, c0, #1
     BIC     r0,  r1, r0
     MCR     p15, #0, r0, c1, c0, #1
     DSB
@@ -569,20 +573,60 @@ CP15AuxControlFeatureDisable:
 @*****************************************************************************
 @ This API returns the main ID register in r0
 @*****************************************************************************
-CP15MainIdPrimPartNumGet:
+cp15_main_id_prim_part_num_get:
     MRC     p15, #0, r0, c0, c0, #0
     UBFX    r0, r0, #4, #12
     BX      lr
 
-_CLIENTD: 
+_CLIENTD:
    .word  0x55555555
 _FLD_MAX_WAY:
    .word  0x3ff
 _FLD_MAX_IDX:
    .word  0x7ff
 
+@*****************************************************************************
+@ Memory Barrier APIs
+@*****************************************************************************
+
+@*****************************************************************************
+@ This API executes an ISB (Instruction Synchronization Barrier) - the "easiest" barrier
+@ Flushes the instruction pipeline and ensures subsequent instructions
+@ are refetched from memory. Required after modifying code or vector table.
+@*****************************************************************************
+cp15_ISB_barrier:
+    ISB
+    BX      lr
+
+@*****************************************************************************
+@ This API executes a DMB (Data Memory Barrier) - middle barrier
+@ Ensures all explicit memory accesses before the barrier complete before
+@ any memory accesses after the barrier start.
+@*****************************************************************************
+cp15_DMB_barrier:
+    DMB
+    BX      lr
+
+@*****************************************************************************
+@ This API executes a DSB (Data Synchronization Barrier) - the most "strict" barrier
+@ Strictest barrier - no instruction after the barrier executes until all
+@ memory accesses and cache/TLB operations before it are complete.
+@*****************************************************************************
+cp15_DSB_barrier:
+    DSB
+    BX      lr
+
+@*****************************************************************************
+@ This API executes DSB followed by ISB
+@ Full synchronization barrier - completes all memory operations and flushes
+@ the instruction pipeline. Use when both data and instruction sync required.
+@*****************************************************************************
+cp15_DSB_ISB_sync_barrier:
+    DSB
+    ISB
+    BX      lr
+
 @
 @ End of the file
 @
     .end
-

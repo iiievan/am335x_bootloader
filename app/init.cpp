@@ -25,16 +25,16 @@ extern "C"
     void IRQHandler(void);
     void FIQHandler(void);
 
-    void CP15VectorBaseAddrSet(unsigned int addr);
-    void CP15DCacheDisable(void);
-    void CP15ICacheDisable(void);
-    void CP15DCacheCleanFlush(void);
-    void CP15ICacheFlush(void);
-    void CP15TlbInvalidate(void);
-    void CP15MMUDisable(void);
-    void CP15BranchPredictionDisable(void);
-    void CP15DCacheEnable(void);
-    void CP15ICacheEnable(void);
+    void cp15_vector_base_addr_set(unsigned int addr);
+    void cp15_D_cache_disable(void);
+    void cp15_I_cache_disable(void);
+    void cp15_D_cache_clean_flush(void);
+    void cp15_I_cache_flush(void);
+    void cp15_TLB_invalidate(void);
+    void cp15_MMU_disable(void);
+    void cp15_branch_prediction_disable(void);
+    void cp15_D_cache_enable(void);
+    void cp15_I_cache_enable(void);
 }
 
 static uint32_t const vec_tbl[14] =
@@ -69,7 +69,7 @@ static void copy_vector_table(void)
     uint32_t *src  = (uint32_t *)vec_tbl;
     uint32_t count;
 
-    CP15VectorBaseAddrSet(AM335X_VECTOR_BASE);
+    cp15_vector_base_addr_set(AM335X_VECTOR_BASE);
 
     for(count = 0; count < sizeof(vec_tbl)/sizeof(vec_tbl[0]); count++)
     {
@@ -81,10 +81,9 @@ static void rtt_cache_clean(void)
 {
     // Очищаем и инвалидируем кэш для RTT области
     // RTT область: 0x40300000 - 0x40310000 (64KB)
-    CP15DCacheCleanFlushBuff(0x40300000, 0x10000);
-    CP15ICacheFlushBuff(0x40300000, 0x10000);
-    __asm__ volatile ("dsb" : : : "memory");
-    __asm__ volatile ("isb");
+    cp15_D_cache_clean_flush_buff(0x40300000, 0x10000);
+    cp15_I_cache_flush_buff(0x40300000, 0x10000);
+    cp15_DSB_ISB_sync_barrier();
 }
 
 bool init_board()
@@ -93,13 +92,11 @@ bool init_board()
 
     rtt_log_init();
     RTT_LOG_I(TAG, "=== AM335x Boot Loader Starting ===");
-    CP15MMUDisable();
-    CP15DCacheDisable();
-    CP15ICacheDisable();
+    cp15_MMU_disable();
+    cp15_D_cache_disable();
+    cp15_I_cache_disable();
 
-    // memory barier for wait full clean and invalidate I and D caches
-    __asm__ volatile ("dsb" : : : "memory");
-    __asm__ volatile ("isb");
+    cp15_DSB_ISB_sync_barrier();
 
     rtt_cache_clean();
 
@@ -182,7 +179,7 @@ static void core_pll_init()
 
     // configure divider and multipler
     // DPLL_MULT = 500, DPLL_DIV = 23 (actual division factor is N+1)
-    // 24MHz*500/24 = 0.5GHz
+    // 24MHz*500/24 = 500 MHz
     wkup.CLKSEL_DPLL_CORE.reg = (500 << 8) | (23);
 
     // Set M4,M5,M6 diveders
@@ -198,39 +195,6 @@ static void core_pll_init()
     dpll_core |= 0x7;
     wkup.CLKMODE_DPLL_CORE.reg = dpll_core;
     while (wkup.IDLEST_DPLL_CORE.b.ST_DPLL_CLK == 0){}
-
-    /*
-    // Switch PLL to bypass mode
-    uint32_t x = REG(CM_CLKMODE_DPLL_CORE);
-    x &= ~0x7;
-    x |= 0x4;
-    REG(CM_CLKMODE_DPLL_CORE) = x;
-
-    // wait for bypass status
-    while (!(REG(CM_IDLEST_DPLL_CORE) & 0x100)) {}
-
-    REG(CM_CLKSEL_DPLL_CORE) = (500 << 8) | (23);
-
-    // Set M4 Divider
-    REG(CM_DIV_M4_DPLL_CORE) &= ~0x1F;
-    REG(CM_DIV_M4_DPLL_CORE) |= 10;
-
-    // Set the M5 Divider
-    REG(CM_DIV_M5_DPLL_CORE) &= ~0x1F;
-    REG(CM_DIV_M5_DPLL_CORE) |= 8;
-
-    // Set the M6 Divider
-    REG(CM_DIV_M6_DPLL_CORE) &= ~0x1F;
-    REG(CM_DIV_M6_DPLL_CORE) |= 4;
-
-    // Enable, locking PLL
-    x = REG(CM_CLKMODE_DPLL_CORE);
-    x |= 0x7;
-    REG(CM_CLKMODE_DPLL_CORE) = x;
-
-    // wait for locking to finish
-    while (!(REG(CM_IDLEST_DPLL_CORE) & 0x1)) {}
-    */
 }
 
 // PER PLL Configuration based on AM335x TRM 8.1.6.8.1
@@ -392,28 +356,11 @@ static bool ddr_check()
 {
     uint32_t i;
 
-    CP15DCacheDisable();
-    CP15ICacheDisable();
-    CP15TlbInvalidate();
+    cp15_D_cache_disable();
+    cp15_I_cache_disable();
+    cp15_TLB_invalidate();
 
-    // memory barier for wait full clean and invalidate I and D caches
-    __asm__ volatile ("dsb" : : : "memory");
-    __asm__ volatile ("isb");
-
-    // 1. ISB (Instruction Synchronization Barrier) - самый "легкий"
-    //__asm__ volatile ("isb" : : : "memory");
-    // Очищает конвейер инструкций, заставляет перечитать их из памяти
-    // Нужен после изменения кода или таблицы векторов
-
-    // 2. DMB (Data Memory Barrier) - средний
-    //__asm__ volatile ("dmb" : : : "memory");
-    // Ждет завершения всех обращений к памяти до определенной точки
-    // Не останавливает выполнение следующих инструкций, только их доступ к памяти
-
-    // 3. DSB (Data Synchronization Barrier) - самый "строгий"
-    //__asm__ volatile ("dsb" : : : "memory");
-    // Ждет ПОЛНОГО завершения ВСЕХ операций с памятью
-    // Останавливает выполнение следующих инструкций
+    cp15_DSB_ISB_sync_barrier();
 
     volatile uint32_t* ddr = (uint32_t*)DDR_START;
 
@@ -422,7 +369,7 @@ static bool ddr_check()
         ddr[i] = 0x55555555;
     }
 
-    __asm__ volatile ("dsb" : : : "memory");
+    cp15_DSB_barrier();
     for (i = 0; i < DDR_TEST_SIZE / 4; i += 1024)
     {
         if (ddr[i] != 0x55555555) return false;
@@ -434,7 +381,7 @@ static bool ddr_check()
         ddr[i] = 0xAAAAAAAA;
     }
 
-    __asm__ volatile ("dsb" : : : "memory");
+    cp15_DSB_barrier();
     for (i = 0; i < DDR_TEST_SIZE / 4; i += 1024)
     {
         if (ddr[i] != 0xAAAAAAAA) return false;
@@ -446,7 +393,7 @@ static bool ddr_check()
         ddr[i] = i;
     }
 
-    __asm__ volatile ("dsb" : : : "memory");
+    cp15_DSB_barrier();
     for (i = 0; i < DDR_TEST_SIZE / 4; i += 1024)
     {
         if (ddr[i] != i) return false;
