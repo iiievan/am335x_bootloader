@@ -1483,6 +1483,33 @@ namespace REGS
 
         inline AM335x_EMIF4D_Type     *AM335x_EMIF0     = reinterpret_cast<AM335x_EMIF4D_Type *>(AM335x_EMIF0_BASE);
         inline AM335x_DDR23mPHY_Type  *AM335x_DDR23mPHY = reinterpret_cast<AM335x_DDR23mPHY_Type *>(AM335x_DDR23mPHY_BASE);
+
+        /* Начальные значения конфигурации взяты из стартового ПО компании TI
+        TODO: требуется настройка с учётом конкретного чипа DDR на bbb */
+        constexpr uint32_t DDR3_CMD_SLAVE_RATIO              = 0x80;
+        constexpr uint32_t DDR3_CMD_INVERT_CLKOUT            = 0x0;
+
+        constexpr uint32_t DDR3_DATA0_RD_DQS_SLAVE_RATIO     = 0x38;
+        constexpr uint32_t DDR3_DATA0_FIFO_WE_SLAVE_RATIO    = 0x94;
+        constexpr uint32_t DDR3_DATA0_WR_DQS_SLAVE_RATIO     = 0x44;
+        constexpr uint32_t DDR3_DATA0_WR_DATA_SLAVE_RATIO    = 0x7D;
+
+        constexpr uint32_t DDR3_IOCTRL_VALUE                 = 0x18B;
+
+        constexpr uint32_t DDR3_CONTROL_DDR_IO_CTRL          = 0xEFFFFFFF;
+
+        constexpr uint32_t DDR3_READ_LATENCY                 = 0x07;
+        constexpr uint32_t DDR3_SDRAM_TIMING1                = 0x0AAAD4DB;
+        constexpr uint32_t DDR3_SDRAM_TIMING2                = 0x266B7FDA;
+        constexpr uint32_t DDR3_SDRAM_TIMING3                = 0x501F867F;
+        constexpr uint32_t DDR3_SDRAM_CONFIG                 = 0x61C05332;
+
+        constexpr uint32_t DDR3_REF_CTRL                     = 0x00000C30;
+        constexpr uint32_t DDR3_ZQ_CONFIG                    = 0x50074BE4;
+
+        // external memory mapped to EMIF0 SDRAM starting at 0x80000000
+        constexpr uint32_t DDR_START                         = 0x80000000;
+
     } // namespace EMIF
 } // namespace REGS
 

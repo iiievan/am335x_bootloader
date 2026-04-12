@@ -63,7 +63,7 @@ static void interface_clocks_init();
 static void ddr_init();
 static bool ddr_check();
 
-static void copy_vector_table(void)
+static void copy_vector_table()
 {
     uint32_t *dest = (uint32_t *)AM335X_VECTOR_BASE;
     uint32_t *src  = (uint32_t *)vec_tbl;
@@ -77,7 +77,7 @@ static void copy_vector_table(void)
     }
 }
 
-static void rtt_cache_clean(void)
+static void rtt_cache_clean()
 {
     // Очищаем и инвалидируем кэш для RTT области
     // RTT область: 0x40300000 - 0x40310000 (64KB)
@@ -136,13 +136,8 @@ static void mpu_pll_init()
     using namespace REGS::PRCM;
     auto& wkup = *AM335x_CM_WKUP;
 
-    // Switch PLL to bypass mode
-    uint32_t dpll_mpu = wkup.CLKMODE_DPLL_MPU.reg;
-    dpll_mpu &= ~0x7;
-    dpll_mpu |= 0x4;
-    wkup.CLKMODE_DPLL_MPU.reg = dpll_mpu;
-
-    // wait for bypass status
+    // Switch dpll mpu to bypass mode and  wait for bypass status
+    wkup.CLKMODE_DPLL_MPU.reg = DPLL_MNBYPASS;
     while (wkup.IDLEST_DPLL_MPU.b.ST_MN_BYPASS == 0){}
 
     // configure divider and multipler
@@ -150,15 +145,11 @@ static void mpu_pll_init()
     // 24MHz*1000/24 = 1GHz
     wkup.CLKSEL_DPLL_MPU.reg = (1000 << 8) | (23);
 
-    wkup.DIV_M2_DPLL_MPU.reg &= ~0x1F;
-    wkup.DIV_M2_DPLL_MPU.reg |= 1;
+    wkup.DIV_M2_DPLL_MPU.b.DPLL_CLKOUT_DIV = 0x0;
+    wkup.DIV_M2_DPLL_MPU.b.DPLL_CLKOUT_DIV |= 0x1;
 
-    // Enable, locking PLL
-    dpll_mpu = wkup.CLKMODE_DPLL_MPU.reg;
-    dpll_mpu |=0X7;
-    wkup.CLKMODE_DPLL_MPU.reg = dpll_mpu;
-
-    // wait for locking to finish
+    // Lock dpll mpu and  wait locking status
+    wkup.CLKMODE_DPLL_MPU.reg = DPLL_LOCKMODE;
     while (wkup.IDLEST_DPLL_MPU.b.DPLL == 0){}
 }
 
@@ -170,30 +161,27 @@ static void core_pll_init()
     using namespace REGS::PRCM;
     auto& wkup = *AM335x_CM_WKUP;
 
-    // Switch PLL to bypass mode and wait to baypass status
-    uint32_t dpll_core = wkup.CLKMODE_DPLL_CORE.reg;
-    dpll_core&= ~0x7;
-    dpll_core |= 0x4;
-    wkup.CLKMODE_DPLL_CORE.reg = dpll_core;
+    // Switch dpll core to bypass mode and wait to baypass status
+    wkup.CLKMODE_DPLL_CORE.b.DPLL_EN = DPLL_MNBYPASS;
     while (wkup.IDLEST_DPLL_CORE.b.ST_MN_BYPASS == 0){}
 
-    // configure divider and multipler
+    // configure divider and multiplier
     // DPLL_MULT = 500, DPLL_DIV = 23 (actual division factor is N+1)
     // 24MHz*500/24 = 500 MHz
     wkup.CLKSEL_DPLL_CORE.reg = (500 << 8) | (23);
 
+    // Set M4,M5,M6 dividers
     // Set M4,M5,M6 diveders
-    wkup.DIV_M4_DPLL_CORE.reg &= ~0x1F;
-    wkup.DIV_M4_DPLL_CORE.reg |= 10;
-    wkup.DIV_M5_DPLL_CORE.reg &= ~0x1F;
-    wkup.DIV_M5_DPLL_CORE.reg |= 8;
-    wkup.DIV_M6_DPLL_CORE.reg &= ~0x1F;
-    wkup.DIV_M6_DPLL_CORE.reg |= 4;
+    wkup.DIV_M4_DPLL_CORE.b.HSDIVIDER_CLKOUT1_DIV = 0x0;
+    wkup.DIV_M4_DPLL_CORE.b.HSDIVIDER_CLKOUT1_DIV |= 0x10;
+    wkup.DIV_M5_DPLL_CORE.b.HSDIVIDER_CLKOUT2_DIV = 0x0;
+    wkup.DIV_M5_DPLL_CORE.b.HSDIVIDER_CLKOUT2_DIV |= 0x8;
+    wkup.DIV_M6_DPLL_CORE.b.HSDIVIDER_CLKOUT3_DIV = 0x0;
+    wkup.DIV_M6_DPLL_CORE.b.HSDIVIDER_CLKOUT3_DIV |= 0x4;
 
-    // Lock PLL and wait locking status
-    dpll_core = wkup.CLKMODE_DPLL_CORE.reg;
-    dpll_core |= 0x7;
-    wkup.CLKMODE_DPLL_CORE.reg = dpll_core;
+
+    // Lock dpll core and wait locking status
+    wkup.CLKMODE_DPLL_CORE.b.DPLL_EN = DPLL_LOCKMODE;
     while (wkup.IDLEST_DPLL_CORE.b.ST_DPLL_CLK == 0){}
 }
 
@@ -202,33 +190,24 @@ static void core_pll_init()
 // clock source is 24MHz crystal on OSC0-IN (BBB schematic page 3)
 static void per_pll_init()
 {
-  uint32_t x;
+    using namespace REGS::PRCM;
+    auto& wkup = *AM335x_CM_WKUP;
 
-  // Switch PLL to bypass mode
-  x = REG(CM_CLKMODE_DPLL_PER);
-  x &= ~0x7;
-  x |= 0x4;
-  REG(CM_CLKMODE_DPLL_PER) = x;
+    // Switch dpll per to bypas mode and wait bypass status
+    wkup.CLKMODE_DPLL_PER.b.DPLL_EN = PER_MNBYPASS;
+    while (wkup.IDLEST_DPLL_PER.b.ST_MN_BYPASS == 0){}
 
-  // wait for bypass status
-  while (!(REG(CM_IDLEST_DPLL_PER) & 0x100)) {}
+    // configure divider and multipler
+    // DPLL_MULT = 960, DPLL_DIV = 23 (actual division factor is N+1)
+    // 24MHz*960/24 = 960MHz
+    wkup.CLKSEL_DPLL_PERIPH.reg = (960 << 8) | (23);
 
-  // configure divider and multipler
-  // DPLL_MULT = 960, DPLL_DIV = 23 (actual division factor is N+1)
-  // 24MHz*960/24 = 960MHz
-  REG(CM_CLKSEL_DPLL_PER) = (960 << 8) | (23);
+    wkup.DIV_M2_DPLL_PER.b.DPLL_CLKOUT_DIV = 0x0;
+    wkup.DIV_M2_DPLL_PER.b.DPLL_CLKOUT_DIV |= 0x5;
 
-  // Set M2 Divider
-  REG(CM_DIV_M2_DPLL_PER) &= ~0x7F;
-  REG(CM_DIV_M2_DPLL_PER) |= 5;
-
-  // Enable, locking PLL
-  x = REG(CM_CLKMODE_DPLL_PER);
-  x |= 0x7;
-  REG(CM_CLKMODE_DPLL_PER) = x;
-
-  // wait for locking to finish
-  while (!(REG(CM_IDLEST_DPLL_PER) & 0x1)) {}
+    // Lock dpll per and wait locking status
+    wkup.CLKMODE_DPLL_PER.b.DPLL_EN = PER_LOCKMODE;
+    while (wkup.IDLEST_DPLL_PER.b.ST_DPLL_CLK == 0){}
 }
 
 // DDR PLL Configuration based on AM335x TRM 8.1.6.11.1
@@ -236,35 +215,25 @@ static void per_pll_init()
 // clock source is 24MHz crystal on OSC0-IN (BBB schematic page 3)
 static void ddr_pll_init()
 {
-  uint32_t x;
+    using namespace REGS::PRCM;
+    auto& wkup = *AM335x_CM_WKUP;
 
-  // Switch PLL to bypass mode
-  x = REG(CM_CLKMODE_DPLL_DDR);
-  x &= ~0x7;
-  x |= 0x4;
-  REG(CM_CLKMODE_DPLL_DDR) = x;
+    // Switch dpll ddr to bypas mode and wait bypass status
+    wkup.CLKMODE_DPLL_DDR.b.DPLL_EN = DPLL_MNBYPASS;
+    while (wkup.IDLEST_DPLL_DDR.b.ST_MN_BYPASS == 0){}
 
-  // wait for bypass status
-  while (!(REG(CM_IDLEST_DPLL_DDR) & 0x100)) {}
+    // configure divider and multipler
+    // DPLL_MULT = 400, DPLL_DIV = 23 (actual division factor is N+1)
+    // 24MHz*400/24 = 400MHz
+    wkup.CLKSEL_DPLL_DDR.reg = (400 << 8) | (23);
 
-  // configure divider and multipler
-  // DPLL_MULT = 400, DPLL_DIV = 23 (actual division factor is N+1)
-  // 24MHz*400/24 = 400MHz
-  REG(CM_CLKSEL_DPLL_DDR) = (400 << 8) | (23);
+    wkup.DIV_M2_DPLL_DDR.b.DPLL_CLKOUT_DIV = 0x0;
+    wkup.DIV_M2_DPLL_DDR.b.DPLL_CLKOUT_DIV |= 0x1;
 
-  // Set M2 Divider
-  REG(CM_DIV_M2_DPLL_DDR) &= ~0x1F;
-  REG(CM_DIV_M2_DPLL_DDR) |= 1;
-
-  // Enable, locking PLL
-  x = REG(CM_CLKMODE_DPLL_DDR);
-  x |= 0x7;
-  REG(CM_CLKMODE_DPLL_DDR) = x;
-
-  // wait for locking to finish
-  while (!(REG(CM_IDLEST_DPLL_DDR) & 0x1)) {}
+    // Lock dpll ddr and wait locking status
+    wkup.CLKMODE_DPLL_DDR.b.DPLL_EN = DPLL_LOCKMODE;
+    while (wkup.IDLEST_DPLL_DDR.b.ST_DPLL_CLK == 0){}
 }
-
 
 static void interface_clocks_init()
 {
@@ -354,7 +323,7 @@ static void ddr_init()
 // read and write to some addresses in DDR, returns 0 on sucess
 static bool ddr_check()
 {
-    uint32_t i;
+    using namespace REGS::EMIF;
 
     cp15_D_cache_disable();
     cp15_I_cache_disable();
@@ -362,6 +331,7 @@ static bool ddr_check()
 
     cp15_DSB_ISB_sync_barrier();
 
+    uint32_t i;
     volatile uint32_t* ddr = (uint32_t*)DDR_START;
 
     for (i = 0; i < DDR_TEST_SIZE / 4; i += 1024)

@@ -723,7 +723,7 @@ namespace REGS
         { 
             struct 
             {                                          /* This register allows controlling the DPLL modes */
-                uint32_t    DPLL_EN             :3;    // bit: 0..2     (RW) DPLL control.[see e_MPU_DPLL_EN]    
+                uint32_t    DPLL_EN             :3;    // bit: 0..2     (RW) DPLL control.[see e_DPLL_EN]
                 uint32_t    DPLL_RAMP_LEVEL     :2;    // bit: 3,4      (RW) clock frequency ramping feature [variants:0x0;0x1;0x2;0x3]see datasheet and e_DPLL_RAMP_LEVEL                
                 uint32_t    DPLL_RAMP_RATE      :3;    // bit: 5..7     (RW) selects the time in terms of DPLL REFCLKs spent at each stage of the clock ramping process. see e_DPLL_RAMP_RATE               
                 uint32_t    DPLL_DRIFTGUARD_EN  :1;    // bit: 8        (RW) This bit allows to enable or disable the automatic recalibration feature of the DPLL. DRIFTGUARD feature [0x0 = disabled; 0x1 = enabled]            

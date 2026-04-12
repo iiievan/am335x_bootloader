@@ -94,10 +94,10 @@ extern unsigned int cp15_main_id_prim_part_num_get(void);
 /*
 ** Memory Barrier API prototypes
 */
-extern void cp15_ISB_barrier(void);              /* Instruction Synchronization Barrier */
-extern void cp15_DMB_barrier(void);              /* Data Memory Barrier */
-extern void cp15_DSB_barrier(void);              /* Data Synchronization Barrier */
-extern void cp15_DSB_ISB_sync_barrier(void);     /* DSB + ISB combined */
+extern void cp15_ISB_barrier(void);
+extern void cp15_DMB_barrier(void);
+extern void cp15_DSB_barrier(void);
+extern void cp15_DSB_ISB_sync_barrier(void);
 
 #ifdef __cplusplus
 }

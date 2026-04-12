@@ -55,30 +55,4 @@
 #define DATA1_REG_PHY_USE_RANK0_DELAYS      (DDR_PHY_BASE + 0x1D8)
 #define DATA1_REG_PHY_DLL_LOCK_DIFF_0       (DDR_PHY_BASE + 0x1DC)
 
-/* Configuration values taken from TI's starterware as a start
-TODO: tuning needed to match actual DDR chip on bbb */
-#define DDR3_CMD_SLAVE_RATIO                0x80
-#define DDR3_CMD_INVERT_CLKOUT              0x0
-
-#define DDR3_DATA0_RD_DQS_SLAVE_RATIO       0x38
-#define DDR3_DATA0_FIFO_WE_SLAVE_RATIO      0x94
-#define DDR3_DATA0_WR_DQS_SLAVE_RATIO       0x44
-#define DDR3_DATA0_WR_DATA_SLAVE_RATIO      0x7D
-
-#define DDR3_IOCTRL_VALUE                   0x18B
-
-#define DDR3_CONTROL_DDR_IO_CTRL            0xefffffff
-
-#define DDR3_READ_LATENCY                   0x07
-#define DDR3_SDRAM_TIMING1                  0x0AAAD4DB
-#define DDR3_SDRAM_TIMING2                  0x266B7FDA   
-#define DDR3_SDRAM_TIMING3                  0x501F867F
-#define DDR3_SDRAM_CONFIG                   0x61C05332
-
-#define DDR3_REF_CTRL                       0x00000C30
-#define DDR3_ZQ_CONFIG                      0x50074BE4
-
-// external memory mapped to EMIF0 SDRAM starting at 0x80000000 
-#define DDR_START 0x80000000
-
 #endif /* _CONTROL_H */
