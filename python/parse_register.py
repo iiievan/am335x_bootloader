@@ -31,8 +31,8 @@ class CoordinatedPDFParser:
                 # Извлекаем поля
                 fields = self._extract_fields(page, text, reg_name)
 
-                # Объединяем соседние зарезервированные поля
-                fields = self._merge_reserved_fields(fields)
+                # Постобработка полей
+                fields = self._postprocess_fields(fields)
 
                 return {
                     'name': reg_name,
@@ -140,7 +140,6 @@ class CoordinatedPDFParser:
         fields = []
 
         # Ищем Figure с битовой маской
-        # Ищем строки вида "31-10 Reserved" или "9 hw_dbg_gate_en"
         bit_pattern = r'(\d+(?:-\d+)?)\s+([A-Za-z_][A-Za-z0-9_]*)'
         matches = re.finditer(bit_pattern, text)
 
@@ -167,7 +166,7 @@ class CoordinatedPDFParser:
             except (ValueError, TypeError):
                 continue
 
-            # Пропускаем, если имя поля содержит номер страницы или другие числа
+            # Пропускаем, если имя поля содержит номер страницы
             if re.search(r'\d', name) and len(name) < 4:
                 continue
 
@@ -190,8 +189,75 @@ class CoordinatedPDFParser:
 
         return unique_fields
 
-    def _merge_reserved_fields(self, fields):
-        """Объединяет соседние зарезервированные поля в одно"""
+    def _postprocess_fields(self, fields):
+        """Постобработка полей: объединение дубликатов и соседних reserved"""
+        if not fields:
+            return fields
+
+        # Шаг 1: Объединяем пересекающиеся/дублирующиеся поля
+        fields = self._merge_overlapping_fields(fields)
+
+        # Шаг 2: Объединяем соседние зарезервированные поля
+        fields = self._merge_adjacent_reserved(fields)
+
+        return fields
+
+    def _merge_overlapping_fields(self, fields):
+        """Объединяет поля, которые пересекаются или дублируются"""
+        if not fields:
+            return fields
+
+        def get_low_bit(bits_str: str) -> int:
+            if '-' in bits_str:
+                return int(bits_str.split('-')[1])
+            return int(bits_str)
+
+        def get_high_bit(bits_str: str) -> int:
+            if '-' in bits_str:
+                return int(bits_str.split('-')[0])
+            return int(bits_str)
+
+        # Сортируем по младшему биту
+        sorted_fields = sorted(fields, key=lambda x: get_low_bit(x['bits']))
+        merged = []
+
+        for field in sorted_fields:
+            if not merged:
+                merged.append(field)
+                continue
+
+            last = merged[-1]
+            last_low = get_low_bit(last['bits'])
+            last_high = get_high_bit(last['bits'])
+            curr_low = get_low_bit(field['bits'])
+            curr_high = get_high_bit(field['bits'])
+
+            # Проверяем пересечение или дублирование
+            if curr_low <= last_high:
+                # Поля пересекаются - объединяем
+                new_low = min(last_low, curr_low)
+                new_high = max(last_high, curr_high)
+
+                # Берём имя от первого поля (или не-reserved)
+                if last['name'].lower() != 'reserved':
+                    name = last['name']
+                else:
+                    name = field['name']
+
+                merged[-1] = {
+                    'bits': f"{new_high}-{new_low}",
+                    'name': name,
+                    'access': last['access'] if last['access'] != 'R' else field['access'],
+                    'reset': last['reset'],
+                    'description': last['description'][:100]
+                }
+            else:
+                merged.append(field)
+
+        return merged
+
+    def _merge_adjacent_reserved(self, fields):
+        """Объединяет соседние зарезервированные поля"""
         if not fields:
             return fields
 
@@ -217,7 +283,7 @@ class CoordinatedPDFParser:
                 i += 1
                 continue
 
-            # Группируем зарезервированные поля
+            # Начинаем группу зарезервированных полей
             reserved_start = get_low_bit(current['bits'])
             reserved_end = get_high_bit(current['bits'])
             j = i + 1
