@@ -410,10 +410,10 @@ class CoordinatedPDFParser:
                     reserved_bits = low - current_bit
                     if reserved_bits == 1:
                         lines.append(
-                            f"        uint32_t                  :{reserved_bits:2d}; // bit: {current_bit:2d} Reserved.")
+                            f"        uint32_t                  :{reserved_bits:2d}; // bit: {current_bit} Reserved.")
                     else:
                         lines.append(
-                            f"        uint32_t                  :{reserved_bits:2d}; // bit: {current_bit:2d}..{low - 1:2d} Reserved.")
+                            f"        uint32_t                  :{reserved_bits:2d}; // bit: {current_bit}..{low - 1} Reserved.")
                     current_bit = low
 
                 width = high - low + 1
@@ -422,17 +422,17 @@ class CoordinatedPDFParser:
                 if field['name'].lower() == 'reserved':
                     if width == 1:
                         lines.append(
-                            f"        uint32_t                  :{width:2d}; // bit: {low:2d} Reserved.")
+                            f"        uint32_t                  :{width:2d}; // bit: {low} Reserved.")
                     else:
                         lines.append(
-                            f"        uint32_t                  :{width:2d}; // bit: {low:2d}..{high:2d} Reserved.")
+                            f"        uint32_t                  :{width:2d}; // bit: {low}..{high} Reserved.")
                 else:
                     if low == high:
-                        bit_display = f"{low:2d}"
+                        bit_display = f"{low}"
                     else:
-                        bit_display = f"{low:2d}..{high:2d}"
+                        bit_display = f"{low}..{high}"
 
-                    comment = f"bit: {bit_display} ({field['access']})"
+                    comment = f"({field['access']})"
                     if field['description']:
                         desc = field['description']
                         if desc.startswith('Field '):
@@ -441,10 +441,7 @@ class CoordinatedPDFParser:
                             short_desc = desc[:50]
                             comment += f" {short_desc}"
 
-                    if len(comment) > 90:
-                        comment = comment[:87] + "..."
-
-                    lines.append(f"        uint32_t    {field['name']:25s}:{width:2d}; // {comment}")
+                    lines.append(f"        uint32_t    {field['name']} :{width:2d}; // bit: {bit_display} {comment}")
 
                 current_bit = high + 1
 
@@ -452,16 +449,57 @@ class CoordinatedPDFParser:
                 reserved_bits = 32 - current_bit
                 if reserved_bits == 1:
                     lines.append(
-                        f"        uint32_t                  :{reserved_bits:2d}; // bit: {current_bit:2d} Reserved.")
+                        f"        uint32_t                  :{reserved_bits:2d}; // bit: {current_bit} Reserved.")
                 else:
                     lines.append(
-                        f"        uint32_t                  :{reserved_bits:2d}; // bit: {current_bit:2d}..31 Reserved.")
+                        f"        uint32_t                  :{reserved_bits:2d}; // bit: {current_bit}..31 Reserved.")
 
         lines.append(f"    }} b;")
         lines.append(f"    uint32_t  reg;")
         lines.append(f"}} {reg_info['name']}_reg_t;")
 
-        return '\n'.join(lines)
+        # Пост-обработка для форматирования
+        c_code = '\n'.join(lines)
+
+        # 1. Добавляем (R) к Reserved
+        c_code = re.sub(r'Reserved\.', '(R) Reserved.', c_code)
+
+        # 2. Убираем пробелы вокруг .. в битах
+        c_code = re.sub(r'bit:\s+(\d+)\s*\.\.\s*(\d+)', r'bit: \1..\2', c_code)
+
+        # 3. Выравнивание полей - находим максимальную длину имени
+        lines_list = c_code.split('\n')
+        formatted_lines = []
+
+        # Сначала найдем все строки с полями внутри struct
+        field_lines_indices = []
+        for i, line in enumerate(lines_list):
+            if 'uint32_t' in line and '// bit:' in line and '} b;' not in line:
+                field_lines_indices.append(i)
+
+        if field_lines_indices:
+            # Находим максимальную позицию двоеточия
+            max_colon_pos = 0
+            for idx in field_lines_indices:
+                line = lines_list[idx]
+                if ':' in line:
+                    colon_pos = line.find(':')
+                    max_colon_pos = max(max_colon_pos, colon_pos)
+
+            # Выравниваем все строки
+            for idx in field_lines_indices:
+                line = lines_list[idx]
+                if ':' in line:
+                    colon_pos = line.find(':')
+                    if colon_pos < max_colon_pos:
+                        # Добавляем пробелы
+                        spaces_to_add = max_colon_pos - colon_pos
+                        line = line[:colon_pos] + ' ' * spaces_to_add + line[colon_pos:]
+                        lines_list[idx] = line
+
+        c_code = '\n'.join(lines_list)
+
+        return c_code
 
 
 def main():
