@@ -29,10 +29,10 @@ class CoordinatedPDFParser:
                 print(f"[OK] Найден на странице {page_num + 1}")
 
                 # Извлекаем поля
-                fields = self._extract_fields(page, text, reg_name)
+                fields = self._extract_fields(page, reg_name)
 
                 # Постобработка полей
-                fields = self._postprocess_fields(fields)
+                fields = self._postprocess_fields(fields, reg_name)
 
                 return {
                     'name': reg_name,
@@ -44,96 +44,98 @@ class CoordinatedPDFParser:
 
         return None
 
-    def _extract_fields(self, page, text: str, reg_name: str):
-        """Извлекает поля регистра"""
+    def _extract_fields(self, page, reg_name: str):
+        """Извлекает поля из HTML-таблицы Field Descriptions"""
         fields = []
 
-        # Ищем секцию Table или Field Descriptions
-        lines = text.split('\n')
-        table_start = -1
+        # Получаем HTML-представление страницы
+        html = page.get_text("html")
 
-        for i, line in enumerate(lines):
-            if 'Field Descriptions' in line or re.search(r'Table\s+[\d\-]+\.', line):
-                table_start = i
-                break
+        # Ищем секцию Field Descriptions
+        if 'Field Descriptions' not in html:
+            return self._extract_from_bitmask(page.get_text(), reg_name)
 
-        if table_start != -1:
-            # Парсим строки таблицы Field Descriptions
-            for i in range(table_start + 1, min(table_start + 50, len(lines))):
-                line = lines[i].strip()
-                if not line:
+        # Находим начало таблицы
+        start_idx = html.find('Field Descriptions')
+        if start_idx == -1:
+            return []
+
+        # Ищем строки таблицы в формате <p> с координатами
+        # Каждое поле состоит из 5 строк: Bit, Field, Type, Reset, Description
+        lines_pattern = r'<p style="top:([\d.]+)pt;left:([\d.]+)pt[^>]*>(.*?)</p>'
+
+        # Извлекаем все элементы <p> после Field Descriptions
+        table_html = html[start_idx:start_idx + 15000]
+        matches = list(re.finditer(lines_pattern, table_html, re.DOTALL))
+
+        # Группируем строки по Y-координате (каждая строка таблицы имеет свою Y)
+        rows = {}
+        for match in matches:
+            y = float(match.group(1))
+            content = re.sub(r'<[^>]+>', '', match.group(3)).strip()
+            if content:
+                if y not in rows:
+                    rows[y] = []
+                rows[y].append(content)
+
+        # Парсим строки таблицы (каждая строка должна иметь 5 колонок)
+        for y, cols in sorted(rows.items()):
+            if len(cols) >= 4:  # Минимум 4 колонки (Bit, Field, Type, Reset)
+                # Очищаем колонки
+                bits = cols[0].strip() if len(cols) > 0 else ''
+                name = cols[1].strip() if len(cols) > 1 else ''
+                access = cols[2].strip() if len(cols) > 2 else ''
+                reset_val = cols[3].strip() if len(cols) > 3 else ''
+                description = cols[4].strip() if len(cols) > 4 else ''
+
+                # Пропускаем заголовки
+                if bits.lower() in ['bit', 'bits'] or name.lower() in ['field']:
                     continue
 
-                # Останавливаемся при следующем заголовке регистра
-                if re.match(r'^\d+\.\d+\.\d+\s+\w+\s+Register', line, re.IGNORECASE):
-                    break
-
-                # Останавливаемся при Figure
-                if 'Figure' in line:
-                    break
-
-                # Пропускаем строки с колонтитулами
-                if 'Copyright' in line or 'www.ti.com' in line:
+                # Валидация битов
+                if not re.match(r'^\d+(?:-\d+)?$', bits):
                     continue
 
-                # Пропускаем легенду
-                if 'LEGEND' in line:
+                try:
+                    if '-' in bits:
+                        high, low = map(int, bits.split('-'))
+                        if high < low or high > 31 or low < 0:
+                            continue
+                    else:
+                        bit = int(bits)
+                        if bit < 0 or bit > 31:
+                            continue
+                except (ValueError, TypeError):
                     continue
 
-                field = self._parse_table_line(line)
-                if field:
-                    fields.append(field)
+                # Нормализация доступа
+                if access == 'W1toCl':
+                    access = 'W'
+                elif access not in ['R', 'W', 'R/W']:
+                    # Пробуем извлечь из формата R-0h
+                    if '-' in access:
+                        access_part = access.split('-')[0]
+                        if access_part in ['R', 'W', 'R/W']:
+                            access = access_part
+                        else:
+                            access = 'R/W'
+                    else:
+                        access = 'R/W'
 
-        # Если нашли поля, возвращаем их
-        if fields:
-            return fields
+                # Нормализация сброса
+                reset_val = re.sub(r'[^0-9a-fA-FhxX]', '', reset_val)
+                if not reset_val:
+                    reset_val = '0h'
 
-        # Если не нашли поля через таблицу, пробуем через битовую маску
-        return self._extract_from_bitmask(text, reg_name)
+                fields.append({
+                    'bits': bits,
+                    'name': name if name != 'Reserved' else f'reserved_{bits.replace("-", "_")}',
+                    'access': access,
+                    'reset': reset_val,
+                    'description': description[:200]
+                })
 
-    def _parse_table_line(self, line: str):
-        """Парсит строку таблицы Field Descriptions"""
-        # Нормализуем пробелы
-        line = re.sub(r'\s+', ' ', line).strip()
-
-        # Паттерн для строки таблицы
-        pattern = r'^(\d+(?:-\d+)?)\s+([A-Za-z_][A-Za-z0-9_]*)\s+(R/W|R|W1toCl)\s+([0-9a-fA-F]+h?)\s+(.*?)$'
-
-        match = re.match(pattern, line, re.IGNORECASE)
-        if not match:
-            return None
-
-        bits = match.group(1)
-        name = match.group(2)
-        access = match.group(3)
-        reset_val = match.group(4)
-        description = match.group(5).strip()
-
-        # Валидация битов
-        try:
-            if '-' in bits:
-                high, low = map(int, bits.split('-'))
-                if high < low or high > 31 or low < 0:
-                    return None
-            else:
-                bit = int(bits)
-                if bit < 0 or bit > 31:
-                    return None
-        except (ValueError, TypeError):
-            return None
-
-        # Очищаем описание
-        description = re.sub(r'<br\s*/?>', ' ', description)
-        description = ' '.join(description.split())
-        description = description[:200]
-
-        return {
-            'bits': bits,
-            'name': name,
-            'access': access,
-            'reset': reset_val,
-            'description': description
-        }
+        return fields
 
     def _extract_from_bitmask(self, text: str, reg_name: str):
         """Извлекает поля из битовой маски (для регистров без Field Descriptions)"""
@@ -173,7 +175,7 @@ class CoordinatedPDFParser:
             fields.append({
                 'bits': bits,
                 'name': name,
-                'access': 'R/W',
+                'access': 'R',
                 'reset': '0h',
                 'description': f'Field {name}'
             })
@@ -189,17 +191,32 @@ class CoordinatedPDFParser:
 
         return unique_fields
 
-    def _postprocess_fields(self, fields):
-        """Постобработка полей: объединение дубликатов и соседних reserved"""
+    def _postprocess_fields(self, fields, reg_name: str):
+        """Постобработка полей: объединение дубликатов, соседних reserved, нормализация битов"""
         if not fields:
             return fields
 
-        # Шаг 1: Объединяем пересекающиеся/дублирующиеся поля
+        # Шаг 1: Нормализуем отображение битов (5..5 -> 5)
+        fields = self._normalize_bit_display(fields)
+
+        # Шаг 2: Объединяем пересекающиеся/дублирующиеся поля
         fields = self._merge_overlapping_fields(fields)
 
-        # Шаг 2: Объединяем соседние зарезервированные поля
+        # Шаг 3: Объединяем соседние зарезервированные поля
         fields = self._merge_adjacent_reserved(fields)
 
+        # Шаг 4: Проверяем сумму битов
+        self._check_bit_sum(fields, reg_name)
+
+        return fields
+
+    def _normalize_bit_display(self, fields):
+        """Нормализует отображение битов: 5..5 -> 5"""
+        for field in fields:
+            if '-' in field['bits']:
+                high, low = map(int, field['bits'].split('-'))
+                if high == low:
+                    field['bits'] = str(high)
         return fields
 
     def _merge_overlapping_fields(self, fields):
@@ -217,7 +234,6 @@ class CoordinatedPDFParser:
                 return int(bits_str.split('-')[0])
             return int(bits_str)
 
-        # Сортируем по младшему биту
         sorted_fields = sorted(fields, key=lambda x: get_low_bit(x['bits']))
         merged = []
 
@@ -232,22 +248,27 @@ class CoordinatedPDFParser:
             curr_low = get_low_bit(field['bits'])
             curr_high = get_high_bit(field['bits'])
 
-            # Проверяем пересечение или дублирование
             if curr_low <= last_high:
-                # Поля пересекаются - объединяем
                 new_low = min(last_low, curr_low)
                 new_high = max(last_high, curr_high)
 
-                # Берём имя от первого поля (или не-reserved)
                 if last['name'].lower() != 'reserved':
                     name = last['name']
                 else:
                     name = field['name']
 
+                # Берём доступ с наименьшими ограничениями
+                if 'R/W' in [last['access'], field['access']]:
+                    access = 'R/W'
+                elif 'W' in [last['access'], field['access']]:
+                    access = 'W'
+                else:
+                    access = 'R'
+
                 merged[-1] = {
-                    'bits': f"{new_high}-{new_low}",
+                    'bits': f"{new_high}-{new_low}" if new_high != new_low else str(new_low),
                     'name': name,
-                    'access': last['access'] if last['access'] != 'R' else field['access'],
+                    'access': access,
                     'reset': last['reset'],
                     'description': last['description'][:100]
                 }
@@ -283,7 +304,6 @@ class CoordinatedPDFParser:
                 i += 1
                 continue
 
-            # Начинаем группу зарезервированных полей
             reserved_start = get_low_bit(current['bits'])
             reserved_end = get_high_bit(current['bits'])
             j = i + 1
@@ -300,8 +320,9 @@ class CoordinatedPDFParser:
                 else:
                     break
 
+            bits_str = f"{reserved_end}-{reserved_start}" if reserved_end != reserved_start else str(reserved_start)
             merged.append({
-                'bits': f"{reserved_end}-{reserved_start}",
+                'bits': bits_str,
                 'name': 'Reserved',
                 'access': 'R',
                 'reset': '0h',
@@ -311,9 +332,24 @@ class CoordinatedPDFParser:
 
         return merged
 
+    def _check_bit_sum(self, fields, reg_name: str):
+        """Проверяет, что сумма всех битов равна 32"""
+        total_bits = 0
+        for field in fields:
+            if '-' in field['bits']:
+                high, low = map(int, field['bits'].split('-'))
+                total_bits += high - low + 1
+            else:
+                total_bits += 1
+
+        if total_bits != 32:
+            print(f"[WARN] Регистр '{reg_name}': сумма битов = {total_bits} (должно быть 32)")
+
     def _convert_hex_format(self, hex_str: str) -> str:
         """Конвертирует формат '6A4h' в '0x6A4'"""
         hex_val = hex_str.rstrip('h').rstrip('H')
+        if hex_val.startswith('0x'):
+            return hex_val
         return f"0x{hex_val}"
 
     def generate_c_code(self, reg_info: dict) -> str:
@@ -358,12 +394,23 @@ class CoordinatedPDFParser:
                     lines.append(
                         f"        uint32_t                  :{width:2d}; // bit: {low:2d}..{high:2d} Reserved.")
                 else:
-                    comment = f"bit: {low:2d}..{high:2d} ({field['access']})"
+                    if low == high:
+                        bit_display = f"{low:2d}"
+                    else:
+                        bit_display = f"{low:2d}..{high:2d}"
+
+                    comment = f"bit: {bit_display} ({field['access']})"
                     if field['description']:
-                        short_desc = field['description'][:60]
-                        comment += f" {short_desc}"
+                        desc = field['description']
+                        if desc.startswith('Field '):
+                            desc = desc[6:]
+                        if desc and desc != 'Reserved':
+                            short_desc = desc[:50]
+                            comment += f" {short_desc}"
+
                     if len(comment) > 90:
                         comment = comment[:87] + "..."
+
                     lines.append(f"        uint32_t    {field['name']:25s}:{width:2d}; // {comment}")
 
                 current_bit = high + 1
