@@ -61,7 +61,6 @@ class CoordinatedPDFParser:
             return []
 
         # Ищем строки таблицы в формате <p> с координатами
-        # Каждое поле состоит из 5 строк: Bit, Field, Type, Reset, Description
         lines_pattern = r'<p style="top:([\d.]+)pt;left:([\d.]+)pt[^>]*>(.*?)</p>'
 
         # Извлекаем все элементы <p> после Field Descriptions
@@ -129,7 +128,7 @@ class CoordinatedPDFParser:
 
                 fields.append({
                     'bits': bits,
-                    'name': name if name != 'Reserved' else f'reserved_{bits.replace("-", "_")}',
+                    'name': name if name != 'Reserved' else 'Reserved',
                     'access': access,
                     'reset': reset_val,
                     'description': description[:200]
@@ -174,7 +173,7 @@ class CoordinatedPDFParser:
 
             fields.append({
                 'bits': bits,
-                'name': name,
+                'name': name if name != 'Reserved' else 'Reserved',
                 'access': 'R',
                 'reset': '0h',
                 'description': f'Field {name}'
@@ -202,7 +201,7 @@ class CoordinatedPDFParser:
         # Шаг 2: Объединяем пересекающиеся/дублирующиеся поля
         fields = self._merge_overlapping_fields(fields)
 
-        # Шаг 3: Объединяем соседние зарезервированные поля
+        # Шаг 3: Объединяем соседние зарезервированные поля и убираем их имена
         fields = self._merge_adjacent_reserved(fields)
 
         # Шаг 4: Проверяем сумму битов
@@ -278,7 +277,7 @@ class CoordinatedPDFParser:
         return merged
 
     def _merge_adjacent_reserved(self, fields):
-        """Объединяет соседние зарезервированные поля"""
+        """Объединяет соседние зарезервированные поля и убирает их имена"""
         if not fields:
             return fields
 
@@ -299,11 +298,13 @@ class CoordinatedPDFParser:
         while i < len(sorted_fields):
             current = sorted_fields[i]
 
+            # Если не зарезервировано или уже не Reserved (после объединения)
             if current['name'].lower() != 'reserved':
                 merged.append(current)
                 i += 1
                 continue
 
+            # Начинаем группу зарезервированных полей
             reserved_start = get_low_bit(current['bits'])
             reserved_end = get_high_bit(current['bits'])
             j = i + 1
@@ -320,10 +321,11 @@ class CoordinatedPDFParser:
                 else:
                     break
 
+            # Создаём анонимное зарезервированное поле (без имени)
             bits_str = f"{reserved_end}-{reserved_start}" if reserved_end != reserved_start else str(reserved_start)
             merged.append({
                 'bits': bits_str,
-                'name': 'Reserved',
+                'name': 'Reserved',  # Оставляем маркер, но при генерации имени не будет
                 'access': 'R',
                 'reset': '0h',
                 'description': 'Reserved'
@@ -390,6 +392,7 @@ class CoordinatedPDFParser:
 
                 width = high - low + 1
 
+                # Для зарезервированных полей не выводим имя
                 if field['name'].lower() == 'reserved':
                     lines.append(
                         f"        uint32_t                  :{width:2d}; // bit: {low:2d}..{high:2d} Reserved.")
