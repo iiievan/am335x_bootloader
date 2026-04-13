@@ -1,19 +1,17 @@
 
 
 
-
-Breakpoint=/home/mbokastnev/code/am335x_bootloader/app/main.cpp:13, State=BP_STATE_ON
-OpenDocument="init.cpp", FilePath="/home/mbokastnev/code/am335x_bootloader/app/init.cpp", Line=149
+OpenDocument="init.cpp", FilePath="/home/mbokastnev/code/am335x_bootloader/app/init.cpp", Line=254
 OpenDocument="main.cpp", FilePath="/home/mbokastnev/code/am335x_bootloader/app/main.cpp", Line=0
 OpenToolbar="Debug", Floating=0, x=0, y=0
-OpenWindow="Registers 1", DockArea=LEFT, x=0, y=0, w=787, h=825, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
+OpenWindow="Registers 1", DockArea=LEFT, x=0, y=0, w=566, h=825, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
 OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=719, h=825, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Memory 1", DockArea=BOTTOM, x=2, y=0, w=728, h=475, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, EditorAddress=0x0
 OpenWindow="Terminal", DockArea=BOTTOM, x=0, y=0, w=873, h=475, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Console", DockArea=BOTTOM, x=1, y=0, w=877, h=475, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 SmartViewPlugin="", Page="", Toolbar="Hidden", Window="SmartView 1"
 TableHeader="Power Sampling", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Ch 0"], ColWidths=[100;100;100]
-TableHeader="Registers 1", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Description"], ColWidths=[327;105;355]
+TableHeader="Registers 1", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Description"], ColWidths=[327;105;315]
 TableHeader="RegisterSelectionDialog", SortCol="None", SortOrder="ASCENDING", VisibleCols=[], ColWidths=[]
 TableHeader="TargetExceptionDialog", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Address";"Description"], ColWidths=[200;100;100;359]
 WatchedExpression="per", Window=Watched Data 1

@@ -101,7 +101,20 @@ namespace REGS
             ADDR_DATA_MUXING          = 0x2,
             ADMUX_RESERVED            = 0x3      
         };
-    
+
+        /* [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                uint32_t    bc            :1;         // bit: 0      (R) Boot Complete
+                uint32_t                  :15;        // bit: 1..15  Reserved
+                uint32_t    booterr       :4;         // bit: 16..19 (R) Boot Error code
+                uint32_t    rsvd2         :12;        // bit: 20..31 Reserved
+            } b;
+            uint32_t  reg;
+        } control_bootstat_reg_t;
+
         /* [reset state = 0x0]*/
         typedef union 
         { 
@@ -233,6 +246,25 @@ namespace REGS
             SDRAM_TYPE_DDR2     = 0x2,
             SDRAM_TYPE_DDR3     = 0x3   
         };
+
+        /* [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                uint32_t    novbgbyr      :1;         // bit: 0      (RW)
+                uint32_t    nocap         :1;         // bit: 1      (RW)
+                uint32_t    bbsel         :1;         // bit: 2      (RW)
+                uint32_t    hz            :1;         // bit: 3      (RW)
+                uint32_t    lowpwr        :1;         // bit: 4      (RW)
+                uint32_t    ldobypassz    :1;         // bit: 5      (RW)
+                uint32_t                  :10;        // bit: 6..15  Reserved
+                uint32_t    vsetrbb       :5;         // bit: 16..20 (RW) VSET for RBB
+                uint32_t    vsetfbb       :5;         // bit: 21..25 (RW) VSET for FBB
+                uint32_t    rsvd2         :6;         // bit: 26..31 Reserved
+            } b;
+            uint32_t  reg;
+        } cortex_vbbldo_ctrl_reg_t;
     
         /* [reset state = 0x0]*/
         typedef union 
@@ -442,7 +474,21 @@ namespace REGS
                 uint32_t                :6;         // bit: 26..31   Reserved  
             } b;                                    // Structure used for bit access 
             uint32_t  reg;                          // Type used for register access 
-        } init_priority_1_reg_t; 
+        } init_priority_1_reg_t;
+
+        /* [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                uint32_t                  :7;         // bit: 0..6   Reserved
+                uint32_t    mmu_disable   :1;         // bit: 7      (RW) MMU disable
+                uint32_t    rsvd2         :7;         // bit: 8..14  Reserved
+                uint32_t    mmu_abort     :1;         // bit: 15     (RW) MMU abort enable
+                uint32_t    rsvd3         :16;        // bit: 16..31 Reserved
+            } b;
+            uint32_t  reg;
+        } control_mmu_cfg_reg_t;
     
         /* [reset state = 0x0]*/
         typedef union 
@@ -465,6 +511,20 @@ namespace REGS
             TPTC_64_BYTE  = 0x2,
             TPTC_128_BYTE = 0x3,
         };
+
+        /* [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                uint32_t    par_en        :1;         // bit: 0      (RW) Parity enable
+                uint32_t    par_resp_en   :1;         // bit: 1      (RW) Parity response enable
+                uint32_t                  :2;         // bit: 2..3   Reserved
+                uint32_t    par_int_clr   :1;         // bit: 4      (RW) Parity interrupt clear
+                uint32_t                  :27;        // bit: 5..31  Reserved
+            } b;
+            uint32_t  reg;
+        } control_ocmc_cfg_reg_t;
     
         /* [reset state = 0x0]*/
         typedef union 
@@ -793,6 +853,45 @@ namespace REGS
             } b;                                      // Structure used for bit access 
             uint32_t  reg;                            // Type used for register access 
         } mpuss_hw_dbg_info_reg_t;
+
+        /* [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                uint32_t    mmode0        :2;         // bit: 0..1
+                uint32_t    mmode1        :2;         // bit: 2..3
+                uint32_t    mmode2        :2;         // bit: 4..5
+                uint32_t    mmode3        :2;         // bit: 6..7
+                uint32_t    mmode4        :2;         // bit: 8..9
+                uint32_t    mmode5        :2;         // bit: 10..11
+                uint32_t    mmode6        :2;         // bit: 12..13
+                uint32_t    mmode7        :2;         // bit: 14..15
+                uint32_t    mmode8        :2;         // bit: 16..17
+                uint32_t    mmode9        :2;         // bit: 18..19
+                uint32_t    mmode10       :2;         // bit: 20..21
+                uint32_t    mmode11       :2;         // bit: 22..23
+                uint32_t    mmode12       :2;         // bit: 24..25
+                uint32_t    mmode13       :2;         // bit: 26..27
+                uint32_t    mmode14       :2;         // bit: 28..29
+                uint32_t    mmode15       :2;         // bit: 30..31
+            } b;
+            uint32_t  reg;
+        } mrgn_mode0_reg_t;
+
+        /* [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                uint32_t    mmode16       :2;         // bit: 0..1
+                uint32_t    mmode17       :2;         // bit: 2..3
+                uint32_t    mmode18       :2;         // bit: 4..5
+                uint32_t    mmode19       :2;         // bit: 6..7
+                uint32_t                  :24;        // bit: 8..31  Reserved
+            } b;
+            uint32_t  reg;
+        } mrgn_mode1_reg_t;
     
         /* [reset state = 0x0]*/
         typedef union 
@@ -1044,6 +1143,18 @@ namespace REGS
             } b;                                      // Structure used for bit access 
             uint32_t  reg;                            // Type used for register access 
         } vref_ctrl_reg_t;
+
+        /* [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                uint32_t    pwrdn         :1;         // bit: 0      (RW) Power down
+                uint32_t    pwrdn_se      :1;         // bit: 1      (RW) Power down single-ended
+                uint32_t                  :30;        // bit: 2..31  Reserved
+            } b;
+            uint32_t  reg;
+        } serdes_refclk_ctl_reg_t;
     
         /* [reset state = 0x0]*/
         typedef union 
@@ -1649,41 +1760,63 @@ namespace REGS
             WD0_WD1_KEEP_ENABLED  = 0x3   // Weak keeper enabled
         };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         struct AM335x_CTRL_MODULE_Type
-        {                                                                                      
-            __R   control_revision_reg_t              control_revision;          // (0x00)  
-            __R   control_hwinfo_reg_t                control_hwinfo;            // (0x04) 
-            __R   uint32_t                            RESERVED[2]; 
+        {
+            __R   control_revision_reg_t              control_revision;          // (0x00)
+            __R   control_hwinfo_reg_t                control_hwinfo;            // (0x04)
+            __R   uint32_t                            RESERVED[2];               //
+
             __RW  control_sysconfig_reg_t             control_sysconfig;         // (0x10)
-            __R   uint32_t                            RESERVED1[11];    
+            __R   uint32_t                            RESERVED1[11];             //
+
             __R   control_status_reg_t                control_status;            // (0x40)
-            __R   uint32_t                            RESERVED2[51];  
-            __RW  control_emif_sdram_config_reg_t     control_emif_sdram_config; // (0x110)  
-            __R   uint32_t                            RESERVED3[197]; 
-            __RW  core_sldo_ctrl_reg_t                core_sldo_ctrl;            // (0x428)  
+            __R   control_bootstat_reg_t              control_bootstat;          // (0x44)
+            __R   uint32_t                            RESERVED2[50];             // уменьшено на 1
+
+            __RW  control_emif_sdram_config_reg_t     control_emif_sdram_config; // (0x110)
+            __R   uint32_t                            RESERVED3[194];            // secure-регистры и прочее до 0x428
+            __RW  cortex_vbbldo_ctrl_reg_t            cortex_vbbldo_ctrl;        // (0x41C)
+            __R   uint32_t                            RESERVED4[2];
+            __RW  core_sldo_ctrl_reg_t                core_sldo_ctrl;            // (0x428)
             __RW  mpu_sldo_ctrl_reg_t                 mpu_sldo_ctrl;             // (0x42C)
-            __R   uint32_t                            RESERVED4[5];  
-            __RW  clk32kdivratio_ctrl_reg_t           clk32kdivratio_ctrl;       // (0x444)  
-            __RW  bandgap_ctrl_reg_t                  bandgap_ctrl;              // (0x448)     // ADC conversion settings
+
+            __R   uint32_t                            RESERVED5[5];
+            __RW  clk32kdivratio_ctrl_reg_t           clk32kdivratio_ctrl;       // (0x444)
+            __RW  bandgap_ctrl_reg_t                  bandgap_ctrl;              // (0x448)
             __RW  bandgap_trim_reg_t                  bandgap_trim;              // (0x44C)
-            __R   uint32_t                            RESERVED5[2];  
+            __R   uint32_t                            RESERVED6[2];
             __RW  pll_clkinpulow_ctrl_reg_t           pll_clkinpulow_ctrl;       // (0x458)
-            __R   uint32_t                            RESERVED6[3];  
+            __R   uint32_t                            RESERVED7[3];
             __RW  mosc_ctrl_reg_t                     mosc_ctrl;                 // (0x468)
-            __R   uint32_t                            RESERVED7[1];  
+            __R   uint32_t                            RESERVED8[1];
             __RW  deepsleep_ctrl_reg_t                deepsleep_ctrl;            // (0x470)
-            __R   uint32_t                            RESERVED8[38];  
+            __R   uint32_t                            RESERVED9[38];
             __R   dpll_pwr_sw_status_reg_t            dpll_pwr_sw_status;        // (0x50C)
-            __R   uint32_t                            RESERVED9[60];
+            __R   uint32_t                            RESERVED10[60];
             __R   device_id_reg_t                     device_id;                 // (0x600)
             __R   dev_feature_reg_t                   dev_feature;               // (0x604)
             __RW  init_priority_0_reg_t               init_priority_0;           // (0x608)
             __RW  init_priority_1_reg_t               init_priority_1;           // (0x60C)
-            __R   uint32_t                            RESERVED10[1];
+            __RW  control_mmu_cfg_reg_t               control_mmu_cfg;           // (0x610)
             __RW  tptc_cfg_reg_t                      tptc_cfg;                  // (0x614)
-            __R   uint32_t                            RESERVED11[2];
+            __RW  control_ocmc_cfg_reg_t              control_ocmc_cfg;          // (0x618)
+            __R   uint32_t                            RESERVED11[1];             //
             __RW  usb_ctrl0_reg_t                     usb_ctrl0;                 // (0x620)
-            __R   usb_sts0_reg_t                      usb_sts0;                  // (0x624) 
+            __R   usb_sts0_reg_t                      usb_sts0;                  // (0x624)
             __RW  usb_ctrl1_reg_t                     usb_ctrl1;                 // (0x628)
             __R   usb_sts1_reg_t                      usb_sts1;                  // (0x62C)
             __R   mac_id0_lo_reg_t                    mac_id0_lo;                // (0x630)
@@ -1699,7 +1832,7 @@ namespace REGS
             __RW  pwmss_ctrl_reg_t                    pwmss_ctrl;                // (0x664)
             __R   uint32_t                            RESERVED15[2];
             __RW  mreqprio_0_reg_t                    mreqprio_0;                // (0x670)
-            __R   mreqprio_1_reg_t                    mreqprio_1;                // (0x674)     // Empty Reserved
+            __R   mreqprio_1_reg_t                    mreqprio_1;                // (0x674)
             __R   uint32_t                            RESERVED16[6];
             __RW  hw_event_sel_grp1_reg_t             hw_event_sel_grp1;         // (0x690)
             __RW  hw_event_sel_grp2_reg_t             hw_event_sel_grp2;         // (0x694)
@@ -1708,19 +1841,22 @@ namespace REGS
             __RW  smrt_ctrl_reg_t                     smrt_ctrl;                 // (0x6A0)
             __RW  mpuss_hw_debug_sel_reg_t            mpuss_hw_debug_sel;        // (0x6A4)
             __R   mpuss_hw_dbg_info_reg_t             mpuss_hw_dbg_info;         // (0x6A8)
-            __R   uint32_t                            RESERVED17[49];
+            __R   uint32_t                            RESERVED17[5];            //
+            __RW  mrgn_mode0_reg_t                    mrgn_mode0;                // (0x6C0)
+            __RW  mrgn_mode1_reg_t                    mrgn_mode1;                // (0x6C4)
+            __R   uint32_t                            RESERVED18[42];           //
             __R   vdd_mpu_opp_050_reg_t               vdd_mpu_opp_050;           // (0x770)
             __R   vdd_mpu_opp_100_reg_t               vdd_mpu_opp_100;           // (0x774)
             __R   vdd_mpu_opp_120_reg_t               vdd_mpu_opp_120;           // (0x778)
             __R   vdd_mpu_opp_turbo_reg_t             vdd_mpu_opp_turbo;         // (0x77C)
-            __R   uint32_t                            RESERVED18[14];
+            __R   uint32_t                            RESERVED19[14];
             __R   vdd_core_opp_050_reg_t              vdd_core_opp_050;          // (0x7B8)
             __R   vdd_core_opp_100_reg_t              vdd_core_opp_100;          // (0x7BC)
-            __R   uint32_t                            RESERVED19[4];
+            __R   uint32_t                            RESERVED20[4];
             __R   bb_scale_reg_t                      bb_scale;                  // (0x7D0)
-            __R   uint32_t                            RESERVED20[8];
+            __R   uint32_t                            RESERVED21[8];
             __R   usb_vid_pid_reg_t                   usb_vid_pid;               // (0x7F4)
-            __R   uint32_t                            RESERVED21[1];
+            __R   uint32_t                            RESERVED22[1];
             __R   efuse_sma_reg_t                     efuse_sma;                 // (0x7FC)
             __RW  conf_module_pin_reg_t               conf_gpmc_ad0;             // (0x800)
             __RW  conf_module_pin_reg_t               conf_gpmc_ad1;             // (0x804)
@@ -1833,9 +1969,9 @@ namespace REGS
             __RW  conf_module_pin_reg_t               conf_xdma_event_intr0;     // (0x9B0)
             __RW  conf_module_pin_reg_t               conf_xdma_event_intr1;     // (0x9B4)
             __RW  conf_module_pin_reg_t               conf_warmrstn;             // (0x9B8)
-            __R   uint32_t                            RESERVED22[1];
+            __R   uint32_t                            RESERVED23[1];
             __RW  conf_module_pin_reg_t               conf_nnmi;                 // (0x9C0)
-            __R   uint32_t                            RESERVED23[3];
+            __R   uint32_t                            RESERVED24[3];
             __RW  conf_module_pin_reg_t               conf_tms;                  // (0x9D0)
             __RW  conf_module_pin_reg_t               conf_tdi;                  // (0x9D4)
             __RW  conf_module_pin_reg_t               conf_tdo;                  // (0x9D8)
@@ -1843,22 +1979,107 @@ namespace REGS
             __RW  conf_module_pin_reg_t               conf_trstn;                // (0x9E0)
             __RW  conf_module_pin_reg_t               conf_emu0;                 // (0x9E4)
             __RW  conf_module_pin_reg_t               conf_emu1;                 // (0x9E8)
-            __R   uint32_t                            RESERVED24[3];
+            __R   uint32_t                            RESERVED25[3];
             __RW  conf_module_pin_reg_t               conf_rtc_pwronrstn;        // (0x9F8)
             __RW  conf_module_pin_reg_t               conf_pmic_power_en;        // (0x9FC)
             __RW  conf_module_pin_reg_t               conf_ext_wakeup;           // (0xA00)
-            __R   uint32_t                            RESERVED25[6];
+            __RW  conf_module_pin_reg_t               conf_enz_kaldo_1p8v;       // (0xA04)
+            __RW  conf_module_pin_reg_t               conf_usb0_dm;              // (0xA08)
+            __RW  conf_module_pin_reg_t               conf_usb0_dp;              // (0xA0C)
+            __RW  conf_module_pin_reg_t               conf_usb0_ce;              // (0xA10)
+            __RW  conf_module_pin_reg_t               conf_usb0_id;              // (0xA14)
+            __RW  conf_module_pin_reg_t               conf_usb0_vbus;            // (0xA18)
             __RW  conf_module_pin_reg_t               conf_usb0_drvvbus;         // (0xA1C)
-            __R   uint32_t                            RESERVED26[5];
+
+            __RW  conf_module_pin_reg_t               conf_usb1_dm;              // (0xA20)
+            __RW  conf_module_pin_reg_t               conf_usb1_dp;              // (0xA24)
+            __RW  conf_module_pin_reg_t               conf_usb1_ce;              // (0xA28)
+            __RW  conf_module_pin_reg_t               conf_usb1_id;              // (0xA2C)
+            __RW  conf_module_pin_reg_t               conf_usb1_vbus;            // (0xA30)
             __RW  conf_module_pin_reg_t               conf_usb1_drvvbus;         // (0xA34)
-            __R   uint32_t                            RESERVED27[242];
+
+            /* ==================== DDR PIN CONF (BeagleBone Black) ==================== */
+            __RW  conf_module_pin_reg_t               conf_ddr_resetn;           // (0xA38)
+            __RW  conf_module_pin_reg_t               conf_ddr_csn0;             // (0xA3C)
+            __RW  conf_module_pin_reg_t               conf_ddr_cke;              // (0xA40)
+            __RW  conf_module_pin_reg_t               conf_ddr_ck;               // (0xA44)
+            __RW  conf_module_pin_reg_t               conf_ddr_nck;              // (0xA48)
+            __RW  conf_module_pin_reg_t               conf_ddr_casn;             // (0xA4C)
+            __RW  conf_module_pin_reg_t               conf_ddr_rasn;             // (0xA50)
+            __RW  conf_module_pin_reg_t               conf_ddr_wen;              // (0xA54)
+            __RW  conf_module_pin_reg_t               conf_ddr_ba0;              // (0xA58)
+            __RW  conf_module_pin_reg_t               conf_ddr_ba1;              // (0xA5C)
+            __RW  conf_module_pin_reg_t               conf_ddr_ba2;              // (0xA60)
+            __RW  conf_module_pin_reg_t               conf_ddr_a0;               // (0xA64)
+            __RW  conf_module_pin_reg_t               conf_ddr_a1;               // (0xA68)
+            __RW  conf_module_pin_reg_t               conf_ddr_a2;               // (0xA6C)
+            __RW  conf_module_pin_reg_t               conf_ddr_a3;               // (0xA70)
+            __RW  conf_module_pin_reg_t               conf_ddr_a4;               // (0xA74)
+            __RW  conf_module_pin_reg_t               conf_ddr_a5;               // (0xA78)
+            __RW  conf_module_pin_reg_t               conf_ddr_a6;               // (0xA7C)
+            __RW  conf_module_pin_reg_t               conf_ddr_a7;               // (0xA80)
+            __RW  conf_module_pin_reg_t               conf_ddr_a8;               // (0xA84)
+            __RW  conf_module_pin_reg_t               conf_ddr_a9;               // (0xA88)
+            __RW  conf_module_pin_reg_t               conf_ddr_a10;              // (0xA8C)
+            __RW  conf_module_pin_reg_t               conf_ddr_a11;              // (0xA90)
+            __RW  conf_module_pin_reg_t               conf_ddr_a12;              // (0xA94)
+            __RW  conf_module_pin_reg_t               conf_ddr_a13;              // (0xA98)
+            __RW  conf_module_pin_reg_t               conf_ddr_a14;              // (0xA9C)
+            __RW  conf_module_pin_reg_t               conf_ddr_a15;              // (0xAA0)
+            __RW  conf_module_pin_reg_t               conf_ddr_odt;              // (0xAA4)
+            __RW  conf_module_pin_reg_t               conf_ddr_d0;               // (0xAA8)
+            __RW  conf_module_pin_reg_t               conf_ddr_d1;               // (0xAAC)
+            __RW  conf_module_pin_reg_t               conf_ddr_d2;               // (0xAB0)
+            __RW  conf_module_pin_reg_t               conf_ddr_d3;               // (0xAB4)
+            __RW  conf_module_pin_reg_t               conf_ddr_d4;               // (0xAB8)
+            __RW  conf_module_pin_reg_t               conf_ddr_d5;               // (0xABC)
+            __RW  conf_module_pin_reg_t               conf_ddr_d6;               // (0xAC0)
+            __RW  conf_module_pin_reg_t               conf_ddr_d7;               // (0xAC4)
+            __RW  conf_module_pin_reg_t               conf_ddr_d8;               // (0xAC8)
+            __RW  conf_module_pin_reg_t               conf_ddr_d9;               // (0xACC)
+            __RW  conf_module_pin_reg_t               conf_ddr_d10;              // (0xAD0)
+            __RW  conf_module_pin_reg_t               conf_ddr_d11;              // (0xAD4)
+            __RW  conf_module_pin_reg_t               conf_ddr_d12;              // (0xAD8)
+            __RW  conf_module_pin_reg_t               conf_ddr_d13;              // (0xADC)
+            __RW  conf_module_pin_reg_t               conf_ddr_d14;              // (0xAE0)
+            __RW  conf_module_pin_reg_t               conf_ddr_d15;              // (0xAE4)
+            __RW  conf_module_pin_reg_t               conf_ddr_dqm0;             // (0xAE8)
+            __RW  conf_module_pin_reg_t               conf_ddr_dqm1;             // (0xAEC)
+            __RW  conf_module_pin_reg_t               conf_ddr_dqs0;             // (0xAF0)
+            __RW  conf_module_pin_reg_t               conf_ddr_dqsn0;            // (0xAF4)
+            __RW  conf_module_pin_reg_t               conf_ddr_dqs1;             // (0xAF8)
+            __RW  conf_module_pin_reg_t               conf_ddr_dqsn1;            // (0xAFC)
+            __RW  conf_module_pin_reg_t               conf_ddr_vref;             // (0xB00)
+            __RW  conf_module_pin_reg_t               conf_ddr_vtp;              // (0xB04)
+            __RW  conf_module_pin_reg_t               conf_ddr_strben0;          // (0xB08)
+            __R   uint32_t                            RESERVED26[1];
+
+            /* ==================== ADC / TEST PINS ==================== */
+            __RW  conf_module_pin_reg_t               conf_ain7;                 // (0xB10)
+            __RW  conf_module_pin_reg_t               conf_ain6;                 // (0xB14)
+            __RW  conf_module_pin_reg_t               conf_ain5;                 // (0xB18)
+            __RW  conf_module_pin_reg_t               conf_ain4;                 // (0xB1C)
+            __RW  conf_module_pin_reg_t               conf_ain3;                 // (0xB20)
+            __RW  conf_module_pin_reg_t               conf_ain2;                 // (0xB24)
+            __RW  conf_module_pin_reg_t               conf_ain1;                 // (0xB28)
+            __RW  conf_module_pin_reg_t               conf_ain0;                 // (0xB2C)
+            __RW  conf_module_pin_reg_t               conf_vrefp;                // (0xB30)
+            __RW  conf_module_pin_reg_t               conf_vrefn;                // (0xB34)
+            __RW  conf_module_pin_reg_t               conf_avdd;                 // (0xB38)
+            __RW  conf_module_pin_reg_t               conf_avss;                 // (0xB3C)
+            __RW  conf_module_pin_reg_t               conf_iforce;               // (0xB40)
+            __RW  conf_module_pin_reg_t               conf_vsense;               // (0xB44)
+            __RW  conf_module_pin_reg_t               conf_testout;              // (0xB48)
+            __R   uint32_t                            RESERVED27[173];
             __R   cqdetect_status_reg_t               cqdetect_status;           // (0xE00)
             __RW  ddr_io_ctrl_reg_t                   ddr_io_ctrl;               // (0xE04)
             __R   uint32_t                            RESERVED28[1];
             __RW  vtp_ctrl_reg_t                      vtp_ctrl;                  // (0xE0C)
             __R   uint32_t                            RESERVED29[1];
             __R   vref_ctrl_reg_t                     vref_ctrl;                 // (0xE14)
-            __R   uint32_t                            RESERVED30[94];
+            __R   uint32_t                            RESERVED30[3];
+            __R   serdes_refclk_ctl_reg_t             serdes_refclk_ctl;         // (0xE24)
+            __R   uint32_t                            RESERVED31[90];
             __RW  tpcc_evt_mux_0_3_reg_t              tpcc_evt_mux_0_3;          // (0xF90)
             __RW  tpcc_evt_mux_4_7_reg_t              tpcc_evt_mux_4_7;          // (0xF94)
             __RW  tpcc_evt_mux_8_11_reg_t             tpcc_evt_mux_8_11;         // (0xF98)
@@ -1878,9 +2099,9 @@ namespace REGS
             __RW  timer_evt_capt_reg_t                timer_evt_capt;            // (0xFD0)
             __RW  ecap_evt_capt_reg_t                 ecap_evt_capt;             // (0xFD4)
             __RW  adc_evt_capt_reg_t                  adc_evt_capt;              // (0xFD8)
-            __R   uint32_t                            RESERVED31[9];
+            __R   uint32_t                            RESERVED32[9];
             __RW  reset_iso_reg_t                     reset_iso;                 // (0x1000)
-            __R   uint32_t                            RESERVED32[197];
+            __R   uint32_t                            RESERVED33[197];
             __RW  dpll_pwr_sw_ctrl_reg_t              dpll_pwr_sw_ctrl;          // (0x1318)
             __RW  ddr_cke_ctrl_reg_t                  ddr_cke_ctrl;              // (0x131C)
             __RW  sma2_reg_t                          sma2;                      // (0x1320)
@@ -1893,11 +2114,11 @@ namespace REGS
             __RW  ipc_msg_reg5_reg_t                  ipc_msg_reg5;              // (0x133C)
             __RW  ipc_msg_reg6_reg_t                  ipc_msg_reg6;              // (0x1340)
             __RW  ipc_msg_reg7_reg_t                  ipc_msg_reg7;              // (0x1344)
-            __R   uint32_t                            RESERVED33[47];
+            __R   uint32_t                            RESERVED34[47];
             __RW  ddr_cmd_ioctrl_reg_t                ddr_cmd0_ioctrl;           // (0x1404)
             __RW  ddr_cmd_ioctrl_reg_t                ddr_cmd1_ioctrl;           // (0x1408)
             __RW  ddr_cmd_ioctrl_reg_t                ddr_cmd2_ioctrl;           // (0x140C)
-            __R   uint32_t                            RESERVED34[12];
+            __R   uint32_t                            RESERVED35[12];
             __RW  ddr_data_ioctrl_reg_t               ddr_data0_ioctrl;          // (0x1440)
             __RW  ddr_data_ioctrl_reg_t               ddr_data1_ioctrl;          // (0x1444)
 

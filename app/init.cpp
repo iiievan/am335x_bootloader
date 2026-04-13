@@ -263,7 +263,7 @@ static void ddr_init()
     auto& emif = *AM335x_EMIF0;
     auto& phy = *AM335x_DDR23mPHY;
 
-    RTT_CHECK_MODULE_SIZE(AM335x_CTRL_MODULE_Type,0x1444);
+    RTT_CHECK_MODULE_SIZE(AM335x_CTRL_MODULE_Type, 0x1444);
 
     per.EMIF_CLKCTRL.reg = MODULEMODE_ENABLE;
     per.EMIF_FW_CLKCTRL.reg = MODULEMODE_ENABLE;
