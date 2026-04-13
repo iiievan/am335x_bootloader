@@ -210,9 +210,13 @@ class CoordinatedPDFParser:
         return fields
 
     def _normalize_bit_display(self, fields):
-        """Нормализует отображение битов: 5..5 -> 5"""
+        """Нормализует отображение битов: 5..5 -> 5, 5-5 -> 5"""
         for field in fields:
-            if '-' in field['bits']:
+            if '..' in field['bits']:
+                high, low = map(int, field['bits'].split('..'))
+                if high == low:
+                    field['bits'] = str(high)
+            elif '-' in field['bits']:
                 high, low = map(int, field['bits'].split('-'))
                 if high == low:
                     field['bits'] = str(high)
@@ -224,12 +228,16 @@ class CoordinatedPDFParser:
             return fields
 
         def get_low_bit(bits_str: str) -> int:
-            if '-' in bits_str:
+            if '..' in bits_str:
+                return int(bits_str.split('..')[1])
+            elif '-' in bits_str:
                 return int(bits_str.split('-')[1])
             return int(bits_str)
 
         def get_high_bit(bits_str: str) -> int:
-            if '-' in bits_str:
+            if '..' in bits_str:
+                return int(bits_str.split('..')[0])
+            elif '-' in bits_str:
                 return int(bits_str.split('-')[0])
             return int(bits_str)
 
@@ -264,6 +272,7 @@ class CoordinatedPDFParser:
                 else:
                     access = 'R'
 
+                # Используем дефис для диапазона, а не '..'
                 merged[-1] = {
                     'bits': f"{new_high}-{new_low}" if new_high != new_low else str(new_low),
                     'name': name,
@@ -282,12 +291,16 @@ class CoordinatedPDFParser:
             return fields
 
         def get_low_bit(bits_str: str) -> int:
-            if '-' in bits_str:
+            if '..' in bits_str:
+                return int(bits_str.split('..')[1])
+            elif '-' in bits_str:
                 return int(bits_str.split('-')[1])
             return int(bits_str)
 
         def get_high_bit(bits_str: str) -> int:
-            if '-' in bits_str:
+            if '..' in bits_str:
+                return int(bits_str.split('..')[0])
+            elif '-' in bits_str:
                 return int(bits_str.split('-')[0])
             return int(bits_str)
 
@@ -338,7 +351,10 @@ class CoordinatedPDFParser:
         """Проверяет, что сумма всех битов равна 32"""
         total_bits = 0
         for field in fields:
-            if '-' in field['bits']:
+            if '..' in field['bits']:
+                high, low = map(int, field['bits'].split('..'))
+                total_bits += high - low + 1
+            elif '-' in field['bits']:
                 high, low = map(int, field['bits'].split('-'))
                 total_bits += high - low + 1
             else:
@@ -353,6 +369,16 @@ class CoordinatedPDFParser:
         if hex_val.startswith('0x'):
             return hex_val
         return f"0x{hex_val}"
+
+    def _parse_bits_range(self, bits_str: str):
+        """Парсит строку битов в формате '5', '5-5', '5..5'"""
+        if '..' in bits_str:
+            high, low = map(int, bits_str.split('..'))
+        elif '-' in bits_str:
+            high, low = map(int, bits_str.split('-'))
+        else:
+            high = low = int(bits_str)
+        return high, low
 
     def generate_c_code(self, reg_info: dict) -> str:
         """Генерирует C union для регистра"""
@@ -371,31 +397,35 @@ class CoordinatedPDFParser:
             lines.append(f"        uint32_t                  :32; // bit: 0..31 Reserved")
         else:
             def get_low_bit(bits_str: str) -> int:
-                if '-' in bits_str:
-                    return int(bits_str.split('-')[1])
-                return int(bits_str)
+                high, low = self._parse_bits_range(bits_str)
+                return low
 
             sorted_fields = sorted(reg_info['fields'], key=lambda x: get_low_bit(x['bits']))
             current_bit = 0
 
             for field in sorted_fields:
-                if '-' in field['bits']:
-                    high, low = map(int, field['bits'].split('-'))
-                else:
-                    low = high = int(field['bits'])
+                high, low = self._parse_bits_range(field['bits'])
 
                 if current_bit < low:
                     reserved_bits = low - current_bit
-                    lines.append(
-                        f"        uint32_t                  :{reserved_bits:2d}; // bit: {current_bit:2d}..{low - 1:2d} Reserved.")
+                    if reserved_bits == 1:
+                        lines.append(
+                            f"        uint32_t                  :{reserved_bits:2d}; // bit: {current_bit:2d} Reserved.")
+                    else:
+                        lines.append(
+                            f"        uint32_t                  :{reserved_bits:2d}; // bit: {current_bit:2d}..{low - 1:2d} Reserved.")
                     current_bit = low
 
                 width = high - low + 1
 
                 # Для зарезервированных полей не выводим имя
                 if field['name'].lower() == 'reserved':
-                    lines.append(
-                        f"        uint32_t                  :{width:2d}; // bit: {low:2d}..{high:2d} Reserved.")
+                    if width == 1:
+                        lines.append(
+                            f"        uint32_t                  :{width:2d}; // bit: {low:2d} Reserved.")
+                    else:
+                        lines.append(
+                            f"        uint32_t                  :{width:2d}; // bit: {low:2d}..{high:2d} Reserved.")
                 else:
                     if low == high:
                         bit_display = f"{low:2d}"
@@ -420,8 +450,12 @@ class CoordinatedPDFParser:
 
             if current_bit <= 31:
                 reserved_bits = 32 - current_bit
-                lines.append(
-                    f"        uint32_t                  :{reserved_bits:2d}; // bit: {current_bit:2d}..31 Reserved.")
+                if reserved_bits == 1:
+                    lines.append(
+                        f"        uint32_t                  :{reserved_bits:2d}; // bit: {current_bit:2d} Reserved.")
+                else:
+                    lines.append(
+                        f"        uint32_t                  :{reserved_bits:2d}; // bit: {current_bit:2d}..31 Reserved.")
 
         lines.append(f"    }} b;")
         lines.append(f"    uint32_t  reg;")
