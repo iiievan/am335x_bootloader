@@ -588,7 +588,7 @@ namespace REGS
             USB_CDET_INTERRUPT         = 0x7  // if any of the pullup is enabled, charger detect routine gets interrupted and will restart from the beginning if the same is disabled
         };
     
-        /* [reset state = 0x0]*/
+        /* (offset = 0x628)[reset state = 0x0]*/
         typedef union 
         { 
             struct 
@@ -830,28 +830,45 @@ namespace REGS
             uint32_t  reg;                            // Type used for register access 
         } smrt_ctrl_reg_t;
     
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+        /* (offset = 0x6A4)[reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                uint32_t    hw_dbg_sel               : 4;   // bit:  0..3  (R/W) Selects which Group of signals are sent out to the
+                                                            //                   MODENA_HW_DBG_INFO register. Please see MPU functional spec for more details.
+                                                            //                   [see e_HW_DBG_SEL]
+                uint32_t                             : 5;   // bit:  4..8  (R) Reserved
+                uint32_t    hw_dbg_gate_en           : 1;   // bit:  9     (R/W) To save power input to MPUSS_HW_DBG_INFO is gated off to all
+                                                            //                   zeros when HW_DBG_GATE_EN bit is low.
+                                                            //                   [0x0: Debug info gated off;
+                                                            //                    0x1: Debug info not gated off]
+                uint32_t                             :22;   // bit: 10..31 (R) Reserved
+            } b;
+            uint32_t  reg;
         } mpuss_hw_debug_sel_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+
+        enum e_HW_DBG_SEL : uint32_t
+        {
+            GROUP_0         = 0x0,
+            GROUP_1         = 0x1,
+            GROUP_2         = 0x2,
+            GROUP_3         = 0x3,
+            GROUP_4         = 0x4,
+            GROUP_5         = 0x5,
+            GROUP_6         = 0x6,
+            GROUP_7         = 0x7,
+            GROUP_RESERVED  = 0x8
+        };
+
+        /* (offset = 0x6A8)[reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                uint32_t    hw_dbg_info   :32; // bit:  0..31 (R) Hardware Debug Info from MPU.
+            } b;
+            uint32_t  reg;
         } mpuss_hw_dbg_info_reg_t;
 
         /* [reset state = 0x0] */
@@ -1759,20 +1776,6 @@ namespace REGS
             WD0_WD1_PD_DISABLED   = 0x2,  // Weak pulldown enabled
             WD0_WD1_KEEP_ENABLED  = 0x3   // Weak keeper enabled
         };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         struct AM335x_CTRL_MODULE_Type
         {
