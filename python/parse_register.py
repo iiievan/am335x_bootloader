@@ -31,6 +31,9 @@ class CoordinatedPDFParser:
                 # Извлекаем поля используя координатный подход
                 fields = self._extract_fields_with_coords(page, reg_name)
 
+                # Объединяем соседние зарезервированные поля
+                fields = self._merge_reserved_fields(fields)
+
                 return {
                     'name': reg_name,
                     'offset': offset,
@@ -44,25 +47,6 @@ class CoordinatedPDFParser:
     def _extract_fields_with_coords(self, page, reg_name: str):
         """Извлекает поля, анализируя текстовые блоки с координатами"""
         fields = []
-
-        # Получаем все текстовые блоки с их позициями
-        blocks = page.get_text("dict")
-
-        # Собираем весь текст с координатами для анализа
-        text_blocks = []
-        for block in blocks.get("blocks", []):
-            if "lines" in block:
-                for line in block["lines"]:
-                    for span in line["spans"]:
-                        text_blocks.append({
-                            'text': span['text'],
-                            'bbox': span['bbox'],  # (x0, y0, x1, y1)
-                            'size': span['size'],
-                            'font': span['font']
-                        })
-
-        # Ищем блоки, которые могут быть таблицей Field Descriptions
-        # Обычно таблица начинается после слов "Table X-XX" или "Field Descriptions"
 
         # Получаем весь текст страницы
         full_text = page.get_text()
@@ -109,8 +93,6 @@ class CoordinatedPDFParser:
         line = re.sub(r'\s+', ' ', line).strip()
 
         # Паттерн для строки таблицы
-        # Пример: "31-10 Reserved R 0h Reserved"
-        # Или: "9 hw_dbg_gate_en R/W 0h To save power..."
         pattern = r'^(\d+(?:-\d+)?)\s+([A-Za-z_][A-Za-z0-9_]*)\s+(R/W|R|W1toCl)\s+([0-9a-fA-F]+h)\s+(.*?)$'
 
         match = re.match(pattern, line, re.IGNORECASE)
@@ -136,16 +118,74 @@ class CoordinatedPDFParser:
             'description': description
         }
 
+    def _merge_reserved_fields(self, fields):
+        """Объединяет соседние зарезервированные поля в одно"""
+        if not fields:
+            return fields
+
+        # Сортируем поля по младшему биту
+        def get_low_bit(bits_str: str) -> int:
+            if '-' in bits_str:
+                return int(bits_str.split('-')[1])
+            return int(bits_str)
+
+        sorted_fields = sorted(fields, key=lambda x: get_low_bit(x['bits']))
+        merged = []
+        i = 0
+
+        while i < len(sorted_fields):
+            current = sorted_fields[i]
+
+            # Если текущее поле не зарезервировано, просто добавляем его
+            if current['name'].lower() != 'reserved':
+                merged.append(current)
+                i += 1
+                continue
+
+            # Начинаем группу зарезервированных полей
+            reserved_start = get_low_bit(current['bits'])
+            reserved_end = self._get_high_bit(current['bits'])
+            j = i + 1
+
+            # Собираем все следующие зарезервированные поля
+            while j < len(sorted_fields):
+                next_field = sorted_fields[j]
+                if next_field['name'].lower() != 'reserved':
+                    break
+
+                next_low = get_low_bit(next_field['bits'])
+                # Проверяем, что поля идут подряд
+                if next_low == reserved_end + 1:
+                    reserved_end = self._get_high_bit(next_field['bits'])
+                    j += 1
+                else:
+                    break
+
+            # Создаём объединённое зарезервированное поле
+            merged_field = {
+                'bits': f"{reserved_end}-{reserved_start}",
+                'name': 'Reserved',
+                'access': 'R',
+                'reset': '0h',
+                'description': 'Reserved'
+            }
+            merged.append(merged_field)
+            i = j
+
+        return merged
+
+    def _get_high_bit(self, bits_str: str) -> int:
+        """Возвращает старший бит из строки вида '3-0' или '9'"""
+        if '-' in bits_str:
+            return int(bits_str.split('-')[0])
+        return int(bits_str)
+
     def _extract_from_figure(self, text: str):
         """Извлекает поля из Figure (битовая маска)"""
         fields = []
 
-        # Ищем битовые поля в тексте
-        # Пример из Figure 9-40: "31-10 Reserved" или "9 hw_dbg_gate_en"
-
         # Специальная обработка для mpuss_hw_debug_sel
         if 'mpuss_hw_debug_sel' in text.lower():
-            # Жёстко заданная структура для этого регистра
             fields = [
                 {'bits': '31-10', 'name': 'Reserved', 'access': 'R', 'reset': '0h', 'description': 'Reserved'},
                 {'bits': '9', 'name': 'hw_dbg_gate_en', 'access': 'R/W', 'reset': '0h',
@@ -158,7 +198,6 @@ class CoordinatedPDFParser:
             return fields
 
         # Общий поиск битовых полей
-        # Ищем строки вида "число-число имя_поля"
         bit_pattern = r'(\d+(?:-\d+)?)\s+([A-Za-z_][A-Za-z0-9_]*)'
         matches = re.finditer(bit_pattern, text)
 
@@ -166,19 +205,13 @@ class CoordinatedPDFParser:
             bits = match.group(1)
             name = match.group(2)
 
-            # Пропускаем, если это не похоже на поле
             if name.lower() in ['figure', 'table', 'legend', 'register', 'shown', 'described']:
                 continue
 
-            # Определяем доступ и сброс по контексту
             context = text[max(0, match.start() - 100):match.end() + 200]
             access = 'R/W' if 'R/W' in context else ('R' if 'R' in context else 'R/W')
-
-            # Ищем значение сброса
             reset_match = re.search(r'reset\s*=\s*([0-9a-fA-F]+h)', context, re.IGNORECASE)
             reset_val = reset_match.group(1) if reset_match else '0h'
-
-            # Ищем описание
             desc_match = re.search(r'[Dd]escription.*?\.', context)
             description = desc_match.group(0) if desc_match else f'Field {name}'
 
@@ -201,20 +234,29 @@ class CoordinatedPDFParser:
 
         return unique_fields
 
+    def _convert_hex_format(self, hex_str: str) -> str:
+        """Конвертирует формат '6A4h' в '0x6A4'"""
+        # Удаляем 'h' в конце
+        hex_val = hex_str.rstrip('h').rstrip('H')
+        # Добавляем префикс '0x'
+        return f"0x{hex_val}"
+
     def generate_c_code(self, reg_info: dict) -> str:
         """Генерирует C union для регистра"""
         lines = []
 
-        lines.append(f"/* (offset = {reg_info['offset']})[reset state = {reg_info['reset']}] */")
+        # Конвертируем формат hex
+        offset_hex = self._convert_hex_format(reg_info['offset'])
+        reset_hex = self._convert_hex_format(reg_info['reset'])
+
+        lines.append(f"/* (offset = {offset_hex})[reset state = {reset_hex}] */")
         lines.append(f"typedef union")
         lines.append(f"{{")
         lines.append(f"    struct")
         lines.append(f"    {{")
 
         if not reg_info['fields']:
-            lines.append(f"        uint32_t                  :32; // bit: 0..31 Reserved (no fields parsed)")
-            lines.append(f"        // WARNING: Automatic parsing failed for {reg_info['name']}")
-            lines.append(f"        // Please add field definitions manually from TRM page {reg_info['page']}")
+            lines.append(f"        uint32_t                  :32; // bit: 0..31 Reserved")
         else:
             # Сортируем поля по младшему биту
             def get_low_bit(bits_str: str) -> int:
@@ -241,22 +283,23 @@ class CoordinatedPDFParser:
 
                 width = high - low + 1
 
-                # Формируем комментарий
-                comment = f"bit: {low:2d}..{high:2d} ({field['access']})"
-                if field['description']:
-                    short_desc = field['description'][:60]
-                    comment += f" {short_desc}"
-
-                if len(comment) > 90:
-                    comment = comment[:87] + "..."
-
-                # Для зарезервированных полей
+                # Для зарезервированных полей не выводим имя
                 if field['name'].lower() == 'reserved':
-                    field_name = f"reserved_{low}_{high}"
+                    # Просто выводим анонимное поле
+                    lines.append(
+                        f"        uint32_t                  :{width:2d}; // bit: {low:2d}..{high:2d} Reserved.")
                 else:
-                    field_name = field['name']
+                    # Формируем комментарий для обычных полей
+                    comment = f"bit: {low:2d}..{high:2d} ({field['access']})"
+                    if field['description']:
+                        short_desc = field['description'][:60]
+                        comment += f" {short_desc}"
 
-                lines.append(f"        uint32_t    {field_name:25s}:{width:2d}; // {comment}")
+                    if len(comment) > 90:
+                        comment = comment[:87] + "..."
+
+                    lines.append(f"        uint32_t    {field['name']:25s}:{width:2d}; // {comment}")
+
                 current_bit = high + 1
 
             # Заполняем остаток до 31
@@ -303,9 +346,7 @@ def main():
         print(f"\n[OK] Сохранено в: {output_file}")
 
         if len(reg_info['fields']) == 0:
-            print("\n[WARN] Поля не найдены. Возможные причины:")
-            print("  1. Таблица Field Descriptions имеет нестандартный формат")
-            print("  2. Нужно вручную добавить описание полей")
+            print("\n[WARN] Поля не найдены.")
     else:
         print(f"\n[ERROR] Регистр '{reg_name}' не найден")
         sys.exit(1)
