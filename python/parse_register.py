@@ -39,9 +39,12 @@ class CoordinatedPDFParser:
                     curr_text = curr_page.get_text()
 
                     # Пропускаем страницу, если на ней уже начался следующий регистр
-                    if extra > 0 and re.search(rf'\w+ Register \(offset', curr_text, re.IGNORECASE):
-                        print(f"[INFO] Следующий регистр обнаружен на странице {page_num + extra + 1}, останавливаемся")
-                        break
+                    if extra > 0:
+                        next_reg_match = re.search(r'([a-z0-9_]+)\s+Register\s*\(offset', curr_text, re.IGNORECASE)
+                        if next_reg_match and next_reg_match.group(1).lower() != reg_name.lower():
+                            print(
+                                f"[INFO] Следующий регистр '{next_reg_match.group(1)}' обнаружен на странице {page_num + extra + 1}, останавливаемся")
+                            break
 
                     curr_fields = self._extract_fields(curr_page, reg_name)
 
