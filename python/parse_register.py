@@ -85,150 +85,95 @@ class CoordinatedPDFParser:
         return unique
 
     def _extract_fields(self, page, reg_name: str):
-        """Извлекает поля из HTML-таблицы Field Descriptions"""
+        """Извлекает поля + ПОЛНЫЕ описания (многострочные)"""
         fields = []
 
-        # Получаем HTML-представление страницы
         html = page.get_text("html")
-
-        # Ищем секцию Field Descriptions
         if 'Field Descriptions' not in html:
             return self._extract_from_bitmask(page.get_text(), reg_name)
 
-        # Находим начало таблицы
         start_idx = html.find('Field Descriptions')
         if start_idx == -1:
             return []
 
-        # Ищем строки таблицы в формате <p> с координатами
-        lines_pattern = r'<p style="top:([\d.]+)pt;left:([\d.]+)pt[^>]*>(.*?)</p>'
+        table_html = html[start_idx:start_idx + 30000]
+        pattern = r'<p style="top:([\d.]+)pt;left:([\d.]+)pt[^>]*>(.*?)</p>'
 
-        # Извлекаем все элементы <p> после Field Descriptions
-        table_html = html[start_idx:start_idx + 20000]
-        matches = list(re.finditer(lines_pattern, table_html, re.DOTALL))
+        matches = list(re.finditer(pattern, table_html, re.DOTALL))
 
-        # Группируем строки по Y-координате (каждая строка таблицы имеет свою Y)
         rows = {}
-        for match in matches:
-            y = float(match.group(1))
-            content = re.sub(r'<[^>]+>', '', match.group(3)).strip()
+        for m in matches:
+            y = float(m.group(1))
+            x = float(m.group(2))
+            content = re.sub(r'<[^>]+>', '', m.group(3)).strip()
             if content:
                 if y not in rows:
                     rows[y] = []
-                rows[y].append(content)
+                rows[y].append((x, content))
 
-        # Парсим строки таблицы (каждая строка должна иметь 5 колонок)
-        for y, cols in sorted(rows.items()):
-            if len(cols) >= 4:  # Минимум 4 колонки (Bit, Field, Type, Reset)
-                # Очищаем колонки
-                bits = cols[0].strip() if len(cols) > 0 else ''
-                name = cols[1].strip() if len(cols) > 1 else ''
-                access = cols[2].strip() if len(cols) > 2 else ''
-                reset_val = cols[3].strip() if len(cols) > 3 else ''
-                description = cols[4].strip() if len(cols) > 4 else ''
+        current_field = None
+        desc_lines = []
 
-                # Пропускаем заголовки
+        for y in sorted(rows.keys()):
+            row = sorted(rows[y], key=lambda it: it[0])
+            contents = [it[1] for it in row]
+
+            # Продолжение описания предыдущего поля
+            if len(contents) <= 2 and current_field and any(x >= 300 for x, _ in row):
+                desc_lines.extend(contents)
+                continue
+
+            # Новая строка таблицы
+            if len(contents) >= 4:
+                bits = contents[0].strip()
+                name = contents[1].strip()
+                access = contents[2].strip()
+                reset_val = contents[3].strip()
+                desc_start = contents[4].strip() if len(contents) > 4 else ''
+
                 if bits.lower() in ['bit', 'bits'] or name.lower() in ['field']:
                     continue
+
+                # Сохраняем предыдущее поле
+                if current_field:
+                    current_field['description'] = ' '.join(desc_lines).strip()
+                    fields.append(current_field)
 
                 # Валидация битов
                 if not re.match(r'^\d+(?:-\d+)?$', bits):
                     continue
-
                 try:
                     if '-' in bits:
                         high, low = map(int, bits.split('-'))
-                        if high < low or high > 31 or low < 0:
-                            continue
+                        if high < low or high > 31 or low < 0: continue
                     else:
                         bit = int(bits)
-                        if bit < 0 or bit > 31:
-                            continue
-                except (ValueError, TypeError):
+                        if bit < 0 or bit > 31: continue
+                except:
                     continue
 
-                # Нормализация доступа
                 if access == 'W1toCl':
                     access = 'W'
-                elif access not in ['R', 'W', 'R/W']:
-                    # Пробуем извлечь из формата R-0h
-                    if '-' in access:
-                        access_part = access.split('-')[0]
-                        if access_part in ['R', 'W', 'R/W']:
-                            access = access_part
-                        else:
-                            access = 'R/W'
-                    else:
-                        access = 'R/W'
+                elif '-' in access:
+                    access = access.split('-')[0]
+                if access not in ['R', 'W', 'R/W']: access = 'R/W'
 
-                # Нормализация сброса
-                reset_val = re.sub(r'[^0-9a-fA-FhxX]', '', reset_val)
-                if not reset_val:
-                    reset_val = '0h'
+                reset_val = re.sub(r'[^0-9a-fA-FhH]', '', reset_val) or '0h'
 
-                fields.append({
+                current_field = {
                     'bits': bits,
-                    'name': name if name != 'Reserved' else 'Reserved',
+                    'name': name if name.upper() != 'RESERVED' else 'Reserved',
                     'access': access,
                     'reset': reset_val,
-                    'description': description[:200]
-                })
+                    'description': desc_start
+                }
+                desc_lines = [desc_start] if desc_start else []
+
+        if current_field:
+            current_field['description'] = ' '.join(desc_lines).strip()
+            fields.append(current_field)
 
         return fields
-
-    def _extract_from_bitmask(self, text: str, reg_name: str):
-        """Извлекает поля из битовой маски (для регистров без Field Descriptions)"""
-        fields = []
-
-        # Ищем Figure с битовой маской
-        bit_pattern = r'(\d+(?:-\d+)?)\s+([A-Za-z_][A-Za-z0-9_]*)'
-        matches = re.finditer(bit_pattern, text)
-
-        for match in matches:
-            bits = match.group(1)
-            name = match.group(2)
-
-            # Пропускаем очевидный мусор
-            if name.lower() in ['figure', 'table', 'legend', 'register', 'shown',
-                                'described', 'and', 'to', 'of', 'for', 'the',
-                                'copyright', 'ti', 'incorporated', 'submit', 'feedback']:
-                continue
-
-            # Валидация битов
-            try:
-                if '-' in bits:
-                    high, low = map(int, bits.split('-'))
-                    if high < low or high > 31 or low < 0:
-                        continue
-                else:
-                    bit = int(bits)
-                    if bit < 0 or bit > 31:
-                        continue
-            except (ValueError, TypeError):
-                continue
-
-            # Пропускаем, если имя поля содержит номер страницы
-            if re.search(r'\d', name) and len(name) < 4:
-                continue
-
-            fields.append({
-                'bits': bits,
-                'name': name if name != 'Reserved' else 'Reserved',
-                'access': 'R',
-                'reset': '0h',
-                'description': f'Field {name}'
-            })
-
-        # Удаляем дубликаты
-        seen = set()
-        unique_fields = []
-        for f in fields:
-            key = (f['bits'], f['name'])
-            if key not in seen:
-                seen.add(key)
-                unique_fields.append(f)
-
-        return unique_fields
 
     def _postprocess_fields(self, fields, reg_name: str):
         """Постобработка полей: объединение дубликатов, соседних reserved, нормализация битов"""
@@ -421,126 +366,111 @@ class CoordinatedPDFParser:
         return high, low
 
     def generate_c_code(self, reg_info: dict) -> str:
-        """Генерирует C union для регистра"""
+        """Финальная отполированная версия"""
         lines = []
 
         offset_hex = self._convert_hex_format(reg_info['offset'])
         reset_hex = self._convert_hex_format(reg_info['reset'])
 
-        lines.append(f"/* (offset = {offset_hex})[reset state = {reset_hex}] */")
-        lines.append(f"typedef union")
-        lines.append(f"{{")
-        lines.append(f"    struct")
-        lines.append(f"    {{")
+        lines.append(f"/* (offset = {offset_hex}) [reset state = {reset_hex}] */")
+        lines.append("typedef union")
+        lines.append("{")
+        lines.append("    struct")
+        lines.append("    {")
 
-        if not reg_info['fields']:
-            lines.append(f"        uint32_t                  :32; // bit: 0..31 Reserved")
+        if not reg_info.get('fields'):
+            lines.append("        uint32_t                  :32; // bit 0..31 (R) Reserved")
         else:
-            def get_low_bit(bits_str: str) -> int:
-                high, low = self._parse_bits_range(bits_str)
+            def get_low_bit(f):
+                high, low = self._parse_bits_range(f['bits'])
                 return low
 
-            sorted_fields = sorted(reg_info['fields'], key=lambda x: get_low_bit(x['bits']))
+            sorted_fields = sorted(reg_info['fields'], key=get_low_bit)
+
+            max_name_len = max((len(f['name'].upper()) for f in sorted_fields
+                                if f['name'].lower() != 'reserved'), default=20)
+
             current_bit = 0
 
             for field in sorted_fields:
                 high, low = self._parse_bits_range(field['bits'])
-
-                if current_bit < low:
-                    reserved_bits = low - current_bit
-                    if reserved_bits == 1:
-                        lines.append(
-                            f"        uint32_t                  :{reserved_bits:2d}; // bit: {current_bit} Reserved.")
-                    else:
-                        lines.append(
-                            f"        uint32_t                  :{reserved_bits:2d}; // bit: {current_bit}..{low - 1} Reserved.")
-                    current_bit = low
-
                 width = high - low + 1
 
-                # Для зарезервированных полей не выводим имя
+                # Пропущенные reserved
+                if current_bit < low:
+                    res = low - current_bit
+                    prefix = "bit " if res == 1 else "bits"
+                    bit_str = str(current_bit) if res == 1 else f"{current_bit}..{low - 1}"
+                    lines.append(
+                        f"        uint32_t{'':{max_name_len + 4}} :{res:2d}; // {prefix} {bit_str:>6} (R)  Reserved")
+                    current_bit = low
+
+                name_upper = field['name'].upper()
+
                 if field['name'].lower() == 'reserved':
-                    if width == 1:
-                        lines.append(
-                            f"        uint32_t                  :{width:2d}; // bit: {low} Reserved.")
-                    else:
-                        lines.append(
-                            f"        uint32_t                  :{width:2d}; // bit: {low}..{high} Reserved.")
+                    prefix = "bit " if width == 1 else "bits"
+                    bit_str = str(low) if width == 1 else f"{low}..{high}"
+                    lines.append(
+                        f"        uint32_t{'':{max_name_len + 4}} :{width:2d}; // {prefix} {bit_str:>6} (R)  Reserved")
                 else:
+                    # Биты
                     if low == high:
-                        bit_display = f"{low}"
+                        bit_display = f"{low:2d}"
+                        bit_prefix = "bit "
                     else:
                         bit_display = f"{low}..{high}"
+                        bit_prefix = "bits"
 
-                    comment = f"({field['access']})"
-                    if field['description']:
-                        desc = field['description']
-                        if desc.startswith('Field '):
-                            desc = desc[6:]
-                        if desc and desc != 'Reserved':
-                            short_desc = desc[:50]
-                            comment += f" {short_desc}"
+                    # Описание
+                    desc = field.get('description', '').strip()
+                    if desc.startswith('Field '):
+                        desc = desc[6:].strip()
 
-                    lines.append(f"        uint32_t    {field['name']} :{width:2d}; // bit: {bit_display} {comment}")
+                    if desc:
+                        words = desc.split()
+                        desc_lines = []
+                        cur = []
+                        for w in words:
+                            if len(' '.join(cur + [w])) > 88:
+                                desc_lines.append(' '.join(cur))
+                                cur = [w]
+                            else:
+                                cur.append(w)
+                        if cur:
+                            desc_lines.append(' '.join(cur))
+                    else:
+                        desc_lines = [""]
+
+                    # Первая строка с правильным выравниванием
+                    first_line = (f"        uint32_t    {name_upper:<{max_name_len}} :{width:2d}; "
+                                  f"// {bit_prefix}{bit_display} ({field['access']}) {desc_lines[0]}")
+                    lines.append(first_line)
+
+                    # Автоматический отступ под //
+                    slash_pos = first_line.find('//')
+                    if slash_pos != -1:
+                        indent = " " * (slash_pos + 0)  # +1 даёт красивый отступ
+                    else:
+                        indent = " " * 60
+
+                    for dline in desc_lines[1:]:
+                        lines.append(f"{indent}//                  {dline}")
 
                 current_bit = high + 1
 
+            # Последний reserved
             if current_bit <= 31:
-                reserved_bits = 32 - current_bit
-                if reserved_bits == 1:
-                    lines.append(
-                        f"        uint32_t                  :{reserved_bits:2d}; // bit: {current_bit} Reserved.")
-                else:
-                    lines.append(
-                        f"        uint32_t                  :{reserved_bits:2d}; // bit: {current_bit}..31 Reserved.")
+                res = 32 - current_bit
+                prefix = "bit " if res == 1 else "bits"
+                bit_str = str(current_bit) if res == 1 else f"{current_bit}..31"
+                lines.append(
+                    f"        uint32_t{'':{max_name_len + 4}} :{res:2d}; // {prefix} {bit_str:>6} (R)  Reserved")
 
-        lines.append(f"    }} b;")
-        lines.append(f"    uint32_t  reg;")
+        lines.append("    } b;")
+        lines.append("    uint32_t reg;")
         lines.append(f"}} {reg_info['name']}_reg_t;")
 
-        # Пост-обработка для форматирования
-        c_code = '\n'.join(lines)
-
-        # 1. Добавляем (R) к Reserved
-        c_code = re.sub(r'Reserved\.', '(R) Reserved.', c_code)
-
-        # 2. Убираем пробелы вокруг .. в битах
-        c_code = re.sub(r'bit:\s+(\d+)\s*\.\.\s*(\d+)', r'bit: \1..\2', c_code)
-
-        # 3. Выравнивание полей - находим максимальную длину имени
-        lines_list = c_code.split('\n')
-        formatted_lines = []
-
-        # Сначала найдем все строки с полями внутри struct
-        field_lines_indices = []
-        for i, line in enumerate(lines_list):
-            if 'uint32_t' in line and '// bit:' in line and '} b;' not in line:
-                field_lines_indices.append(i)
-
-        if field_lines_indices:
-            # Находим максимальную позицию двоеточия
-            max_colon_pos = 0
-            for idx in field_lines_indices:
-                line = lines_list[idx]
-                if ':' in line:
-                    colon_pos = line.find(':')
-                    max_colon_pos = max(max_colon_pos, colon_pos)
-
-            # Выравниваем все строки
-            for idx in field_lines_indices:
-                line = lines_list[idx]
-                if ':' in line:
-                    colon_pos = line.find(':')
-                    if colon_pos < max_colon_pos:
-                        # Добавляем пробелы
-                        spaces_to_add = max_colon_pos - colon_pos
-                        line = line[:colon_pos] + ' ' * spaces_to_add + line[colon_pos:]
-                        lines_list[idx] = line
-
-        c_code = '\n'.join(lines_list)
-
-        return c_code
-
+        return '\n'.join(lines)
 
 def main():
     if len(sys.argv) != 3:
