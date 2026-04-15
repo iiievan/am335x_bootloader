@@ -14,12 +14,11 @@ class CoordinatedPDFParser:
         self.doc = fitz.open(pdf_path)
 
     def find_register(self, reg_name: str):
-        """Находит регистр в PDF"""
+        """Находит регистр и собирает Field Descriptions даже при переносе на следующие страницы"""
         for page_num in range(len(self.doc)):
             page = self.doc[page_num]
             text = page.get_text()
 
-            # Поиск заголовка регистра
             pattern = rf'{re.escape(reg_name)}\s+Register\s*\(offset\s*=\s*([0-9a-fA-F]+h)\)\s*\[reset\s*=\s*([0-9a-fA-F]+h)\]'
             match = re.search(pattern, text, re.IGNORECASE)
 
@@ -28,10 +27,37 @@ class CoordinatedPDFParser:
                 reset = match.group(2)
                 print(f"[OK] Найден на странице {page_num + 1}")
 
-                # Извлекаем поля
-                fields = self._extract_fields(page, reg_name)
+                fields = []
+                max_extra_pages = 3  # на всякий случай
 
-                # Постобработка полей
+                for extra in range(max_extra_pages + 1):
+                    if page_num + extra >= len(self.doc):
+                        break
+
+                    curr_page = self.doc[page_num + extra]
+                    curr_html = curr_page.get_text("html")
+                    curr_text = curr_page.get_text()
+
+                    # Пропускаем страницу, если на ней уже начался следующий регистр
+                    if extra > 0 and re.search(rf'\w+ Register \(offset', curr_text, re.IGNORECASE):
+                        print(f"[INFO] Следующий регистр обнаружен на странице {page_num + extra + 1}, останавливаемся")
+                        break
+
+                    curr_fields = self._extract_fields(curr_page, reg_name)
+
+                    if curr_fields:
+                        print(f"[INFO] Собрано {len(curr_fields)} полей со страницы {page_num + extra + 1}")
+                        fields.extend(curr_fields)
+
+                    # Если на странице есть "(continued)", продолжаем
+                    if extra > 0 and 'continued' not in curr_html.lower() and 'Field Descriptions' in curr_html:
+                        # Если это уже новая таблица — выходим
+                        break
+
+                # Убираем дубликаты по битам
+                fields = self._remove_duplicate_bits(fields)
+
+                # Постобработка (твоя любимая часть)
                 fields = self._postprocess_fields(fields, reg_name)
 
                 return {
@@ -43,6 +69,17 @@ class CoordinatedPDFParser:
                 }
 
         return None
+
+    def _remove_duplicate_bits(self, fields):
+        """Удаляет дубликаты по диапазону битов"""
+        seen = {}
+        unique = []
+        for f in fields:
+            key = f.get('bits', '')
+            if key and key not in seen:
+                seen[key] = True
+                unique.append(f)
+        return unique
 
     def _extract_fields(self, page, reg_name: str):
         """Извлекает поля из HTML-таблицы Field Descriptions"""
@@ -64,7 +101,7 @@ class CoordinatedPDFParser:
         lines_pattern = r'<p style="top:([\d.]+)pt;left:([\d.]+)pt[^>]*>(.*?)</p>'
 
         # Извлекаем все элементы <p> после Field Descriptions
-        table_html = html[start_idx:start_idx + 15000]
+        table_html = html[start_idx:start_idx + 20000]
         matches = list(re.finditer(lines_pattern, table_html, re.DOTALL))
 
         # Группируем строки по Y-координате (каждая строка таблицы имеет свою Y)
