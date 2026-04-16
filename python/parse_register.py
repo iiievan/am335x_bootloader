@@ -506,10 +506,24 @@ class CoordinatedPDFParser:
 
             sorted_fields = sorted(reg_info['fields'], key=get_low_bit)
 
-            max_name_len = max((len(f['name'].upper()) for f in sorted_fields
+            # Находим максимальную длину имени поля (оригинальное имя, не uppercase)
+            max_name_len = max((len(f['name']) for f in sorted_fields
                                 if f['name'].lower() != 'reserved'), default=20)
 
             current_bit = 0
+
+            # Вычисляем точную позицию начала комментария //
+            # Создаем пример строки с максимальной длиной имени
+            example_name = 'x' * max_name_len
+            example_line = f"        uint32_t    {example_name} : 0; // "
+            slash_pos = example_line.find('//')
+
+            # Добавляем комментарий с названием регистра без лишних //
+            reg_comment = f"/* Register {reg_info['name']} */"
+            # Вычисляем сколько пробелов нужно чтобы выровнять по позиции //
+            indent_spaces = ' ' * slash_pos
+            lines.append(f"{indent_spaces}{reg_comment}")
+            lines.append("")  # пустая строка для читаемости
 
             for field in sorted_fields:
                 high, low = self._parse_bits_range(field['bits'])
@@ -524,9 +538,10 @@ class CoordinatedPDFParser:
                         f"        uint32_t{'':{max_name_len + 4}} :{res:2d}; // {prefix} {bit_str:>6} (R)  Reserved")
                     current_bit = low
 
-                name_upper = field['name'].upper()
+                # Сохраняем оригинальное имя поля (не форсируем uppercase)
+                name_original = field['name']
 
-                if field['name'].lower() == 'reserved':
+                if name_original.lower() == 'reserved':
                     prefix = "bit " if width == 1 else "bits"
                     bit_str = str(low) if width == 1 else f"{low}..{high}"
                     lines.append(
@@ -561,7 +576,7 @@ class CoordinatedPDFParser:
                         desc_lines = [""]
 
                     # Первая строка с правильным выравниванием
-                    first_line = (f"        uint32_t    {name_upper:<{max_name_len}} :{width:2d}; "
+                    first_line = (f"        uint32_t    {name_original:<{max_name_len}} :{width:2d}; "
                                   f"// {bit_prefix}{bit_display} ({field['access']}) {desc_lines[0]}")
                     lines.append(first_line)
 
@@ -589,6 +604,7 @@ class CoordinatedPDFParser:
         lines.append("    uint32_t reg;")
         lines.append(f"}} {reg_info['name']}_reg_t;")
 
+        # Применяем рефакторинг форматирования
         lines = self._refactor_description_format(lines)
 
         return '\n'.join(lines)
