@@ -207,10 +207,10 @@ def main():
         epilog="""
 Примеры:
   # Парсинг диапазона страниц
-  python parse_registers_batch.py spruh73q.pdf --pages 1465-1476 --output control_module.h
+  python parse_registers_batch.py spruh73q.pdf --pages 1465-1476 --output control_module.h --module-name CONTROL --base-address 0x44E10000
 
   # Парсинг из файла со списком регистров
-  python parse_registers_batch.py spruh73q.pdf --list regs.txt --output all_regs.h
+  python parse_registers_batch.py spruh73q.pdf --list regs.txt --output all_regs.h --module-name I2C --base-address 0x44E0B000
 
 Формат файла со списком регистров (regs.txt):
   # Это комментарий
@@ -226,6 +226,7 @@ def main():
     parser.add_argument("--list", dest="list_file", help="Файл со списком регистров (по одному на строку)")
     parser.add_argument("--output", "-o", default="registers.h", help="Выходной файл (по умолчанию: registers.h)")
     parser.add_argument("--module-name", default="registers", help="Имя модуля для заголовка")
+    parser.add_argument("--base-address", default="0x0", help="Базовый адрес модуля (например: 0x44E10000)")
 
     args = parser.parse_args()
 
@@ -273,7 +274,7 @@ def main():
 
     # Генерируем объединённый заголовочный файл
     print(f"[INFO] Генерация {args.output}")
-    header_content = generate_combined_header(registers, args.module_name)
+    header_content = generate_combined_header(registers, args.module_name, args.base_address)
 
     with open(args.output, 'w') as f:
         f.write(header_content)
