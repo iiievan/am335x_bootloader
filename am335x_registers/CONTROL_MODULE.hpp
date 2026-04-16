@@ -2,7 +2,7 @@
 #define _CONTROL_MODULE_H_
 
 #include <stdint.h>
-#include "REGS.hpp"
+#include "am335x_registers.hpp"
 
 namespace REGS
 {

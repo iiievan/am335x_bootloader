@@ -28,7 +28,7 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
 add_subdirectory(startup)
-add_subdirectory(am335x_regs)
+add_subdirectory(am335x_registers)
 add_subdirectory(app)
 add_subdirectory(thirdparty)
 add_subdirectory(rtt_log)

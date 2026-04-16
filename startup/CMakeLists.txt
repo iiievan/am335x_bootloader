@@ -10,7 +10,7 @@ set(STARTUP_SOURCES startup.s
 add_library(${PROJECT_NAME} STATIC ${STARTUP_SOURCES})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        am335x_regs
+        am335x_registers
         RTT
 )
 

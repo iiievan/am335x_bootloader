@@ -1,16 +1,11 @@
 /*=======================================================================*/
 /*  Includes                                                             */
 /*=======================================================================*/
-#include <stdbool.h>
 #include "init.h"
 #include "cp15.h"
 #include "PRCM.hpp"
 #include "EMIF.hpp"
 #include "CONTROL_MODULE.hpp"
-#include"include/common.h"
-#include"include/emif.h"
-#include"include/prcm.h"
-#include"include/control.h"
 #include "rtt_log.h"
 #include "ddr_calibration.hpp"
 

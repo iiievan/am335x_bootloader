@@ -7,7 +7,7 @@ add_executable(${APP}.elf ${APP_SOURCES})
 
 target_link_libraries(${APP}.elf
         startup
-        am335x_regs
+        am335x_registers
         rtt_log
 )
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(am335x_regs
+project(am335x_registers
         VERSION 0.1.0
         LANGUAGES CXX
         DESCRIPTION
