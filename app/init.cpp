@@ -12,6 +12,7 @@
 #include"include/prcm.h"
 #include"include/control.h"
 #include "rtt_log.h"
+#include "ddr_calibration.hpp"
 
 #define DDR_TEST_SIZE            (32 * 1024 * 1024)
 #define TAG "brd_ini"
@@ -252,7 +253,6 @@ static void interface_clocks_init()
     per.L3S_CLKSTCTRL.b.CLKTRCTRL = SW_WKUP;
 }
 
-
 static void ddr_init()
 {
     using namespace REGS::CONTROL_MODULE;
@@ -330,6 +330,26 @@ static bool ddr_check()
     cp15_TLB_invalidate();
 
     cp15_DSB_ISB_sync_barrier();
+
+    ddr_calib_values_t calib_values;
+
+    if (ddr_calibrate(&calib_values))
+    {
+        RTT_LOG_I(TAG, "Calibration successful!");
+
+        if (ddr_stress_test(100))
+            RTT_LOG_I(TAG, "DDR fully initialized and stable!");
+        else
+        {
+            RTT_LOG_W(TAG, "Stress test failed, but calibration values may still work");
+            ddr_init();
+        }
+    }
+    else
+    {
+        RTT_LOG_E(TAG, "Calibration failed! Using default values.");
+        ddr_init();
+    }
 
     uint32_t i;
     volatile uint32_t* ddr = (uint32_t*)DDR_START;

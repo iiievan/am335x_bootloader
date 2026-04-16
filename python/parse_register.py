@@ -365,6 +365,125 @@ class CoordinatedPDFParser:
             high = low = int(bits_str)
         return high, low
 
+    def _refactor_description_format(self, lines: list) -> list:
+        """
+        Улучшает форматирование сгенерированных строк:
+        - Приводит битовое описание к виду 'bit:X' или 'bits:X..Y'
+        - Выравнивает уровни доступа (R), (W), (R/W)
+        - Сохраняет правильные отступы для строк продолжения
+        - Убирает дублирование имён полей в строках продолжения
+        """
+        import re
+
+        processed = []
+        access_max_len = 0
+        bit_part_max_len = 0
+
+        # Первый проход: собираем максимальные длины для выравнивания
+        for line in lines:
+            if '//' not in line:
+                continue
+            code_part, comment_part = line.split('//', 1)
+            comment_part = comment_part.strip()
+
+            # Парсим битовую часть и доступ
+            match = re.match(r'(bit|bits)\s*:?\s*(\d+(?:\.\.\d+)?)\s*(\([^)]+\))?\s*(.*)', comment_part)
+            if match:
+                bit_word, bit_range, access, desc = match.groups()
+                bit_word = 'bit' if '..' not in bit_range else 'bits'
+                bit_part = f"{bit_word}:{bit_range}"
+                access = access if access else ''
+                bit_part_max_len = max(bit_part_max_len, len(bit_part))
+                if access:
+                    access_max_len = max(access_max_len, len(access))
+
+        # Второй проход: переформатируем
+        i = 0
+        while i < len(lines):
+            line = lines[i]
+
+            # Если строка не содержит комментарий или это не строка с битовым полем/продолжением
+            if '//' not in line:
+                processed.append(line)
+                i += 1
+                continue
+
+            code_part, comment_part = line.split('//', 1)
+            comment_part = comment_part.strip()
+
+            # Проверяем, является ли строка началом описания поля
+            match = re.match(r'(bit|bits)\s*:?\s*(\d+(?:\.\.\d+)?)\s*(\([^)]+\))?\s*(.*)', comment_part)
+
+            if match:
+                # Это основная строка поля
+                bit_word, bit_range, access, desc = match.groups()
+                bit_word = 'bit' if '..' not in bit_range else 'bits'
+                bit_part = f"{bit_word}:{bit_range}"
+                access = access if access else ''
+                desc = desc.strip()
+
+                # Формируем выровненную строку
+                bit_part_padded = bit_part.ljust(bit_part_max_len)
+                access_padded = access.ljust(access_max_len) if access else ''
+
+                # Собираем комментарий
+                if access_padded:
+                    comment_new = f"{bit_part_padded} {access_padded} {desc}".strip()
+                else:
+                    comment_new = f"{bit_part_padded} {desc}".strip()
+
+                line = f"{code_part.rstrip()} // {comment_new}"
+                processed.append(line)
+
+                # Сохраняем code_part и позицию начала описания для возможных строк продолжения
+                base_code_part = code_part.rstrip()
+                desc_start_pos = len(base_code_part) + 3 + len(bit_part_padded)  # +3 для " // "
+                if access_padded:
+                    desc_start_pos += len(access_padded) + 1
+
+                # Проверяем следующие строки на предмет продолжения описания
+                i += 1
+                while i < len(lines):
+                    next_line = lines[i]
+
+                    # Если следующая строка - это продолжение (начинается с пробелов и //)
+                    if '//' in next_line:
+                        next_code, next_comment = next_line.split('//', 1)
+                        next_comment = next_comment.strip()
+
+                        # Проверяем, не началось ли новое поле
+                        next_match = re.match(r'(bit|bits)\s*:?\s*(\d+(?:\.\.\d+)?)\s*(\([^)]+\))?', next_comment)
+                        if next_match:
+                            # Это новое поле, прекращаем обработку продолжений
+                            break
+
+                        # Это продолжение описания
+                        # Создаём пустой code_part той же длины
+                        empty_code = ' ' * len(base_code_part)
+
+                        # Вычисляем отступ до текста описания
+                        current_pos = len(empty_code) + 3  # " // "
+                        spaces_needed = desc_start_pos - current_pos
+
+                        if spaces_needed > 0:
+                            continuation_line = f"{empty_code} // {' ' * spaces_needed}{next_comment}"
+                        else:
+                            continuation_line = f"{empty_code} // {next_comment}"
+
+                        processed.append(continuation_line)
+                        i += 1
+                    else:
+                        # Строка без комментария - добавляем как есть
+                        processed.append(next_line)
+                        i += 1
+                        break
+            else:
+                # Это одиночный комментарий или что-то ещё
+                processed.append(line)
+                i += 1
+
+        return processed
+
     def generate_c_code(self, reg_info: dict) -> str:
         """Финальная отполированная версия"""
         lines = []
@@ -449,7 +568,7 @@ class CoordinatedPDFParser:
                     # Автоматический отступ под //
                     slash_pos = first_line.find('//')
                     if slash_pos != -1:
-                        indent = " " * (slash_pos + 0)  # +1 даёт красивый отступ
+                        indent = " " * (slash_pos + 0)
                     else:
                         indent = " " * 60
 
@@ -469,6 +588,8 @@ class CoordinatedPDFParser:
         lines.append("    } b;")
         lines.append("    uint32_t reg;")
         lines.append(f"}} {reg_info['name']}_reg_t;")
+
+        lines = self._refactor_description_format(lines)
 
         return '\n'.join(lines)
 

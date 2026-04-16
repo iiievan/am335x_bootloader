@@ -1,5 +1,6 @@
 set(APP_SOURCES init.cpp
                 main.cpp
+                ddr_calibration.cpp
 )
 
 add_executable(${APP}.elf ${APP_SOURCES})
