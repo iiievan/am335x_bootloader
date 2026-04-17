@@ -3,6 +3,7 @@ project(startup LANGUAGES ASM CXX)
 
 set(STARTUP_SOURCES startup.s
                     cp15.s
+                    cpu.s
                     exceptionhandlers.s
                     cxx_support.cpp
 )

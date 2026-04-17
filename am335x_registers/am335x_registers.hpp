@@ -7,4 +7,13 @@
 
 #define BIT(x) (1u << (x))
 
+#include "PRCM.hpp"
+#include "CONTROL_MODULE.hpp"
+#include "EMIF.hpp"
+#include "INTC.hpp"
+#include "DMTIMER.hpp"
+#include "DMTIMER1MS.hpp"
+#include "UART.hpp"
+#include "MMCHS.hpp"
+
 #endif //__AM335X_REGISTERS_H

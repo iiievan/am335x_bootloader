@@ -583,92 +583,78 @@ namespace REGS
         
                 uint32_t debug_dump_INTC(AM335x_INTC_Type &sINTC = *AM335x_INTC);
      
-             ITR_reg_t*& get_ITR_reference(e_INT_ID int_id);
-             MIR_reg_t*& get_MIR_reference(e_INT_ID int_id);
-       MIR_CLEAR_reg_t*& get_MIR_CLEAR_reference(e_INT_ID int_id);
-         MIR_SET_reg_t*& get_MIR_SET_reference(e_INT_ID int_id);            
-         ISR_SET_reg_t*& get_ISR_SET_reference(e_INT_ID int_id);
-       ISR_CLEAR_reg_t*& get_ISR_CLEAR_reference(e_INT_ID int_id);
-     PENDING_IRQ_reg_t*& get_pending_IRQ_reference(e_INT_ID int_id);
-     PENDING_FIQ_reg_t*& get_pending_FIQ_reference(e_INT_ID int_id);
-        INTC_ILR_reg_t*& get_ILR_reference(e_INT_ID int_id);
+             ITR_reg_t* get_ITR_reference(e_INT_ID int_id);
+             MIR_reg_t* get_MIR_reference(e_INT_ID int_id);
+       MIR_CLEAR_reg_t* get_MIR_CLEAR_reference(e_INT_ID int_id);
+         MIR_SET_reg_t* get_MIR_SET_reference(e_INT_ID int_id);
+         ISR_SET_reg_t* get_ISR_SET_reference(e_INT_ID int_id);
+       ISR_CLEAR_reg_t* get_ISR_CLEAR_reference(e_INT_ID int_id);
+     PENDING_IRQ_reg_t* get_pending_IRQ_reference(e_INT_ID int_id);
+     PENDING_FIQ_reg_t* get_pending_FIQ_reference(e_INT_ID int_id);
+        INTC_ILR_reg_t* get_ILR_reference(e_INT_ID int_id);
         
         /* for testing purpose */
-        inline uint32_t debug_dump_INTC(AM335x_INTC_Type &sINTC)
+        inline ITR_reg_t* get_ITR_reference(e_INT_ID int_id)
         {
-            constexpr uint32_t COUNTOF_INTC = sizeof(AM335x_INTC_Type)/sizeof(uint32_t);
-            volatile  uint32_t TSTREG[COUNTOF_INTC] = {0};          
-            uint32_t  *pAM335x_INTC = (uint32_t *)&sINTC;
-            volatile uint32_t SIZEOF_INTC = sizeof(AM335x_INTC_Type); 
-            
-            for(uint32_t i = 0 ; i < COUNTOF_INTC; i++)
-            {   
-                TSTREG[i] = pAM335x_INTC[i];
-            }
-            
-            return SIZEOF_INTC;
-        }
-        
-        inline ITR_reg_t*& get_ITR_reference(e_INT_ID int_id) 
-        {
-            uint32_t n = ((uint32_t)int_id)/32;
+            uint32_t n = static_cast<uint32_t>(int_id)/32UL;
             uint32_t ITR = (AM335x_INTC_BASE + 0x80 + (n * 0x20));
-            return (ITR_reg_t*&)ITR;
+            return reinterpret_cast<ITR_reg_t*>(ITR);
         }
         
-        inline MIR_reg_t*& get_MIR_reference(e_INT_ID int_id) 
+        inline MIR_reg_t* get_MIR_reference(e_INT_ID int_id)
         {
-            uint32_t n = ((uint32_t)int_id)/32;
+            uint32_t n = static_cast<uint32_t>(int_id)/32UL;
             uint32_t MIR = (AM335x_INTC_BASE + 0x84 + (n * 0x20));
-            return (MIR_reg_t*&)MIR;
+            return reinterpret_cast<MIR_reg_t*>(MIR);
         }
         
-        inline MIR_CLEAR_reg_t*& get_MIR_CLEAR_reference(e_INT_ID int_id)
+        inline MIR_CLEAR_reg_t* get_MIR_CLEAR_reference(e_INT_ID int_id)
         {
             uint32_t n = ((uint32_t)int_id)/32;
             uint32_t sMIR_CLEAR = (AM335x_INTC_BASE + 0x88 + (n * 0x20));
-            return (MIR_CLEAR_reg_t*&)sMIR_CLEAR;
+            return reinterpret_cast<MIR_CLEAR_reg_t*>(sMIR_CLEAR);
         }
         
-        inline MIR_SET_reg_t*& get_MIR_SET_reference(e_INT_ID int_id)
+        inline MIR_SET_reg_t* get_MIR_SET_reference(e_INT_ID int_id)
         {
-            uint32_t n = ((uint32_t)int_id)/32;
+            uint32_t n = static_cast<uint32_t>(int_id)/32UL;
             uint32_t sMIR_SET = (AM335x_INTC_BASE + 0x8c + (n * 0x20));
-            return (MIR_SET_reg_t*&)sMIR_SET;
+            return reinterpret_cast<MIR_SET_reg_t*>(sMIR_SET);
         }
         
-        inline ISR_SET_reg_t*& get_ISR_SET_reference(e_INT_ID int_id) 
+        inline ISR_SET_reg_t* get_ISR_SET_reference(e_INT_ID int_id)
         {
-            uint32_t n = ((uint32_t)int_id)/32;
+            uint32_t n = static_cast<uint32_t>(int_id)/32UL;
             uint32_t sISR_SET= (AM335x_INTC_BASE + 0x90 + (n * 0x20));
-            return (ISR_SET_reg_t*&)sISR_SET;
+            return reinterpret_cast<ISR_SET_reg_t*>(sISR_SET);
         }
         
-        inline ISR_CLEAR_reg_t*& get_ISR_CLEAR_reference(e_INT_ID int_id) 
+        inline ISR_CLEAR_reg_t* get_ISR_CLEAR_reference(e_INT_ID int_id)
         {
-            uint32_t n = ((uint32_t)int_id)/32;
+            uint32_t n = static_cast<uint32_t>(int_id)/32UL;
             uint32_t sISR_CLEAR = (AM335x_INTC_BASE + 0x94 + (n * 0x20));
-            return (ISR_CLEAR_reg_t*&)sISR_CLEAR;
+            return reinterpret_cast<ISR_CLEAR_reg_t*>(sISR_CLEAR);
         } 
           
-        inline PENDING_IRQ_reg_t*& get_pending_IRQ_reference(e_INT_ID int_id) 
+        inline PENDING_IRQ_reg_t* get_pending_IRQ_reference(e_INT_ID int_id)
         {
-            uint32_t n = ((uint32_t)int_id)/32;
+            uint32_t n = static_cast<uint32_t>(int_id)/32UL;
             uint32_t PENDING = (AM335x_INTC_BASE + 0x98 + (n * 0x20));
-            return (PENDING_IRQ_reg_t*&)PENDING;
+            return reinterpret_cast<PENDING_IRQ_reg_t*>(PENDING);
         }
         
-        inline PENDING_FIQ_reg_t*& get_pending_FIQ_reference(e_INT_ID int_id) 
+        inline PENDING_FIQ_reg_t* get_pending_FIQ_reference(e_INT_ID int_id)
         {
-            uint32_t n = ((uint32_t)int_id)/32;
+            uint32_t n = static_cast<uint32_t>(int_id)/32UL;
             uint32_t PENDING = (AM335x_INTC_BASE + 0x9c + (n * 0x20));
-            return (PENDING_FIQ_reg_t*&)PENDING;
+            return reinterpret_cast<PENDING_FIQ_reg_t*>(PENDING);
         }
         
-        inline INTC_ILR_reg_t*& get_ILR_reference(e_INT_ID int_id) 
+        inline INTC_ILR_reg_t* get_ILR_reference(e_INT_ID int_id)
         {
-            uint32_t ILR = (AM335x_INTC_BASE + 0x100 + (((uint32_t)int_id) * 0x04));
-            return (INTC_ILR_reg_t*&)ILR;
+            auto n = static_cast<uint32_t>(int_id);
+            uint32_t ILR = (AM335x_INTC_BASE + 0x100 + (n * 0x04));
+            return reinterpret_cast<INTC_ILR_reg_t*>(ILR);
         }
 
     }   // namespace INTC
