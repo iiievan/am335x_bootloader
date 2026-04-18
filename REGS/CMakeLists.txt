@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(am335x_registers
+project(REGS
         VERSION 0.1.0
         LANGUAGES CXX
         DESCRIPTION
@@ -13,4 +13,5 @@ file(GLOB REGS_SOURCES
 
 add_library(${PROJECT_NAME} STATIC ${REGS_SOURCES})
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+                                                  ${CMAKE_CURRENT_SOURCE_DIR}/..)

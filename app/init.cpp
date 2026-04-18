@@ -2,11 +2,14 @@
 /*  Includes                                                             */
 /*=======================================================================*/
 #include "init.h"
+
+
+
 #include "cp15.h"
-#include "am335x_registers.hpp"
+#include "REGS/REGS.hpp"
 #include "rtt_log.h"
 #include "ddr_calibration.hpp"
-#include "INTController.hpp"
+#include "HAL/INTC.hpp"
 
 #define DDR_TEST_SIZE            (32 * 1024 * 1024)
 #define TAG "brd_ini"
@@ -101,7 +104,7 @@ bool init_board()
     ddr_pll_init();
     interface_clocks_init();
 
-    intc.init();    //Initializing the ARM Interrupt Controller.
+    HAL::INTC::init();    //Initializing the ARM Interrupt Controller.
 
     ddr_init();
 

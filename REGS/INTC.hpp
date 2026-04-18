@@ -2,7 +2,7 @@
 #define _INTC_H_
 
 #include <stdint.h>
-#include "am335x_registers.hpp"
+#include "REGS.hpp"
 
 namespace REGS
 {
@@ -566,7 +566,7 @@ namespace REGS
             DMA_INTR_PIN0       = 123,   // External DMA/Interrupt Pin0 (xdma_event_intr0)
             DMA_INTR_PIN1       = 124,   // External DMA/Interrupt Pin1 (xdma_event_intr1)
             SPI1INT             = 125,   // SPI1
-            INT_NUM_MAX         = 128       
+            INT_NUM_MAX         = 127
         };
     
         constexpr         uint32_t  AM335x_INTC_BASE     = 0x48200000;

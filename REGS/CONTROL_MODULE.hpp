@@ -2,7 +2,7 @@
 #define _CONTROL_MODULE_H_
 
 #include <stdint.h>
-#include "am335x_registers.hpp"
+#include "REGS.hpp"
 
 namespace REGS
 {
@@ -721,113 +721,167 @@ namespace REGS
             } b;                                      // Structure used for bit access 
             uint32_t  reg;                            // Type used for register access 
         } usb_wkup_ctrl_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+
+        /* (offset = 0x650) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                                 /* Register gmii_sel */
+
+                uint32_t    gmii1_sel       : 2; // bits:0..1  (R/W) 00: Port1 GMII/MII Mode 01: Port1 RMII Mode 10: Port1 RGMII Mode 11: Not Used
+                uint32_t    gmii2_sel       : 2; // bits:2..3  (R/W) 00: Port2 GMII/MII Mode 01: Port2 RMII Mode 10: Port2 RGMII Mode 11: Not Used
+                uint32_t    rgmii1_idmode   : 1; // bit:4      (R/W) RGMII1 Internal Delay Mode 0: Reserved 1: No Internal Delay See &quot;Silicon Revision
+                                                 //                 Functional Differences and Enhancements&quot; for differences in operation based on
+                                                 //                 AM335x silicon revision.
+                uint32_t    rgmii2_idmode   : 1; // bit:5      (R/W) RGMII2 Internal Delay Mode 0: Reserved 1: No Internal Delay See &quot;Silicon Revision
+                                                 //                 Functional Differences and Enhancements&quot; for differences in operation based on
+                                                 //                 AM335x silicon revision.
+                uint32_t    rmii1_io_clk_en : 1; // bit:6      (R/W) 0: RMII Reference Clock Output mode. Enable RMII clock to be sourced from PLL 1: RMII
+                                                 //                 Reference Clock Input mode. Enable RMII clock to be sourced from chip pin See
+                                                 //                 &quot;Silicon Revision Functional Differences and Enhancements&quot; for differences in
+                                                 //                 operation based on AM335x silicon revision.
+                uint32_t    rmii2_io_clk_en : 1; // bit:7      (R/W) 0: RMII Reference Clock Output mode. Enable RMII clock to be sourced from PLL. 1: RMII
+                                                 //                 Reference Clock Input mode. Enable RMII clock to be sourced from chip pin. See
+                                                 //                 &quot;Silicon Revision Functional Differences and Enhancements&quot; for differences in
+                                                 //                 operation based on AM335x silicon revision.
+                uint32_t                    :24; // bits:8..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } gmii_sel_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+
+        /* (offset = 0x664) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                /* Register pwmss_ctrl */
+
+                uint32_t    pwmss0_tbclken : 1; // bit:0      (R/W) Timebase clock enable for PWMSS0
+                uint32_t    pwmss1_tbclken : 1; // bit:1      (R/W) Timebase clock enable for PWMSS1
+                uint32_t    pwmss2_tbclken : 1; // bit:2      (R/W) Timebase clock enable for PWMSS2
+                uint32_t                   :29; // bits:3..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } pwmss_ctrl_reg_t;
     
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+        /* (offset = 0x670) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                               /* Register mreqprio_0 */
+
+                uint32_t    sab_init0     : 3; // bits:0..2   (R/W) MReqPriority for MPU Initiator 0 OCP Interface
+                uint32_t                  : 1; // bit:3       (R)   Reserved
+                uint32_t    sab_init1     : 3; // bits:4..6   (R/W) MReqPriority for MPU Initiator 1 OCP Interface
+                uint32_t                  : 1; // bit:7       (R)   Reserved
+                uint32_t    pru_icss_pru0 : 3; // bits:8..10  (R/W) MReqPriority for PRU-ICSS PRU0 Initiator OCP Interface
+                uint32_t                  : 5; // bits:11..15 (R)   Reserved
+                uint32_t    cpsw          : 3; // bits:16..18 (R/W) MReqPriority for CPSW Initiator OCP Interface
+                uint32_t                  : 1; // bit:19      (R)   Reserved
+                uint32_t    usb0          : 3; // bits:20..22 (R/W) MReqPriority for USB0 Initiator OCP Interface
+                uint32_t                  : 1; // bit:23      (R)   Reserved
+                uint32_t    usb1          : 3; // bits:24..26 (R/W) MReqPriority for USB1 Initiator OCP Interface
+                uint32_t                  : 1; // bit:27      (R)   Reserved
+                uint32_t    sgx           : 3; // bits:28..30 (R/W) MReqPriority for SGX Initiator OCP Interface
+                uint32_t                  : 1; // bit:31      (R)   Reserved
+            } b;
+            uint32_t reg;
         } mreqprio_0_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+
+
+        /* (offset = 0x674) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                                      /* Register mreqprio_1 */
+
+                uint32_t                         :32; // bits:0..31 (R) Reserved
+            } b;
+            uint32_t reg;
         } mreqprio_1_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+
+
+        /* (offset = 0x690) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                        /* Register hw_event_sel_grp1 */
+
+                uint32_t    event1 : 8; // bits:0..7   (R/W) Select 1st trace event from group 1
+                uint32_t    event2 : 8; // bits:8..15  (R/W) Select 2nd trace event from group 1
+                uint32_t    event3 : 8; // bits:16..23 (R/W) Select 3rd trace event from group 1
+                uint32_t    event4 : 8; // bits:24..31 (R/W) Select 4th trace event from group 1
+            } b;
+            uint32_t reg;
         } hw_event_sel_grp1_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+
+
+        /* (offset = 0x694) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                        /* Register hw_event_sel_grp2 */
+
+                uint32_t    event5 : 8; // bits:0..7   (R/W) Select 5th trace event from group 2
+                uint32_t    event6 : 8; // bits:8..15  (R/W) Select 6th trace event from group 2
+                uint32_t    event7 : 8; // bits:16..23 (R/W) Select 7th trace event from group 2
+                uint32_t    event8 : 8; // bits:24..31 (R/W) Select 8th trace event from group 2
+            } b;
+            uint32_t reg;
         } hw_event_sel_grp2_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+
+
+        /* (offset = 0x698) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                         /* Register hw_event_sel_grp3 */
+
+                uint32_t    event9  : 8; // bits:0..7   (R/W) Select 9th trace event from group 3
+                uint32_t    event10 : 8; // bits:8..15  (R/W) Select 10th trace event from group 3
+                uint32_t    event11 : 8; // bits:16..23 (R/W) Select 11th trace event from group 3
+                uint32_t    event12 : 8; // bits:24..31 (R/W) Select 12th trace event from group 3
+            } b;
+            uint32_t reg;
         } hw_event_sel_grp3_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+
+
+        /* (offset = 0x69C) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                         /* Register hw_event_sel_grp4 */
+
+                uint32_t    event13 : 8; // bits:0..7   (R/W) Select 13th trace event from group 4
+                uint32_t    event14 : 8; // bits:8..15  (R/W) Select 14th trace event from group 4
+                uint32_t    event15 : 8; // bits:16..23 (R/W) Select 15th trace event from group 4
+                uint32_t    event16 : 8; // bits:24..31 (R/W) Select 16th trace event from group 4
+            } b;
+            uint32_t reg;
         } hw_event_sel_grp4_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+
+
+        /* (offset = 0x6A0) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                           /* Register smrt_ctrl */
+
+                uint32_t    sr0_sleep : 1; // bit:0      (R/W) 0: Disable sensor (SRSLEEP on sensor driven to 1) 1: Enable sensor (SRSLEEP on sensor
+                                           //                 driven to 0).
+                uint32_t    sr1_sleep : 1; // bit:1      (R/W) 0: Disable sensor (SRSLEEP on sensor driven to 1) 1: Enable sensor (SRSLEEP on sensor
+                                           //                 driven to 0).
+                uint32_t              :30; // bits:2..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } smrt_ctrl_reg_t;
     
         /* (offset = 0x6A4)[reset state = 0x0] */
@@ -910,114 +964,131 @@ namespace REGS
             uint32_t  reg;
         } mrgn_mode1_reg_t;
     
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+        /* (offset = 0x770) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                         /* Register vdd_mpu_opp_050 */
+
+                uint32_t    ntarget :24; // bits:0..23  (R) Ntarget value for MPU Voltage domain OPP50 Reset value is device-dependent.
+                uint32_t            : 8; // bits:24..31 (R) Reserved
+            } b;
+            uint32_t reg;
         } vdd_mpu_opp_050_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+
+
+        /* (offset = 0x774) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                         /* Register vdd_mpu_opp_100 */
+
+                uint32_t    ntarget :24; // bits:0..23  (R) Ntarget value for MPU Voltage domain OPP100 Reset value is device-dependent.
+                uint32_t            : 8; // bits:24..31 (R) Reserved
+            } b;
+            uint32_t reg;
         } vdd_mpu_opp_100_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+
+
+        /* (offset = 0x778) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                         /* Register vdd_mpu_opp_120 */
+
+                uint32_t    ntarget :24; // bits:0..23  (R) Ntarget value for MPU Voltage domain OPP120 Reset value is device-dependent.
+                uint32_t            : 8; // bits:24..31 (R) Reserved
+            } b;
+            uint32_t reg;
         } vdd_mpu_opp_120_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+
+
+        /* (offset = 0x77C) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                         /* Register vdd_mpu_opp_turbo */
+
+                uint32_t    ntarget :24; // bits:0..23  (R) Ntarget value for MPU Voltage domain OPPTURBO Reset value is device-dependent.
+                uint32_t            : 8; // bits:24..31 (R) Reserved
+            } b;
+            uint32_t reg;
         } vdd_mpu_opp_turbo_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+
+
+        /* (offset = 0x7B8) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                         /* Register vdd_core_opp_050 */
+
+                uint32_t    ntarget :24; // bits:0..23  (R) Ntarget value for CORE Voltage domain OPP50 Reset value is device-dependent.
+                uint32_t            : 8; // bits:24..31 (R) Reserved
+            } b;
+            uint32_t reg;
         } vdd_core_opp_050_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+
+
+        /* (offset = 0x7BC) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                         /* Register vdd_core_opp_100 */
+
+                uint32_t    ntarget :24; // bits:0..23  (R) Ntarget value for CORE Voltage domain OPP100 Reset value is device-dependent.
+                uint32_t            : 8; // bits:24..31 (R) Reserved
+            } b;
+            uint32_t reg;
         } vdd_core_opp_100_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bbias      :2;         // bit: 0,1          (R) BBIAS value from Efuse  
-                uint32_t               :6;         // bit: 2..7         Reserved. 
-                uint32_t    scale      :4;         // bit: 8..11        (R) Dynamic core voltage scaling for class 0  
-                uint32_t               :20;        // bit: 12..31       Reserved.        
-            } b;                                   // Structure used for bit access 
-            uint32_t  reg;                         // Type used for register access 
+
+
+        /* (offset = 0x7D0) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                       /* Register bb_scale */
+
+                uint32_t    bbias : 2; // bits:0..1   (R) BBIAS value from Efuse
+                uint32_t          : 6; // bits:2..7   (R) Reserved
+                uint32_t    scale : 4; // bits:8..11  (R) Dynamic core voltage scaling for class 0
+                uint32_t          :20; // bits:12..31 (R) Reserved
+            } b;
+            uint32_t reg;
         } bb_scale_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+
+
+        /* (offset = 0x7F4) [reset state = 0x4516141] */
+        typedef union
+        {
+            struct
+            {
+                                         /* Register usb_vid_pid */
+
+                uint32_t    usb_pid :16; // bits:0..15  (R) USB Product ID
+                uint32_t    usb_vid :16; // bits:16..31 (R) USB Vendor ID
+            } b;
+            uint32_t reg;
         } usb_vid_pid_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+
+
+        /* (offset = 0x7FC) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                                  /* Register efuse_sma */
+
+                uint32_t    arm_mpu_max_freq :32; // bits:0..31 (R/W) Designates the ARM MPU Maximum Frequency supported by the device (PG2.x only). There are
+                                                  //                 also voltag
+            } b;
+            uint32_t reg;
         } efuse_sma_reg_t;
     
         /* [reset state = 0xX]*/
@@ -1077,39 +1148,51 @@ namespace REGS
             SLOW   = 0x1     
         };
     
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
-        } cqdetect_status_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                             /**  Register ddr_io_ctrl **/
+        /* (offset = 0xE00) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                                /* Register cqdetect_status */
 
-                uint32_t                          :28;    // bit: 0..27    (R) Reserved.
-                uint32_t    mddr_sel              :1;     // bit: 28       (RW) [0x0: IOs set for DDR2/DDR3 (STL mode)
-                                                          //                     0x1: IOs set for mDDR (CMOS mode)]
-                uint32_t                          :1;     // bit: 29       (R) Reserved.
-                uint32_t    ddr_wuclk_disable     :1;     // bit: 30       (RW) Disables the slow clock to WUCLKIN and ISOCLKIN of DDR emif
-                                                          //                    SS and IOs (required for proper initialization, after which clock could
-                                                          //                    be shut off).
-                                                          //                    [0x0 = free running SLOW (32k) clock
-                                                          //                     0x1 = clock is synchronously gated]
-                uint32_t    ddr3_rst_def_val      :1;     // bit: 31       (RW) DDR3 reset default value
-            } b;                                          // Structure used for bit access
-            uint32_t  reg;                                // Type used for register access
+                uint32_t    cqstat_gpmc    : 1; // bit:0       (R) 1: IOs are 3.3V mode 0: IOs are 1.8V mode
+                uint32_t    cqstat_mmcsd_a : 1; // bit:1       (R) 1: IOs are 3.3V mode 0: IOs are 1.8V mode
+                uint32_t    cqstat_mmcsd_b : 1; // bit:2       (R) 1: IOs are 3.3V mode 0: IOs are 1.8V mode
+                uint32_t    cqstat_gemac_a : 1; // bit:3       (R) 1: IOs are 3.3V mode 0: IOs are 1.8V mode
+                uint32_t    cqstat_gemac_b : 1; // bit:4       (R) 1: IOs are 3.3V mode 0: IOs are 1.8V mode
+                uint32_t    cqstat_general : 1; // bit:5       (R) 1: IOs are 3.3V mode 0: IOs are 1.8V mode
+                uint32_t                   : 2; // bits:6..7   (R) Reserved
+                uint32_t    cqerr_gpmc     : 1; // bit:8       (R) CQDetect Mode Error Status
+                uint32_t    cqerr_mmcsd_a  : 1; // bit:9       (R) CQDetect Mode Error Status
+                uint32_t    cqerr_mmcsd_b  : 1; // bit:10      (R) CQDetect Mode Error Status
+                uint32_t    cqerr_gemac_a  : 1; // bit:11      (R) CQDetect Mode Error Status
+                uint32_t    cqerr_gemac_b  : 1; // bit:12      (R) CQDetect Mode Error Status
+                uint32_t    cqerr_general  : 1; // bit:13      (R) CQDetect Mode Error Status
+                uint32_t                   :18; // bits:14..31 (R) Reserved
+            } b;
+            uint32_t reg;
+        } cqdetect_status_reg_t;
+
+
+        /* (offset = 0xE04) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                                   /* Register ddr_io_ctrl */
+
+                uint32_t                      :28; // bits:0..27 (R)   Reserved
+                uint32_t    mddr_sel          : 1; // bit:28     (R/W) 0: IOs set for DDR2/DDR3 (STL mode) 1: IOs set for mDDR (CMOS mode)
+                uint32_t                      : 1; // bit:29     (R)   Reserved
+                uint32_t    ddr_wuclk_disable : 1; // bit:30     (R/W) Disables the slow clock to WUCLKIN and ISOCLKIN of DDR emif SS and IOs (required for
+                                                   //                 proper initialization, after which clock could be shut off). 0 = free running SLOW (32k)
+                                                   //                 clock 1 = clock is synchronously gated
+                uint32_t    ddr3_rst_def_val  : 1; // bit:31     (R/W) DDR3 reset default value
+            } b;
+            uint32_t reg;
         } ddr_io_ctrl_reg_t;
     
-        /* [reset state = 0x0]*/
+        /* (offset = 0xE0C) [reset state = 0x0] */
         typedef union 
         { 
             struct 
@@ -1132,7 +1215,7 @@ namespace REGS
                 uint32_t    pcin      :7;        // bit: 16..22   (R) Default/reset values of 'N' for the VTP controller.
                                                  //                   See "Silicon Revision Functional Differences and Enhancements" for
                                                  //                   differences in operation based on AM335x silicon revision.
-                uint32_t              :9;       // bit: 23..31   (R) Reserved.
+                uint32_t              :9;        // bit: 23..31   (R) Reserved.
             } b;                                 // Structure used for bit access
             uint32_t  reg;                       // Type used for register access
         } vtp_ctrl_reg_t;
@@ -1149,16 +1232,24 @@ namespace REGS
             DFILTER_EIGHT_REQUESTS  = 0x7,       // 0x111: Update on eight consecutive update requests
         };
     
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+        /* (offset = 0xE14) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                               /* Register vref_ctrl */
+
+                uint32_t    ddr_vref_en   : 1; // bit:0      (R/W) active high internal reference enable for DDR
+                uint32_t    ddr_vref_tap  : 2; // bits:1..2  (R/W) select for int ref for DDR 00 : Pad/Bias2 connected to internal reference VDDS/2 for 2uA
+                                               //                 current load 01 : Pad/Bias2 connected to internal reference VDDS/2 for 4uA current load
+                                               //                 10 : Pad/Bias2 connected to internal reference VDDS/2 for 6uA current load 11 :
+                                               //                 Pad/Bias2 connected to internal reference VDDS/2 for 8uA current load
+                uint32_t    ddr_vref_ccap : 2; // bits:3..4  (R/W) select for coupling cap for DDR 00 : No capacitor connected 01 : Capacitor between BIAS2
+                                               //                 and VSS 10 : Capacitor between BIAS2 and VDDS 11: Capacitor between BIAS2 and VSS andamp
+                                               //                 Capacitor between BIAS2 and VDDS
+                uint32_t                  :27; // bits:5..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } vref_ctrl_reg_t;
 
         /* [reset state = 0x0] */
@@ -1173,399 +1264,481 @@ namespace REGS
             uint32_t  reg;
         } serdes_refclk_ctl_reg_t;
     
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct  
-            {                                       /*  */
-                 
-                uint32_t    evt_mux_0     :6;       // bit: 0..5      (RW) Selects 1 of 64 inputs for DMA event 0  
-                uint32_t                  :2;       // bit: 6,7        Reserved.
-                uint32_t    evt_mux_1     :6;       // bit: 8..13     (RW) Selects 1 of 64 inputs for DMA event 1  
-                uint32_t                  :2;       // bit: 14,15      Reserved.
-                uint32_t    evt_mux_2     :6;       // bit: 16..21    (RW) Selects 1 of 64 inputs for DMA event 2  
-                uint32_t                  :2;       // bit: 22,23      Reserved.
-                uint32_t    evt_mux_3     :6;       // bit: 24..29    (RW) Selects 1 of 64 inputs for DMA event 3  
-                uint32_t                  :2;       // bit: 30,31      Reserved.
-            } b;                                    // Structure used for bit access 
-            uint32_t  reg;                          // Type used for register access 
+        /* (offset = 0xF90) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                           /* Register tpcc_evt_mux_0_3 */
+
+                uint32_t    evt_mux_0 : 6; // bits:0..5   (R/W) Selects 1 of 64 inputs for DMA event 0
+                uint32_t              : 2; // bits:6..7   (R)   Reserved
+                uint32_t    evt_mux_1 : 6; // bits:8..13  (R/W) Selects 1 of 64 inputs for DMA event 1
+                uint32_t              : 2; // bits:14..15 (R)   Reserved
+                uint32_t    evt_mux_2 : 6; // bits:16..21 (R/W) Selects 1 of 64 inputs for DMA event 2
+                uint32_t              : 2; // bits:22..23 (R)   Reserved
+                uint32_t    evt_mux_3 : 6; // bits:24..29 (R/W) Selects 1 of 64 inputs for DMA event 3
+                uint32_t              : 2; // bits:30..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } tpcc_evt_mux_0_3_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct  
-            {                                       /*  */
-                 
-                uint32_t    evt_mux_4     :6;       // bit: 0..5      (RW) Selects 1 of 64 inputs for DMA event 4  
-                uint32_t                  :2;       // bit: 6,7        Reserved.
-                uint32_t    evt_mux_5     :6;       // bit: 8..13     (RW) Selects 1 of 64 inputs for DMA event 5  
-                uint32_t                  :2;       // bit: 14,15      Reserved.
-                uint32_t    evt_mux_6     :6;       // bit: 16..21    (RW) Selects 1 of 64 inputs for DMA event 6  
-                uint32_t                  :2;       // bit: 22,23      Reserved.
-                uint32_t    evt_mux_7     :6;       // bit: 24..29    (RW) Selects 1 of 64 inputs for DMA event 7  
-                uint32_t                  :2;       // bit: 30,31      Reserved.
-            } b;                                    // Structure used for bit access 
-            uint32_t  reg;                          // Type used for register access 
+
+
+        /* (offset = 0xF94) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                           /* Register tpcc_evt_mux_4_7 */
+
+                uint32_t    evt_mux_4 : 6; // bits:0..5   (R/W) Selects 1 of 64 inputs for DMA event 4
+                uint32_t              : 2; // bits:6..7   (R)   Reserved
+                uint32_t    evt_mux_5 : 6; // bits:8..13  (R/W) Selects 1 of 64 inputs for DMA event 5
+                uint32_t              : 2; // bits:14..15 (R)   Reserved
+                uint32_t    evt_mux_6 : 6; // bits:16..21 (R/W) Selects 1 of 64 inputs for DMA event 6
+                uint32_t              : 2; // bits:22..23 (R)   Reserved
+                uint32_t    evt_mux_7 : 6; // bits:24..29 (R/W) Selects 1 of 64 inputs for DMA event 7
+                uint32_t              : 2; // bits:30..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } tpcc_evt_mux_4_7_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct  
-            {                                       /*  */
-                 
-                uint32_t    evt_mux_8     :6;       // bit: 0..5      (RW) Selects 1 of 64 inputs for DMA event 8  
-                uint32_t                  :2;       // bit: 6,7        Reserved.
-                uint32_t    evt_mux_9     :6;       // bit: 8..13     (RW) Selects 1 of 64 inputs for DMA event 9  
-                uint32_t                  :2;       // bit: 14,15      Reserved.
-                uint32_t    evt_mux_10    :6;       // bit: 16..21    (RW) Selects 1 of 64 inputs for DMA event 10  
-                uint32_t                  :2;       // bit: 22,23      Reserved.
-                uint32_t    evt_mux_11    :6;       // bit: 24..29    (RW) Selects 1 of 64 inputs for DMA event 11  
-                uint32_t                  :2;       // bit: 30,31      Reserved.
-            } b;                                    // Structure used for bit access 
-            uint32_t  reg;                          // Type used for register access 
+
+
+        /* (offset = 0xF98) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                            /* Register tpcc_evt_mux_8_11 */
+
+                uint32_t    evt_mux_8  : 6; // bits:0..5   (R/W) Selects 1 of 64 inputs for DMA event 8
+                uint32_t               : 2; // bits:6..7   (R)   Reserved
+                uint32_t    evt_mux_9  : 6; // bits:8..13  (R/W) Selects 1 of 64 inputs for DMA event 9
+                uint32_t               : 2; // bits:14..15 (R)   Reserved
+                uint32_t    evt_mux_10 : 6; // bits:16..21 (R/W) Selects 1 of 64 inputs for DMA event 10
+                uint32_t               : 2; // bits:22..23 (R)   Reserved
+                uint32_t    evt_mux_11 : 6; // bits:24..29 (R/W) Selects 1 of 64 inputs for DMA event 11
+                uint32_t               : 2; // bits:30..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } tpcc_evt_mux_8_11_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct  
-            {                                       /*  */
-                 
-                uint32_t    evt_mux_12    :6;       // bit: 0..5      (RW) Selects 1 of 64 inputs for DMA event 12  
-                uint32_t                  :2;       // bit: 6,7        Reserved.
-                uint32_t    evt_mux_13    :6;       // bit: 8..13     (RW) Selects 1 of 64 inputs for DMA event 13  
-                uint32_t                  :2;       // bit: 14,15      Reserved.
-                uint32_t    evt_mux_14    :6;       // bit: 16..21    (RW) Selects 1 of 64 inputs for DMA event 14  
-                uint32_t                  :2;       // bit: 22,23      Reserved.
-                uint32_t    evt_mux_15    :6;       // bit: 24..29    (RW) Selects 1 of 64 inputs for DMA event 15  
-                uint32_t                  :2;       // bit: 30,31      Reserved.
-            } b;                                    // Structure used for bit access 
-            uint32_t  reg;                          // Type used for register access 
+
+
+        /* (offset = 0xF9C) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                            /* Register tpcc_evt_mux_12_15 */
+
+                uint32_t    evt_mux_12 : 6; // bits:0..5   (R/W) Selects 1 of 64 inputs for DMA event 12
+                uint32_t               : 2; // bits:6..7   (R)   Reserved
+                uint32_t    evt_mux_13 : 6; // bits:8..13  (R/W) Selects 1 of 64 inputs for DMA event 13
+                uint32_t               : 2; // bits:14..15 (R)   Reserved
+                uint32_t    evt_mux_14 : 6; // bits:16..21 (R/W) Selects 1 of 64 inputs for DMA event 14
+                uint32_t               : 2; // bits:22..23 (R)   Reserved
+                uint32_t    evt_mux_15 : 6; // bits:24..29 (R/W) Selects 1 of 64 inputs for DMA event 15
+                uint32_t               : 2; // bits:30..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } tpcc_evt_mux_12_15_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct  
-            {                                       /*  */
-                 
-                uint32_t    evt_mux_16    :6;       // bit: 0..5      (RW) Selects 1 of 64 inputs for DMA event 16  
-                uint32_t                  :2;       // bit: 6,7        Reserved.
-                uint32_t    evt_mux_17    :6;       // bit: 8..13     (RW) Selects 1 of 64 inputs for DMA event 17  
-                uint32_t                  :2;       // bit: 14,15      Reserved.
-                uint32_t    evt_mux_18    :6;       // bit: 16..21    (RW) Selects 1 of 64 inputs for DMA event 18  
-                uint32_t                  :2;       // bit: 22,23      Reserved.
-                uint32_t    evt_mux_19    :6;       // bit: 24..29    (RW) Selects 1 of 64 inputs for DMA event 19  
-                uint32_t                  :2;       // bit: 30,31      Reserved.
-            } b;                                    // Structure used for bit access 
-            uint32_t  reg;                          // Type used for register access 
+
+
+        /* (offset = 0xFA0) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                            /* Register tpcc_evt_mux_16_19 */
+
+                uint32_t    evt_mux_16 : 6; // bits:0..5   (R/W) Selects 1 of 64 inputs for DMA event 16
+                uint32_t               : 2; // bits:6..7   (R)   Reserved
+                uint32_t    evt_mux_17 : 6; // bits:8..13  (R/W) Selects 1 of 64 inputs for DMA event 17
+                uint32_t               : 2; // bits:14..15 (R)   Reserved
+                uint32_t    evt_mux_18 : 6; // bits:16..21 (R/W) Selects 1 of 64 inputs for DMA event 18
+                uint32_t               : 2; // bits:22..23 (R)   Reserved
+                uint32_t    evt_mux_19 : 6; // bits:24..29 (R/W) Selects 1 of 64 inputs for DMA event 19
+                uint32_t               : 2; // bits:30..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } tpcc_evt_mux_16_19_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct  
-            {                                       /*  */
-                 
-                uint32_t    evt_mux_20    :6;       // bit: 0..5      (RW) Selects 1 of 64 inputs for DMA event 20  
-                uint32_t                  :2;       // bit: 6,7        Reserved.
-                uint32_t    evt_mux_21    :6;       // bit: 8..13     (RW) Selects 1 of 64 inputs for DMA event 21  
-                uint32_t                  :2;       // bit: 14,15      Reserved.
-                uint32_t    evt_mux_22    :6;       // bit: 16..21    (RW) Selects 1 of 64 inputs for DMA event 22  
-                uint32_t                  :2;       // bit: 22,23      Reserved.
-                uint32_t    evt_mux_23    :6;       // bit: 24..29    (RW) Selects 1 of 64 inputs for DMA event 23  
-                uint32_t                  :2;       // bit: 30,31      Reserved.
-            } b;                                    // Structure used for bit access 
-            uint32_t  reg;                          // Type used for register access 
+
+
+        /* (offset = 0xFA4) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                            /* Register tpcc_evt_mux_20_23 */
+
+                uint32_t    evt_mux_20 : 6; // bits:0..5   (R/W) Selects 1 of 64 inputs for DMA event 20
+                uint32_t               : 2; // bits:6..7   (R)   Reserved
+                uint32_t    evt_mux_21 : 6; // bits:8..13  (R/W) Selects 1 of 64 inputs for DMA event 21
+                uint32_t               : 2; // bits:14..15 (R)   Reserved
+                uint32_t    evt_mux_22 : 6; // bits:16..21 (R/W) Selects 1 of 64 inputs for DMA event 22
+                uint32_t               : 2; // bits:22..23 (R)   Reserved
+                uint32_t    evt_mux_23 : 6; // bits:24..29 (R/W) Selects 1 of 64 inputs for DMA event 23
+                uint32_t               : 2; // bits:30..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } tpcc_evt_mux_20_23_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct  
-            {                                       /*  */
-                 
-                uint32_t    evt_mux_24    :6;       // bit: 0..5      (RW) Selects 1 of 64 inputs for DMA event 24  
-                uint32_t                  :2;       // bit: 6,7        Reserved.
-                uint32_t    evt_mux_25    :6;       // bit: 8..13     (RW) Selects 1 of 64 inputs for DMA event 25  
-                uint32_t                  :2;       // bit: 14,15      Reserved.
-                uint32_t    evt_mux_26    :6;       // bit: 16..21    (RW) Selects 1 of 64 inputs for DMA event 26  
-                uint32_t                  :2;       // bit: 22,23      Reserved.
-                uint32_t    evt_mux_27    :6;       // bit: 24..29    (RW) Selects 1 of 64 inputs for DMA event 27  
-                uint32_t                  :2;       // bit: 30,31      Reserved.
-            } b;                                    // Structure used for bit access 
-            uint32_t  reg;                          // Type used for register access 
+
+
+        /* (offset = 0xFA8) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                            /* Register tpcc_evt_mux_24_27 */
+
+                uint32_t    evt_mux_24 : 6; // bits:0..5   (R/W) Selects 1 of 64 inputs for DMA event 24
+                uint32_t               : 2; // bits:6..7   (R)   Reserved
+                uint32_t    evt_mux_25 : 6; // bits:8..13  (R/W) Selects 1 of 64 inputs for DMA event 25
+                uint32_t               : 2; // bits:14..15 (R)   Reserved
+                uint32_t    evt_mux_26 : 6; // bits:16..21 (R/W) Selects 1 of 64 inputs for DMA event 26
+                uint32_t               : 2; // bits:22..23 (R)   Reserved
+                uint32_t    evt_mux_27 : 6; // bits:24..29 (R/W) Selects 1 of 64 inputs for DMA event 27
+                uint32_t               : 2; // bits:30..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } tpcc_evt_mux_24_27_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct  
-            {                                       /*  */
-                 
-                uint32_t    evt_mux_28    :6;       // bit: 0..5      (RW) Selects 1 of 64 inputs for DMA event 28  
-                uint32_t                  :2;       // bit: 6,7        Reserved.
-                uint32_t    evt_mux_29    :6;       // bit: 8..13     (RW) Selects 1 of 64 inputs for DMA event 29  
-                uint32_t                  :2;       // bit: 14,15      Reserved.
-                uint32_t    evt_mux_30    :6;       // bit: 16..21    (RW) Selects 1 of 64 inputs for DMA event 30  
-                uint32_t                  :2;       // bit: 22,23      Reserved.
-                uint32_t    evt_mux_31    :6;       // bit: 24..29    (RW) Selects 1 of 64 inputs for DMA event 31  
-                uint32_t                  :2;       // bit: 30,31      Reserved.
-            } b;                                    // Structure used for bit access 
-            uint32_t  reg;                          // Type used for register access 
+
+
+        /* (offset = 0xFAC) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                            /* Register tpcc_evt_mux_28_31 */
+
+                uint32_t    evt_mux_28 : 6; // bits:0..5   (R/W) Selects 1 of 64 inputs for DMA event 28
+                uint32_t               : 2; // bits:6..7   (R)   Reserved
+                uint32_t    evt_mux_29 : 6; // bits:8..13  (R/W) Selects 1 of 64 inputs for DMA event 29
+                uint32_t               : 2; // bits:14..15 (R)   Reserved
+                uint32_t    evt_mux_30 : 6; // bits:16..21 (R/W) Selects 1 of 64 inputs for DMA event 30
+                uint32_t               : 2; // bits:22..23 (R)   Reserved
+                uint32_t    evt_mux_31 : 6; // bits:24..29 (R/W) Selects 1 of 64 inputs for DMA event 31
+                uint32_t               : 2; // bits:30..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } tpcc_evt_mux_28_31_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct  
-            {                                       /*  */
-                 
-                uint32_t    evt_mux_32    :6;       // bit: 0..5      (RW) Selects 1 of 64 inputs for DMA event 32  
-                uint32_t                  :2;       // bit: 6,7        Reserved.
-                uint32_t    evt_mux_33    :6;       // bit: 8..13     (RW) Selects 1 of 64 inputs for DMA event 33  
-                uint32_t                  :2;       // bit: 14,15      Reserved.
-                uint32_t    evt_mux_34    :6;       // bit: 16..21    (RW) Selects 1 of 64 inputs for DMA event 34  
-                uint32_t                  :2;       // bit: 22,23      Reserved.
-                uint32_t    evt_mux_35    :6;       // bit: 24..29    (RW) Selects 1 of 64 inputs for DMA event 35  
-                uint32_t                  :2;       // bit: 30,31      Reserved.
-            } b;                                    // Structure used for bit access 
-            uint32_t  reg;                          // Type used for register access 
+
+
+        /* (offset = 0xFB0) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                            /* Register tpcc_evt_mux_32_35 */
+
+                uint32_t    evt_mux_32 : 6; // bits:0..5   (R/W) Selects 1 of 64 inputs for DMA event 32
+                uint32_t               : 2; // bits:6..7   (R)   Reserved
+                uint32_t    evt_mux_33 : 6; // bits:8..13  (R/W) Selects 1 of 64 inputs for DMA event 33
+                uint32_t               : 2; // bits:14..15 (R)   Reserved
+                uint32_t    evt_mux_34 : 6; // bits:16..21 (R/W) Selects 1 of 64 inputs for DMA event 34
+                uint32_t               : 2; // bits:22..23 (R)   Reserved
+                uint32_t    evt_mux_35 : 6; // bits:24..29 (R/W) Selects 1 of 64 inputs for DMA event 35
+                uint32_t               : 2; // bits:30..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } tpcc_evt_mux_32_35_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct  
-            {                                       /*  */
-                 
-                uint32_t    evt_mux_36    :6;       // bit: 0..5      (RW) Selects 1 of 64 inputs for DMA event 36  
-                uint32_t                  :2;       // bit: 6,7        Reserved.
-                uint32_t    evt_mux_37    :6;       // bit: 8..13     (RW) Selects 1 of 64 inputs for DMA event 37  
-                uint32_t                  :2;       // bit: 14,15      Reserved.
-                uint32_t    evt_mux_38    :6;       // bit: 16..21    (RW) Selects 1 of 64 inputs for DMA event 38  
-                uint32_t                  :2;       // bit: 22,23      Reserved.
-                uint32_t    evt_mux_39    :6;       // bit: 24..29    (RW) Selects 1 of 64 inputs for DMA event 39  
-                uint32_t                  :2;       // bit: 30,31      Reserved.
-            } b;                                    // Structure used for bit access 
-            uint32_t  reg;                          // Type used for register access 
+
+
+        /* (offset = 0xFB4) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                            /* Register tpcc_evt_mux_36_39 */
+
+                uint32_t    evt_mux_36 : 6; // bits:0..5   (R/W) Selects 1 of 64 inputs for DMA event 36
+                uint32_t               : 2; // bits:6..7   (R)   Reserved
+                uint32_t    evt_mux_37 : 6; // bits:8..13  (R/W) Selects 1 of 64 inputs for DMA event 37
+                uint32_t               : 2; // bits:14..15 (R)   Reserved
+                uint32_t    evt_mux_38 : 6; // bits:16..21 (R/W) Selects 1 of 64 inputs for DMA event 38
+                uint32_t               : 2; // bits:22..23 (R)   Reserved
+                uint32_t    evt_mux_39 : 6; // bits:24..29 (R/W) Selects 1 of 64 inputs for DMA event 39
+                uint32_t               : 2; // bits:30..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } tpcc_evt_mux_36_39_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct  
-            {                                       /*  */
-                 
-                uint32_t    evt_mux_40    :6;       // bit: 0..5      (RW) Selects 1 of 64 inputs for DMA event 40  
-                uint32_t                  :2;       // bit: 6,7        Reserved.
-                uint32_t    evt_mux_41    :6;       // bit: 8..13     (RW) Selects 1 of 64 inputs for DMA event 41  
-                uint32_t                  :2;       // bit: 14,15      Reserved.
-                uint32_t    evt_mux_42    :6;       // bit: 16..21    (RW) Selects 1 of 64 inputs for DMA event 42  
-                uint32_t                  :2;       // bit: 22,23      Reserved.
-                uint32_t    evt_mux_43    :6;       // bit: 24..29    (RW) Selects 1 of 64 inputs for DMA event 43  
-                uint32_t                  :2;       // bit: 30,31      Reserved.
-            } b;                                    // Structure used for bit access 
-            uint32_t  reg;                          // Type used for register access 
+
+
+        /* (offset = 0xFB8) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                            /* Register tpcc_evt_mux_40_43 */
+
+                uint32_t    evt_mux_40 : 6; // bits:0..5   (R/W) Selects 1 of 64 inputs for DMA event 40
+                uint32_t               : 2; // bits:6..7   (R)   Reserved
+                uint32_t    evt_mux_41 : 6; // bits:8..13  (R/W) Selects 1 of 64 inputs for DMA event 41
+                uint32_t               : 2; // bits:14..15 (R)   Reserved
+                uint32_t    evt_mux_42 : 6; // bits:16..21 (R/W) Selects 1 of 64 inputs for DMA event 42
+                uint32_t               : 2; // bits:22..23 (R)   Reserved
+                uint32_t    evt_mux_43 : 6; // bits:24..29 (R/W) Selects 1 of 64 inputs for DMA event 43
+                uint32_t               : 2; // bits:30..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } tpcc_evt_mux_40_43_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct  
-            {                                       /*  */
-                 
-                uint32_t    evt_mux_44    :6;       // bit: 0..5      (RW) Selects 1 of 64 inputs for DMA event 44  
-                uint32_t                  :2;       // bit: 6,7        Reserved.
-                uint32_t    evt_mux_47    :6;       // bit: 8..13     (RW) Selects 1 of 64 inputs for DMA event 47  
-                uint32_t                  :2;       // bit: 14,15      Reserved.
-                uint32_t    evt_mux_48    :6;       // bit: 16..21    (RW) Selects 1 of 64 inputs for DMA event 48  
-                uint32_t                  :2;       // bit: 22,23      Reserved.
-                uint32_t    evt_mux_49    :6;       // bit: 24..29    (RW) Selects 1 of 64 inputs for DMA event 49  
-                uint32_t                  :2;       // bit: 30,31      Reserved.
-            } b;                                    // Structure used for bit access 
-            uint32_t  reg;                          // Type used for register access 
+
+
+        /* (offset = 0xFBC) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                            /* Register tpcc_evt_mux_44_47 */
+
+                uint32_t    evt_mux_44 : 6; // bits:0..5   (R/W) Selects 1 of 64 inputs for DMA event 44
+                uint32_t               : 2; // bits:6..7   (R)   Reserved
+                uint32_t    evt_mux_45 : 6; // bits:8..13  (R/W) Selects 1 of 64 inputs for DMA event 45
+                uint32_t               : 2; // bits:14..15 (R)   Reserved
+                uint32_t    evt_mux_46 : 6; // bits:16..21 (R/W) Selects 1 of 64 inputs for DMA event 46
+                uint32_t               : 2; // bits:22..23 (R)   Reserved
+                uint32_t    evt_mux_47 : 6; // bits:24..29 (R/W) Selects 1 of 64 inputs for DMA event 47
+                uint32_t               : 2; // bits:30..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } tpcc_evt_mux_44_47_reg_t;
-    
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct  
-            {                                       /*  */
-                 
-                uint32_t    evt_mux_48    :6;       // bit: 0..5      (RW) Selects 1 of 64 inputs for DMA event 48  
-                uint32_t                  :2;       // bit: 6,7        Reserved.
-                uint32_t    evt_mux_49    :6;       // bit: 8..13     (RW) Selects 1 of 64 inputs for DMA event 49  
-                uint32_t                  :2;       // bit: 14,15      Reserved.
-                uint32_t    evt_mux_50    :6;       // bit: 16..21    (RW) Selects 1 of 64 inputs for DMA event 50  
-                uint32_t                  :2;       // bit: 22,23      Reserved.
-                uint32_t    evt_mux_51    :6;       // bit: 24..29    (RW) Selects 1 of 64 inputs for DMA event 51 
-                uint32_t                  :2;       // bit: 30,31      Reserved.
-            } b;                                    // Structure used for bit access 
-            uint32_t  reg;                          // Type used for register access 
+
+
+        /* (offset = 0xFC0) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                            /* Register tpcc_evt_mux_48_51 */
+
+                uint32_t    evt_mux_48 : 6; // bits:0..5   (R/W) Selects 1 of 64 inputs for DMA event 48
+                uint32_t               : 2; // bits:6..7   (R)   Reserved
+                uint32_t    evt_mux_49 : 6; // bits:8..13  (R/W) Selects 1 of 64 inputs for DMA event 49
+                uint32_t               : 2; // bits:14..15 (R)   Reserved
+                uint32_t    evt_mux_50 : 6; // bits:16..21 (R/W) Selects 1 of 64 inputs for DMA event 50
+                uint32_t               : 2; // bits:22..23 (R)   Reserved
+                uint32_t    evt_mux_51 : 6; // bits:24..29 (R/W) Selects 1 of 64 inputs for DMA event 51
+                uint32_t               : 2; // bits:30..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } tpcc_evt_mux_48_51_reg_t;
 
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct  
-            {                                       /*  */
-                 
-                uint32_t    evt_mux_52    :6;       // bit: 0..5      (RW) Selects 1 of 64 inputs for DMA event 52  
-                uint32_t                  :2;       // bit: 6,7        Reserved.
-                uint32_t    evt_mux_53    :6;       // bit: 8..13     (RW) Selects 1 of 64 inputs for DMA event 53  
-                uint32_t                  :2;       // bit: 14,15      Reserved.
-                uint32_t    evt_mux_54    :6;       // bit: 16..21    (RW) Selects 1 of 64 inputs for DMA event 54  
-                uint32_t                  :2;       // bit: 22,23      Reserved.
-                uint32_t    evt_mux_55    :6;       // bit: 24..29    (RW) Selects 1 of 64 inputs for DMA event 55  
-                uint32_t                  :2;       // bit: 30,31      Reserved.
-            } b;                                    // Structure used for bit access 
-            uint32_t  reg;                          // Type used for register access 
+
+        /* (offset = 0xFC4) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                            /* Register tpcc_evt_mux_52_55 */
+
+                uint32_t    evt_mux_52 : 6; // bits:0..5   (R/W) Selects 1 of 64 inputs for DMA event 52
+                uint32_t               : 2; // bits:6..7   (R)   Reserved
+                uint32_t    evt_mux_53 : 6; // bits:8..13  (R/W) Selects 1 of 64 inputs for DMA event 53
+                uint32_t               : 2; // bits:14..15 (R)   Reserved
+                uint32_t    evt_mux_54 : 6; // bits:16..21 (R/W) Selects 1 of 64 inputs for DMA event 54
+                uint32_t               : 2; // bits:22..23 (R)   Reserved
+                uint32_t    evt_mux_55 : 6; // bits:24..29 (R/W) Selects 1 of 64 inputs for DMA event 55
+                uint32_t               : 2; // bits:30..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } tpcc_evt_mux_52_55_reg_t;
 
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct  
-            {                                       /*  */
-                 
-                uint32_t    evt_mux_56    :6;       // bit: 0..5      (RW) Selects 1 of 64 inputs for DMA event 56  
-                uint32_t                  :2;       // bit: 6,7        Reserved.
-                uint32_t    evt_mux_57    :6;       // bit: 8..13     (RW) Selects 1 of 64 inputs for DMA event 57 
-                uint32_t                  :2;       // bit: 14,15      Reserved.
-                uint32_t    evt_mux_58    :6;       // bit: 16..21    (RW) Selects 1 of 64 inputs for DMA event 58  
-                uint32_t                  :2;       // bit: 22,23      Reserved.
-                uint32_t    evt_mux_59    :6;       // bit: 24..29    (RW) Selects 1 of 64 inputs for DMA event 59  
-                uint32_t                  :2;       // bit: 30,31      Reserved.
-            } b;                                    // Structure used for bit access 
-            uint32_t  reg;                          // Type used for register access 
+
+        /* (offset = 0xFC8) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                            /* Register tpcc_evt_mux_56_59 */
+
+                uint32_t    evt_mux_56 : 6; // bits:0..5   (R/W) Selects 1 of 64 inputs for DMA event 56
+                uint32_t               : 2; // bits:6..7   (R)   Reserved
+                uint32_t    evt_mux_57 : 6; // bits:8..13  (R/W) Selects 1 of 64 inputs for DMA event 57
+                uint32_t               : 2; // bits:14..15 (R)   Reserved
+                uint32_t    evt_mux_58 : 6; // bits:16..21 (R/W) Selects 1 of 64 inputs for DMA event 58
+                uint32_t               : 2; // bits:22..23 (R)   Reserved
+                uint32_t    evt_mux_59 : 6; // bits:24..29 (R/W) Selects 1 of 64 inputs for DMA event 59
+                uint32_t               : 2; // bits:30..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } tpcc_evt_mux_56_59_reg_t;
 
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct  
-            {                                       /*  */
-                 
-                uint32_t    evt_mux_60    :6;       // bit: 0..5      (RW) Selects 1 of 64 inputs for DMA event 60  
-                uint32_t                  :2;       // bit: 6,7        Reserved.
-                uint32_t    evt_mux_61    :6;       // bit: 8..13     (RW) Selects 1 of 64 inputs for DMA event 61  
-                uint32_t                  :2;       // bit: 14,15      Reserved.
-                uint32_t    evt_mux_62    :6;       // bit: 16..21    (RW) Selects 1 of 64 inputs for DMA event 62  
-                uint32_t                  :2;       // bit: 22,23      Reserved.
-                uint32_t    evt_mux_63    :6;       // bit: 24..29    (RW) Selects 1 of 64 inputs for DMA event 63  
-                uint32_t                  :2;       // bit: 30,31      Reserved.
-            } b;                                    // Structure used for bit access 
-            uint32_t  reg;                          // Type used for register access 
+
+        /* (offset = 0xFCC) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                            /* Register tpcc_evt_mux_60_63 */
+
+                uint32_t    evt_mux_60 : 6; // bits:0..5   (R/W) Selects 1 of 64 inputs for DMA event 60
+                uint32_t               : 2; // bits:6..7   (R)   Reserved
+                uint32_t    evt_mux_61 : 6; // bits:8..13  (R/W) Selects 1 of 64 inputs for DMA event 61
+                uint32_t               : 2; // bits:14..15 (R)   Reserved
+                uint32_t    evt_mux_62 : 6; // bits:16..21 (R/W) Selects 1 of 64 inputs for DMA event 62
+                uint32_t               : 2; // bits:22..23 (R)   Reserved
+                uint32_t    evt_mux_63 : 6; // bits:24..29 (R/W) Selects 1 of 64 inputs for DMA event 63
+                uint32_t               : 2; // bits:30..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } tpcc_evt_mux_60_63_reg_t;
 
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct  
-            {                                          /*  */
-                 
-                uint32_t    timer5_evtcapt   :5;       // bit: 0..4      (RW) Timer 5 event capture mux  
-                uint32_t                     :3;       // bit: 5..7       Reserved.
-                uint32_t    timer6_evtcapt   :5;       // bit: 8..12     (RW) Timer 6 event capture mux  
-                uint32_t                     :3;       // bit: 13..15     Reserved.
-                uint32_t    timer7_evtcapt   :5;       // bit: 16..20    (RW) Timer 7 event capture mux  
-                uint32_t                     :11;      // bit: 21..31     Reserved.
-            } b;                                       // Structure used for bit access 
-            uint32_t  reg;                             // Type used for register access 
+
+        /* (offset = 0xFD0) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                                /* Register timer_evt_capt */
+
+                uint32_t    timer5_evtcapt : 5; // bits:0..4   (R/W) Timer 5 event capture mux
+                uint32_t                   : 3; // bits:5..7   (R)   Reserved
+                uint32_t    timer6_evtcapt : 5; // bits:8..12  (R/W) Timer 6 event capture mux
+                uint32_t                   : 3; // bits:13..15 (R)   Reserved
+                uint32_t    timer7_evtcapt : 5; // bits:16..20 (R/W) Timer 7 event capture mux
+                uint32_t                   :11; // bits:21..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } timer_evt_capt_reg_t;
 
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct  
-            {                                          /*  */
-                 
-                uint32_t    ecap0_evtcapt    :5;       // bit: 0..4      (RW) ECAP0 event capture mux 
-                uint32_t                     :3;       // bit: 5..7       Reserved.
-                uint32_t    ecap1_evtcapt    :5;       // bit: 8..12     (RW) ECAP1 event capture mux  
-                uint32_t                     :3;       // bit: 13..15     Reserved.
-                uint32_t    ecap2_evtcapt    :5;       // bit: 16..20    (RW) ECAP2 event capture mux  
-                uint32_t                     :11;      // bit: 21..31     Reserved.
-            } b;                                       // Structure used for bit access 
-            uint32_t  reg;                             // Type used for register access 
+
+        /* (offset = 0xFD4) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                               /* Register ecap_evt_capt */
+
+                uint32_t    ecap0_evtcapt : 5; // bits:0..4   (R/W) ECAP0 event capture mux
+                uint32_t                  : 3; // bits:5..7   (R)   Reserved
+                uint32_t    ecap1_evtcapt : 5; // bits:8..12  (R/W) ECAP1 event capture mux
+                uint32_t                  : 3; // bits:13..15 (R)   Reserved
+                uint32_t    ecap2_evtcapt : 5; // bits:16..20 (R/W) ECAP2 event capture mux
+                uint32_t                  :11; // bits:21..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } ecap_evt_capt_reg_t;
 
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct  
-            {                                          /*  */
-                 
-                uint32_t    adc_evtcapt      :4;       // bit: 0..4      (RW) ADC event capture mux 
-                uint32_t                     :28;      // bit: 5..31      Reserved.
-            } b;                                       // Structure used for bit access 
-            uint32_t  reg;                             // Type used for register access 
+
+        /* (offset = 0xFD8) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                             /* Register adc_evt_capt */
+
+                uint32_t    adc_evtcapt : 4; // bits:0..3  (R/W) ECAP0 event capture mux
+                uint32_t                :28; // bits:4..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } adc_evt_capt_reg_t;
 
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+
+        /* (offset = 0x1000) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                             /* Register reset_iso */
+
+                uint32_t    iso_control : 1; // bit:0      (R/W) 0 : Ethernet Switch is not isolated 1 : Ethernet Switch is isolated
+                uint32_t                :31; // bits:1..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } reset_iso_reg_t;
 
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+
+        /* (offset = 0x1318) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                                  /* Register dpll_pwr_sw_ctrl */
+
+                uint32_t                     : 8; // bits:0..7 (R)   Reserved
+                uint32_t    ponin_per        : 1; // bit:8     (R/W) Drives PONIN signal of PER DPLL.
+                uint32_t    pgoodin_per      : 1; // bit:9     (R/W) Drives PGOODIN signal of PER DPLL.
+                uint32_t    iso_per          : 1; // bit:10    (R/W) Drives ISO signal of PER DPLL.
+                uint32_t    reset_per        : 1; // bit:11    (R/W) Drives RESET signal of PER DPLL.
+                uint32_t    ret_per          : 1; // bit:12    (R/W) Drives RET of PER DPLL.
+                uint32_t    isoscan_per      : 1; // bit:13    (R/W) Drives ISOSCAN of PER PLL.
+                uint32_t                     : 1; // bit:14    (R)   Reserved
+                uint32_t    sw_ctrl_per_dpll : 1; // bit:15    (R/W) Enable software control over PER DPLL RET, RESET, ISO, PGOODIN, PONIN for power savings.
+                                                  //                0: PRCM controls the DPLL reset, RET = 0, ISO = 0, PGOODIN = 1, PONIN = 1. 1: Controlled
+                                                  //                by corresponding bits in this register.
+                uint32_t    ponin_disp       : 1; // bit:16    (R/W) Drives PONIN of DISP DPLL.
+                uint32_t    pgoodin_disp     : 1; // bit:17    (R/W) Drives PGOODIN of DISP DPLL.
+                uint32_t    iso_disp         : 1; // bit:18    (R/W) Drives ISO of DISP DPLL.
+                uint32_t    reset_disp       : 1; // bit:19    (R/W) Drives RESET of DISP DPLL.
+                uint32_t    ret_disp         : 1; // bit:20    (R/W) Drives RET of DISP DPLL.
+                uint32_t    isoscan_disp     : 1; // bit:21    (R/W) Drives ISOSCAN of DISP PLL.
+                uint32_t                     : 1; // bit:22    (R)   Reserved
+                uint32_t    sw_ctrl_disp_pll : 1; // bit:23    (R/W) Enable software control over DISP DPLL RET, RESET, ISO, PGOODIN, PONIN for power
+                                                  //                savings. 0: PRCM controls the DPLL reset, RET = 0, ISO = 0, PGOODIN = 1, PONIN = 1. 1:
+                                                  //                Controlled by corresponding bits in this register.
+                uint32_t    ponin_ddr        : 1; // bit:24    (R/W) Drives PONIN of DDR DPLL.
+                uint32_t    pgoodin_ddr      : 1; // bit:25    (R/W) Drives PGOODIN of DDR DPLL.
+                uint32_t    iso_ddr          : 1; // bit:26    (R/W) Drives ISO of DDR DPLL.
+                uint32_t    reset_ddr        : 1; // bit:27    (R/W) Drives RESET of DDR DPLL.
+                uint32_t    ret_ddr          : 1; // bit:28    (R/W) Drives RET signal of DDR PLL.
+                uint32_t    isoscan_ddr      : 1; // bit:29    (R/W) Drives ISOSCAN of DDR PLL.
+                uint32_t                     : 1; // bit:30    (R)   Reserved
+                uint32_t    sw_ctrl_ddr_pll  : 1; // bit:31    (R/W) Enable software control over DDR DPLL RET, RESET, ISO, PGOODIN, PONIN for power savings.
+                                                  //                0: PRCM controls the DPLL reset, RET = 0, ISO = 0, PGOODIN = 1, PONIN = 1. 1: Controlled
+                                                  //                by corresponding bits in this register.
+            } b;
+            uint32_t reg;
         } dpll_pwr_sw_ctrl_reg_t;
 
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register ddr_cke_ctrl **/
-                 
-                uint32_t    ddr_cke_ctrl  :1;         // bit: 0        (RW) CKE from EMIF/DDRPHY is ANDed with this bit.
-                                                      //                    [0x0: CKE to memories gated off to zero. External DRAM memories will
-                                                      //                          not able to register DDR commands from device
-                                                      //                     0x1: Normal operation. CKE is now controlled by EMIF/DDR PHY.]
-                uint32_t                  :31;        // bit: 1..31    (R) Reserved.
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+
+        /* (offset = 0x131C) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                              /* Register ddr_cke_ctrl */
+
+                uint32_t    ddr_cke_ctrl : 1; // bit:0      (R/W) CKE from EMIF/DDRPHY is ANDed with this bit. 0: CKE to memories gated off to zero.
+                                              //                 External DRAM memories will not able to register DDR commands from device 1: Normal
+                                              //                 operation. CKE is now controlled by EMIF/DDR PHY.
+                uint32_t                 :31; // bits:1..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } ddr_cke_ctrl_reg_t;
 
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+
+        /* (offset = 0x1320) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                                       /* Register sma2 */
+
+                uint32_t    rmii2_crs_dv_mode_sel : 1; // bit:0      (R/W) 0: Select MMC2_DAT7 on GPMC_A9 pin in MODE3. 1: Select RMII2_CRS_DV on GPMC_A9 pin in
+                                                       //                 MODE3.
+                uint32_t                          : 1; // bit:1      (R)   Reserved
+                uint32_t                          :30; // bits:2..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } sma2_reg_t;
 
-        /* [reset state = 0x0]*/
-        typedef union 
-        { 
-            struct 
-            {                                         /**  Register not described!!! Describe yoursef using am335x_reference_manual **/
-                 
-                uint32_t    bitfield      :1;         // bit: 0        (RW) Bitfield description.  
-                uint32_t                  :31;        // bit: 1..31   Reserved.         
-            } b;                                      // Structure used for bit access 
-            uint32_t  reg;                            // Type used for register access 
+
+        /* (offset = 0x1324) [reset state = 0x0] */
+        typedef union
+        {
+            struct
+            {
+                                             /* Register m3_txev_eoi */
+
+                uint32_t    m3_txev_eoi : 1; // bit:0      (R/W) TXEV (Event) from M3 processor is a pulse signal connected as intertupt to MPU IRQ(78)
+                                             //                 Since MPU expects level signals. The TXEV pulse from M3 is converted to a level in glue
+                                             //                 logic. The logic works as follows: -On a 0-1 transition on TXEV, the IRQ[78] is set.
+                                             //                 -For clearing the interrupt, S/W must do the following: S/W must clear the IRQ[78] by
+                                             //                 writing a 1 to M3_TXEV_EOI bit in this registe This bit is sticky and for re-arming the
+                                             //                 IRQ[78], S/W must write a 0 to this field in the ISR
+                uint32_t                :31; // bits:1..31 (R)   Reserved
+            } b;
+            uint32_t reg;
         } m3_txev_eoi_reg_t;
 
         /* [reset state = 0x0]*/

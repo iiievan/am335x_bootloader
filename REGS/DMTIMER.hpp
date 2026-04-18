@@ -2,7 +2,7 @@
 #define __DMTIMER_H
 
 #include <stdint.h>
-#include "am335x_registers.hpp"
+#include "REGS.hpp"
 
 namespace REGS
 { 

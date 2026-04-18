@@ -13,6 +13,8 @@
 #include "INTC.hpp"
 #include "DMTIMER.hpp"
 #include "DMTIMER1MS.hpp"
+#include "WDT.hpp"
+#include "RTC.hpp"
 #include "UART.hpp"
 #include "MMCHS.hpp"
 
