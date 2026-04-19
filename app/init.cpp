@@ -10,6 +10,7 @@
 #include "rtt_log.h"
 #include "ddr_calibration.hpp"
 #include "HAL/INTC.hpp"
+#include "HAL/sysTimer.hpp"
 
 #define DDR_TEST_SIZE            (32 * 1024 * 1024)
 #define TAG "brd_ini"
@@ -61,6 +62,9 @@ static void interface_clocks_init();
 static void ddr_init();
 static bool ddr_check();
 
+extern HAL::TIMERS::sysTimer<SYST_t> sys_time;
+//extern HAL::TIMERS::sysTimer<REGS::DMTIMER::AM335x_DMTIMER_Type> dm_timer_2;
+
 static void copy_vector_table()
 {
     uint32_t *dest = (uint32_t *)AM335X_VECTOR_BASE;
@@ -104,7 +108,8 @@ bool init_board()
     ddr_pll_init();
     interface_clocks_init();
 
-    HAL::INTC::init();    //Initializing the ARM Interrupt Controller.
+    HAL::INTC::init();  //Initializing the ARM Interrupt Controller.
+    HAL::TIMERS::sys_time.init();    // setup system timer for 1ms interrupt
 
     ddr_init();
 

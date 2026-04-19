@@ -9,11 +9,12 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(DRV_HEADERS INTC.hpp
-                am335x_dmtimer.h
-                sys_timer.h)
+        hwTimer.hpp
+        sysTimer.hpp)
 
 set(DRV_SOURCES INTC.cpp
-                am335x_dmtimer.cpp)
+        hwTimer.cpp
+)
 
 add_library(${PROJECT_NAME} STATIC ${DRV_SOURCES})
 
