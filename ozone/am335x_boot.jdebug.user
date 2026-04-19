@@ -1,20 +1,21 @@
 
 
-
-OpenDocument="init.cpp", FilePath="/home/mbokastnev/code/am335x_bootloader/app/init.cpp", Line=254
+OpenDocument="INTC.cpp", FilePath="/home/mbokastnev/code/am335x_bootloader/HAL/INTC.cpp", Line=27
+OpenDocument="sysTimer.hpp", FilePath="/home/mbokastnev/code/am335x_bootloader/HAL/sysTimer.hpp", Line=61
+OpenDocument="exceptionhandlers.s", FilePath="/home/mbokastnev/code/am335x_bootloader/startup/exceptionhandlers.s", Line=115
+OpenDocument="init.cpp", FilePath="/home/mbokastnev/code/am335x_bootloader/app/init.cpp", Line=98
 OpenDocument="main.cpp", FilePath="/home/mbokastnev/code/am335x_bootloader/app/main.cpp", Line=0
 OpenToolbar="Debug", Floating=0, x=0, y=0
-OpenWindow="Registers 1", DockArea=LEFT, x=0, y=0, w=566, h=825, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
-OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=719, h=825, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Memory 1", DockArea=BOTTOM, x=2, y=0, w=728, h=475, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, EditorAddress=0x0
-OpenWindow="Terminal", DockArea=BOTTOM, x=0, y=0, w=873, h=475, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Console", DockArea=BOTTOM, x=1, y=0, w=877, h=475, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Registers 1", DockArea=LEFT, x=0, y=0, w=379, h=974, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
+OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=1, w=719, h=484, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Memory 1", DockArea=BOTTOM, x=2, y=0, w=728, h=326, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, EditorAddress=0x0
+OpenWindow="Watched Data 1", DockArea=RIGHT, x=0, y=0, w=719, h=484, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Terminal", DockArea=BOTTOM, x=0, y=0, w=873, h=326, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Console", DockArea=BOTTOM, x=1, y=0, w=877, h=326, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 SmartViewPlugin="", Page="", Toolbar="Hidden", Window="SmartView 1"
 TableHeader="Power Sampling", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Ch 0"], ColWidths=[100;100;100]
 TableHeader="Registers 1", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Description"], ColWidths=[327;105;315]
+TableHeader="Watched Data 1", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Location";"Refresh";"Access"], ColWidths=[166;280;100;173;100]
 TableHeader="RegisterSelectionDialog", SortCol="None", SortOrder="ASCENDING", VisibleCols=[], ColWidths=[]
 TableHeader="TargetExceptionDialog", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Address";"Description"], ColWidths=[200;100;100;359]
-WatchedExpression="per", Window=Watched Data 1
-WatchedExpression="cm", Window=Watched Data 1
-WatchedExpression="emif", Window=Watched Data 1
-WatchedExpression="phy", Window=Watched Data 1
+WatchedExpression="s_interrupt_vectors", Window=Watched Data 1

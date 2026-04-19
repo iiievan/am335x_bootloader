@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "rtt_log.h"
 #include "SEGGER_RTT.h"
+#include "rtt_log_CAPI.hpp"
 
 
 #define _RTT_LOG_COLOR(clr) "\033[0;" clr "m"
@@ -81,9 +82,11 @@ void rtt_log_print_format(rtt_log_level_t level, const char* tag, const char* fo
         break;
     }
 
-    const uint32_t rtt_get_tick = 12345;
+    uint64_t timestamp = rtt_get_system_time_ms();
+    uint32_t seconds = (uint32_t)(timestamp / 1000);
+    uint32_t milliseconds = (uint32_t)(timestamp % 1000);
 
-    SEGGER_RTT_printf(0, "%s%d:\t[%s][%s]:\t", color, rtt_get_tick, log_letter, tag);
+    SEGGER_RTT_printf(0, "%s[%5u.%03u]:\t[%s][%s]:\t", color, seconds, milliseconds, log_letter, tag);
     va_list ParamList;
     va_start(ParamList, format);
     SEGGER_RTT_vprintf(0, format, &ParamList);

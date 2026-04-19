@@ -25,7 +25,7 @@ namespace HAL::TIMERS
         class sysTimer : public hwTimer<DMT>
         {
         public:
-            sysTimer(DMT *p_regs)
+            explicit sysTimer(DMT *p_regs) noexcept
             : hwTimer<DMT>(p_regs)
 
             {
@@ -34,14 +34,11 @@ namespace HAL::TIMERS
                 m_isr_handler = (INTC::isr_handler_t)sys_timer_irqhandler;
             }
 
-            float  get_ms(void)  { return hwTimer<DMT>::m_time; }
+            [[nodiscard]] uint64_t  get_ms() const noexcept  { return hwTimer<DMT>::m_time; }
 
-            inline void  increment(float dt = 1.0)
-            {
-                hwTimer<DMT>::m_time += (float)dt;
-            }
+            void  increment(uint32_t dt = 1UL) noexcept  { hwTimer<DMT>::m_time += static_cast<uint64_t>(dt);  }
 
-            void  init()
+            void  init() noexcept
             {
     #if defined(USE_DMTIMER_1ms)
                 setup_1ms_precise();
@@ -55,7 +52,7 @@ namespace HAL::TIMERS
             **/
             void setup(REGS::DMTIMER::e_DMTIMER_mode  mode = REGS::DMTIMER::MODE_AUTORLD_NOCMP_ENABLE,
                                             uint32_t  reload_value = SYST_RLD_COUNT,
-                                            uint32_t  priority = (REGS::INTC::MAX_IRQ_PRIORITIES - 1))
+                                            uint32_t  priority = (REGS::INTC::MAX_IRQ_PRIORITIES - 1)) noexcept
             {
                 run_clk_DMTIMER(m_DMTIMER_num);
 
@@ -76,7 +73,7 @@ namespace HAL::TIMERS
             // specific setup for DM_TIMER 1ms precise value,
             // if using another DMTIMER(0, 2,3,4,5,6,7) - use setup(REGS::DMTIMER::e_DMTIMER_mode mode, uint32_t reload_value, uint32_t priority)
             void setup_1ms_precise(uint32_t priority = (REGS::INTC::MAX_IRQ_PRIORITIES - 1),
-              REGS::PRCM::e_TIMER1MS_CLKSEL clocksource = REGS::PRCM::MS1_32KHZ)
+              REGS::PRCM::e_TIMER1MS_CLKSEL clocksource = REGS::PRCM::MS1_32KHZ) noexcept
             {
 
                 run_clk_DMTIMER_1ms(clocksource);
@@ -96,8 +93,8 @@ namespace HAL::TIMERS
                 hwTimer<DMT>::enable();
             }
 
-            void sys_interrupt_enable()  { INTC::unmask_interrupt(m_DMTIMER_sys_isr_num);  }
-            void sys_interrupt_disable() { INTC::mask_interrupt(m_DMTIMER_sys_isr_num); }
+            void sys_interrupt_enable() noexcept  { INTC::unmask_interrupt(m_DMTIMER_sys_isr_num);  }
+            void sys_interrupt_disable() noexcept { INTC::mask_interrupt(m_DMTIMER_sys_isr_num); }
 
         private:
             INTC::isr_handler_t  m_isr_handler;
@@ -106,7 +103,7 @@ namespace HAL::TIMERS
         };
 
 
-        sysTimer<SYST_t> sys_time(SYST_TIMER_ptr);
+        inline sysTimer<SYST_t> sys_time(SYST_TIMER_ptr);
 
         inline void sys_timer_irqhandler(void *p_obj)
         {

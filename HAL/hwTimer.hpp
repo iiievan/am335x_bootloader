@@ -22,7 +22,7 @@ namespace HAL::TIMERS
         } dmtimer_context_t;
 
     protected:
-        volatile    float  m_time; // the timer time
+        volatile uint64_t m_time; // the timer time
         bool  m_is_paused { true };
 
     private:

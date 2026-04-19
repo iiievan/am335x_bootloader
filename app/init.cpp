@@ -108,16 +108,19 @@ bool init_board()
     ddr_pll_init();
     interface_clocks_init();
 
+    RTT_CHECK_MODULE_SIZE(REGS::INTC::AM335x_INTC_Type,0x2FC);
+    RTT_CHECK_MODULE_SIZE(REGS::DMTIMER::AM335x_DMTIMER_Type,0x58);
+    RTT_CHECK_MODULE_SIZE(REGS::DMTIMER1MS::AM335x_DMTIMER1MS_Type,0x58);
+    RTT_CHECK_MODULE_SIZE(REGS::RTC::AM335x_RTC_Type,0x9C);
+
     HAL::INTC::init();  //Initializing the ARM Interrupt Controller.
     HAL::TIMERS::sys_time.init();    // setup system timer for 1ms interrupt
+    HAL::INTC::master_IRQ_enable();
 
     ddr_init();
 
     using namespace REGS::EMIF;
     const auto& emif = *AM335x_EMIF0;
-
-    RTT_CHECK_MODULE_SIZE(AM335x_EMIF4D_Type,0x120);
-    RTT_CHECK_MODULE_SIZE(AM335x_DDR23mPHY_Type,0x1DC);
 
     if(!emif.is_phy_ready())
     {
@@ -334,7 +337,7 @@ static bool ddr_check()
     cp15_TLB_invalidate();
 
     cp15_DSB_ISB_sync_barrier();
-
+/*
     ddr_calib_values_t calib_values;
 
     if (ddr_calibrate(&calib_values))
@@ -354,7 +357,7 @@ static bool ddr_check()
         RTT_LOG_E(TAG, "Calibration failed! Using default values.");
         ddr_init();
     }
-
+*/
     uint32_t i;
     volatile uint32_t* ddr = (uint32_t*)DDR_START;
 
