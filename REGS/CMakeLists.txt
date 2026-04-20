@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 project(REGS
-        VERSION 0.1.0
+        VERSION 0.3.0
         LANGUAGES CXX
         DESCRIPTION
         "Registers description for TI AM335x")

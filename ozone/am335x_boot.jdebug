@@ -10,6 +10,7 @@
 */
 void OnProjectLoad (void) 
 {
+  Edit.SysVar (VAR_RTT_ENABLED, 1);
   Project.SetRTT(0);
 
   // Вот эти две строки решают проблему неработающего Reset с открытой вкладкой Peripherals

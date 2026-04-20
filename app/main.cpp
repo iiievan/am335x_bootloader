@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include "init.h"
 #include "rtt_log.h"
+#include "board.hpp"
 
 
 #define TAG "main"
@@ -21,7 +22,8 @@ int main ()
     RTT_LOG_I(TAG, "Board initialization seccess!");
     while(true)
     {
-
+        delay_100us(200);
+        Board::USR3.toggle();
     }
 
     return(0);

@@ -85,13 +85,13 @@ namespace HAL::TIMERS
 
     };
 
-    extern     void dmtimer_irqhandler(void *p_obj) noexcept;
+    extern void dmtimer_irqhandler(void *p_obj) noexcept;
 
-    void run_clk_interconnects();
-    void run_clk_DMTIMER(REGS::DMTIMER::e_TIMER_NUM tmr_num);
-    void run_clk_DMTIMER_1ms(REGS::PRCM::e_TIMER1MS_CLKSEL clk_sel);
-    void run_clk_DMTIMER_5();
-    void run_clk_DMTIMER_6();
+    void run_clk_interconnects() noexcept;
+    void run_clk_DMTIMER(REGS::DMTIMER::e_TIMER_NUM tmr_num) noexcept;
+    void run_clk_DMTIMER_1ms(REGS::PRCM::e_TIMER1MS_CLKSEL clk_sel) noexcept;
+    void run_clk_DMTIMER_5() noexcept;
+    void run_clk_DMTIMER_6() noexcept;
 
     extern hwTimer<REGS::DMTIMER::AM335x_DMTIMER_Type> dm_timer_0;
     extern hwTimer<REGS::DMTIMER1MS::AM335x_DMTIMER1MS_Type> dm_timer_1ms;

@@ -612,7 +612,7 @@ namespace HAL::TIMERS
         return static_cast<bool>( m_regs.TIOCP_CFG.b.EMUFREE);
     }
 
-    void run_clk_interconnects()
+    void run_clk_interconnects() noexcept
     {
         using namespace REGS::PRCM;
         auto& per = *AM335x_CM_PER;
@@ -640,7 +640,7 @@ namespace HAL::TIMERS
         while(per.L4LS_CLKCTRL.b.MODULEMODE != MODULEMODE_ENABLE){}
     }
 
-        void run_clk_DMTIMER(e_TIMER_NUM tmr_num)
+        void run_clk_DMTIMER(e_TIMER_NUM tmr_num) noexcept
         {
             using namespace REGS::DMTIMER;
             using namespace REGS::PRCM;
@@ -736,7 +736,7 @@ namespace HAL::TIMERS
             }
         }
 
-        void run_clk_DMTIMER_1ms(REGS::PRCM::e_TIMER1MS_CLKSEL clk_sel)
+        void run_clk_DMTIMER_1ms(REGS::PRCM::e_TIMER1MS_CLKSEL clk_sel) noexcept
         {
             using namespace REGS::PRCM;
             using namespace REGS::RTC;
@@ -823,7 +823,7 @@ namespace HAL::TIMERS
             while(wkup.TIMER1_CLKCTRL.b.IDLEST != IDLEST_FUNC){}
         }
 
-        void run_clk_DMTIMER_5()
+        void run_clk_DMTIMER_5() noexcept
         {
             using namespace REGS::PRCM;
             auto& dpll = *AM335x_CM_DPLL;
@@ -841,7 +841,7 @@ namespace HAL::TIMERS
             per.L4LS_CLKSTCTRL.b.CLKACTIVITY_TIMER5_GCLK) == false){}
         }
 
-        void run_clk_DMTIMER_6()
+        void run_clk_DMTIMER_6() noexcept
         {
             using namespace REGS::PRCM;
             auto& dpll = *AM335x_CM_DPLL;

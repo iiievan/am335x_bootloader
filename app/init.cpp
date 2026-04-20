@@ -2,18 +2,28 @@
 /*  Includes                                                             */
 /*=======================================================================*/
 #include "init.h"
-
-
-
 #include "cp15.h"
 #include "REGS/REGS.hpp"
 #include "rtt_log.h"
 #include "ddr_calibration.hpp"
 #include "HAL/INTC.hpp"
 #include "HAL/sysTimer.hpp"
+#include "board.hpp"
 
 #define DDR_TEST_SIZE            (32 * 1024 * 1024)
 #define TAG "brd_ini"
+
+#define DLY_100US    (10160)  //11830
+
+void delay_100us(uint32_t delay)
+{
+    for(; delay; delay--)
+    {
+        for(volatile uint32_t j = DLY_100US; j; j--)//7 operations per cycle
+        {
+        }
+    }
+}
 
 extern "C"
 {
@@ -116,6 +126,8 @@ bool init_board()
     HAL::INTC::init();  //Initializing the ARM Interrupt Controller.
     HAL::TIMERS::sys_time.init();    // setup system timer for 1ms interrupt
     HAL::INTC::master_IRQ_enable();
+
+    Board::init_user_leds();
 
     ddr_init();
 

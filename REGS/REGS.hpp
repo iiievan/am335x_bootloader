@@ -17,5 +17,6 @@
 #include "RTC.hpp"
 #include "UART.hpp"
 #include "MMCHS.hpp"
+#include "GPIO.hpp"
 
 #endif //__AM335X_REGISTERS_H
