@@ -141,14 +141,15 @@ namespace REGS
         // enum for interrupt enable
         enum e_UART_IT_EN : uint32_t
         {
-            RECEIVE_IT   = BIT(0),  
-            TRANSMIT_IT  = BIT(1),  
-            LINESTS_IT   = BIT(2),  
-            MODEMSTS_IT  = BIT(3),  
-            SLEEPMODE_IT = BIT(4),  
-            XOFF_IT      = BIT(5),  
-            RTS_IT       = BIT(6),
-            CTS_IT       = BIT(7)
+            RECEIVE_IT   = BIT(0),      // enable Receiver Data available interrupt and
+                                        // Character timeout indication interrupt.
+            TRANSMIT_IT  = BIT(1),      // enable Transmitter Holding Register Empty interrupt
+            LINESTS_IT   = BIT(2),      // enable Line Status interrupt
+            MODEMSTS_IT  = BIT(3),      // enable Modem Status interrupt
+            SLEEPMODE_IT = BIT(4),      // enable Sleep Mode
+            XOFF_IT      = BIT(5),      // enable XOFF interrupt
+            RTS_IT       = BIT(6),      // enable Request-To-Send interrupt
+            CTS_IT       = BIT(7)       // enable Clear-To-Send interrupt,
         };
     
         /*! @brief      Refer to Section 19.3.7.1 to determine the mode(s) in which this register can be accessed.  

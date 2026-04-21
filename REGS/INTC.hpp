@@ -451,7 +451,7 @@ namespace REGS
             __RW  INTC_ILR_reg_t        INTC_ILR_124;         // (0x2F0)    DMA_INTR_PIN1
             __RW  INTC_ILR_reg_t        INTC_ILR_125;         // (0x2F4)    SPI1INT
             __RW  INTC_ILR_reg_t        INTC_ILR_126;         // (0x2F8)    Reserved
-            __RW  INTC_ILR_reg_t        INTC_ILR_127;         // (0x2FC)    Reserved                                                                                 
+            __RW  INTC_ILR_reg_t        INTC_ILR_127;         // (0x2FC)    Reserved
         }; 
     
         enum e_INT_ID : uint32_t
@@ -581,7 +581,7 @@ namespace REGS
         constexpr uint32_t HOSTINT_ROUTE_IRQ = 0;  // To route an interrupt to IRQ    
         constexpr uint32_t HOSTINT_ROUTE_FIQ = 1;  // To route an interrupt to FIQ       
         
-                uint32_t debug_dump_INTC(AM335x_INTC_Type &sINTC = *AM335x_INTC);
+        inline void new_IRQ_agree() noexcept { AM335x_INTC->CONTROL.b.NewIRQAgr = 0x1; }
      
              ITR_reg_t* get_ITR_reference(e_INT_ID int_id);
              MIR_reg_t* get_MIR_reference(e_INT_ID int_id);

@@ -41,10 +41,6 @@ namespace HAL::SERIAL
         void  m_save_LCR()    { m_LCR_before.reg = m_instance.LCR.reg; }
         void  m_restore_LCR() { m_instance.LCR.reg = m_LCR_before.reg; }
 
-        REGS::UART::e_MODESELECT  m_mode_before;
-        void  m_save_opmode()    { m_mode_before = static_cast<REGS::UART::e_MODESELECT>(m_instance.MDR1.b.MODESELECT); }
-        void  m_restore_opmode() { m_instance.MDR1.b.MODESELECT = m_mode_before; }
-
         REGS::UART::IER_UART_reg_t  m_IER_before;
         void  m_save_IER()    { m_IER_before.reg = m_instance.IER_UART.reg; }
         void  m_restore_IER() { m_instance.IER_UART.reg = m_IER_before.reg; }
@@ -55,10 +51,9 @@ namespace HAL::SERIAL
         ~serial();
 
         /// <--- Start module init ---> ///
-        void  reset_module(void);
-        void  resume_operation(void) const;
+        void  reset_module();
+        void  resume_operation() const;
         void  init(serial_user_callback usr_clb);
-        void  int_enable(REGS::UART::e_UART_IT_EN int_flag);
 
         /// <--- FIFO management methods TRM 19.3 ---> ///
         void  FIFO_register_write(REGS::UART::FCR_reg_t  fcr);
@@ -70,7 +65,7 @@ namespace HAL::SERIAL
 
         /// <--- Protocol formating methods TRM 19.3 ---> ///
         ///  1. Clock generation setup:
-        REGS::UART::divisor_latch  divisor_latch_get(void);
+        REGS::UART::divisor_latch  divisor_latch_get();
         void  divisor_latch_set(REGS::UART::divisor_latch divisor);
         void  divisor_latch_enable();
         void  divisor_latch_disable();
@@ -81,6 +76,8 @@ namespace HAL::SERIAL
                                REGS::UART::e_LCR_PARITY  parity);
 
         ///  3. Interrupt management:
+        void  int_enable(REGS::UART::e_UART_IT_EN int_flag);
+        void  int_disable(REGS::UART::e_UART_IT_EN int_flag);
 
         /// <--- Power management methods ---> ///
         void  idle_mode_configure(REGS::UART::e_IDLEMODE mode);

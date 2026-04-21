@@ -134,15 +134,16 @@ namespace HAL::SERIAL
         HAL::PINS::uart0_rxd.gpio_module_init();
         HAL::PINS::uart0_rxd.sel_pinmode(HAL::PINS::e_UART0_RXD::uart0_rxd);
         HAL::PINS::uart0_rxd.pullup_enable(true);
+        HAL::PINS::uart0_rxd.sel_pull_type(PULL_UP);
+        HAL::PINS::uart0_rxd.dir_set(REGS::GPIO::GPIO_INPUT);
         HAL::PINS::uart0_rxd.sel_slewrate(FAST);
-        HAL::PINS::uart0_rxd.pullup_enable(PULL_UP);
-        HAL::PINS::uart0_rxd.sel_rxactive(INPUT_ENABLE);
 
         HAL::PINS::uart0_txd.sel_pinmode(HAL::PINS::e_UART0_TXD::uart0_txd);
         HAL::PINS::uart0_txd.pullup_enable(true);
+        HAL::PINS::uart0_txd.sel_pull_type(PULL_UP);
+        HAL::PINS::uart0_txd.dir_set(REGS::GPIO::GPIO_OUTPUT);
         HAL::PINS::uart0_txd.sel_slewrate(FAST);
-        HAL::PINS::uart0_txd.pullup_enable(PULL_UP);
-        HAL::PINS::uart0_txd.sel_rxactive(INPUT_DISABLE);
+
 
 
         reset_module();
@@ -185,66 +186,6 @@ namespace HAL::SERIAL
 
         HAL::INTC::register_handler(REGS::INTC::UART0INT, uart_isr);
         HAL::INTC::unmask_interrupt(REGS::INTC::UART0INT);
-    }
-
-#define SWITCH_MODE_A(LCR) (LCR = (uint32_t)0x0080 & 0xFF)
-#define SWITCH_MODE_B(LCR) (LCR = (uint32_t)0x00BF & 0xFF)
-#define SWITCH_OPERMODE(LCR) (LCR &= 0x7F)
-    void  serial::int_enable(REGS::UART::e_UART_IT_EN int_flag)
-    {
-        using namespace REGS::UART;
-
-        uint32_t enhan_fn_bit_val = 0;
-        uint32_t  LCR_reg_value = m_instance.LCR.reg;
-
-        SWITCH_MODE_B(m_instance.LCR.reg);
-
-        // Collecting the current value of EFR[4] and later setting it.
-        //enhan_fn_bit_val = HWREG(baseAdd + UART_EFR) & UART_EFR_ENHANCED_EN;
-        //HWREG(baseAdd + UART_EFR) |= UART_EFR_ENHANCED_EN;
-        enhan_fn_bit_val = m_instance.EFR.b.ENHANCEDEN;
-        m_instance.EFR.b.ENHANCEDEN = 0x1;
-
-        SWITCH_OPERMODE(m_instance.LCR.reg);
-
-        /*
-        ** It is suggested that the System Interrupts for UART in the
-        ** Interrupt Controller are enabled after enabling the peripheral
-        ** interrupts of the UART using this API. If done otherwise, there
-        ** is a risk of LCR value not getting restored and illicit characters
-        ** transmitted or received from/to the UART. The situation is explained
-        ** below.
-        ** The scene is that the system interrupt for UART is already enabled and
-        ** the current API is invoked. On enabling the interrupts corresponding
-        ** to IER[7:4] bits below, if any of those interrupt conditions
-        ** already existed, there is a possibility that the control goes to
-        ** Interrupt Service Routine (ISR) without executing the remaining
-        ** statements in this API. Executing the remaining statements is
-        ** critical in that the LCR value is restored in them.
-        ** However, there seems to be no risk in this API for enabling interrupts
-        ** corresponding to IER[3:0] because it is done at the end and no
-        ** statements follow that.
-        */
-
-        /************* ATOMIC STATEMENTS START *************************/
-
-        //HWREG(baseAdd + UART_IER) |= (int_flag & 0xF0); // Programming the bits IER[7:4].
-        m_instance.IER_UART.reg |= (static_cast<uint32_t>(int_flag) & 0xF0);
-
-        SWITCH_MODE_B(m_instance.LCR.reg);
-
-        // Restoring the value of EFR[4] to its original value.
-        //HWREG(baseAdd + UART_EFR) &= ~(UART_EFR_ENHANCED_EN);
-        //HWREG(baseAdd + UART_EFR) |= enhan_fn_bit_val;
-        m_instance.EFR.b.ENHANCEDEN = 0;
-        m_instance.EFR.b.ENHANCEDEN = enhan_fn_bit_val;
-
-        //HWREG(baseAdd + UART_LCR) = LCR_reg_value;  // Restoring the value of LCR.
-         m_instance.LCR.reg = LCR_reg_value;   // Restoring the value of LCR.
-
-        /************** ATOMIC STATEMENTS END *************************/
-        //HWREG(baseAdd + UART_IER) |= (int_flag & 0x0F); // Programming the bits IER[3:0].
-         m_instance.IER_UART.reg |= (int_flag & 0x0F);
     }
 
     /*
@@ -348,22 +289,13 @@ namespace HAL::SERIAL
         using namespace REGS::UART;
         LCR_reg_t tLCR;
 
-        // if uart in opertioanl mode, save register to restore later
-        // when resume operational mode
-        if(m_state.config_mode == OPERATIONAL_MODE)
-            m_save_LCR();
-
         switch(mode)
         {
         case CONFIG_MODE_A:
         case CONFIG_MODE_B:
-            m_instance.LCR.reg = ((uint32_t)mode & 0xFF);
+            m_instance.LCR.reg = (static_cast<uint32_t>(mode) & 0xFF);
             break;
         case OPERATIONAL_MODE:
-            // if LCR[7] is 0x1 restore register saved later
-            if(m_state.config_mode == CONFIG_MODE_A ||
-               m_state.config_mode == CONFIG_MODE_B)
-                m_restore_LCR();
             m_instance.LCR.reg &= 0x7F;
             break;
         default:
@@ -372,15 +304,17 @@ namespace HAL::SERIAL
 
         m_state.config_mode = mode;
 
-        tLCR.reg = m_instance.LCR.reg;
-        m_instance.LCR.reg = (((uint32_t)CONFIG_MODE_B) & 0xFF);
+        if(m_state.enhanced_sts != enh)
+        {
+            tLCR.reg = m_instance.LCR.reg;
+            m_instance.LCR.reg = (((uint32_t)CONFIG_MODE_B) & 0xFF);
 
+            m_instance.EFR.b.ENHANCEDEN = 0;
+            m_instance.EFR.b.ENHANCEDEN = enh;
+            m_state.enhanced_sts        = enh;
 
-        m_instance.EFR.b.ENHANCEDEN = 0;
-        m_instance.EFR.b.ENHANCEDEN = enh;
-        m_state.enhanced_sts        = enh;
-
-        m_instance.LCR.reg = tLCR.reg;
+            m_instance.LCR.reg = tLCR.reg;
+        }
     }
 
     /*
@@ -434,9 +368,7 @@ namespace HAL::SERIAL
         divisor_latch  result;
 
         switch_reg_config_mode(OPERATIONAL_MODE, ENH_ENABLE);
-
         sleep_bit = m_instance.IER_UART.b.SLEEPMODE;
-
         if(sleep_bit)
             sleep(false);
 
@@ -461,31 +393,27 @@ namespace HAL::SERIAL
     void  serial::divisor_latch_set(REGS::UART::divisor_latch divisor)
     {
         using namespace REGS::UART;
-        LCR_reg_t tLCR;
 
         volatile  bool  sleep_bit = false;
         e_MODESELECT  modf = m_state.module_function;
 
-        tLCR.reg = m_instance.LCR.reg;
+        m_save_LCR();
+
         switch_reg_config_mode(OPERATIONAL_MODE, ENH_ENABLE);
-
         sleep_bit = m_instance.IER_UART.b.SLEEPMODE;
-
         if(sleep_bit)
             sleep(false);
 
         switch_reg_config_mode(CONFIG_MODE_B, ENH_ENABLE);
-
         if(modf != MODE_DISABLE)
             switch_operating_mode(MODE_DISABLE);
-
         m_instance.DLL.reg = (divisor.b.DLL & 0xFF);
         m_instance.DLH.reg = (divisor.b.DLH & 0x3F);
 
         if(sleep_bit)
             sleep(true);
 
-        m_instance.LCR.reg = tLCR.reg;
+        m_restore_LCR();
 
         //restore the original state of  module
         if(m_state.module_function != modf)
@@ -526,18 +454,73 @@ namespace HAL::SERIAL
     {
 
         m_instance.LCR.b.CHAR_LENGTH = 0;
-        m_instance.LCR.b.CHAR_LENGTH = char_len;    // then write
+        m_instance.LCR.b.CHAR_LENGTH = char_len;
 
         m_instance.LCR.b.NB_STOP = 0;
-        m_instance.LCR.b.NB_STOP = stop_bit;  // then write
+        m_instance.LCR.b.NB_STOP = stop_bit;
 
         m_instance.LCR.b.PARITY_EN = 0;
         m_instance.LCR.b.PARITY_TYPE1 = 0;
         m_instance.LCR.b.PARITY_TYPE2 = 0;
 
         m_instance.LCR.reg |= (parity & REGS::UART::LCR_Parity_mask);
+    }
+
+    void  serial::int_enable(REGS::UART::e_UART_IT_EN int_flag)
+    {
+        using namespace REGS::UART;
 
         m_save_LCR();
+        switch_reg_config_mode(OPERATIONAL_MODE, ENH_ENABLE);
+
+        // It is suggested that the System Interrupts for UART in the
+        // Interrupt Controller are enabled after enabling the peripheral
+        // interrupts of the UART using this API. If done otherwise, there
+        // is a risk of LCR value not getting restored and illicit characters
+        // transmitted or received from/to the UART. The situation is explained
+        // below.
+        // The scene is that the system interrupt for UART is already enabled and
+        // the current API is invoked. On enabling the interrupts corresponding
+        // to IER[7:4] bits below, if any of those interrupt conditions
+        // already existed, there is a possibility that the control goes to
+        // Interrupt Service Routine (ISR) without executing the remaining
+        // statements in this API. Executing the remaining statements is
+        // critical in that the LCR value is restored in them.
+        // However, there seems to be no risk in this API for enabling interrupts
+        // corresponding to IER[3:0] because it is done at the end and no
+        // statements follow that.
+
+        m_instance.IER_UART.reg |= (static_cast<uint32_t>(int_flag) & 0xF0);
+
+        switch_reg_config_mode(OPERATIONAL_MODE, ENH_DISABLE);
+
+        m_restore_LCR();
+
+        m_instance.IER_UART.reg |= (int_flag & 0x0F);
+    }
+
+    /*
+     * @brief   This API disables the specified interrupts in the UART mode of
+     *          operation.
+     *
+     * @param   int_flag   Bit mask value of the bits corresponding to Interrupt
+     *                     Enable Register(IER). This specifies the UART interrupts
+     *                     to be disabled.
+     *
+     * @note  The note motod of int_enable() also applies to this API.
+     */
+    void serial::int_disable(REGS::UART::e_UART_IT_EN int_flag)
+    {
+        using namespace REGS::UART;
+
+        m_save_LCR();
+        switch_reg_config_mode(OPERATIONAL_MODE, ENH_ENABLE);
+
+        m_instance.IER_UART.reg &= ~(((uint32_t)int_flag) & 0xFF);
+
+        switch_reg_config_mode(OPERATIONAL_MODE, ENH_DISABLE);
+
+        m_restore_LCR();
     }
 
     /*
@@ -555,10 +538,8 @@ namespace HAL::SERIAL
      */
     void  serial::idle_mode_configure(REGS::UART::e_IDLEMODE mode)
     {
-        // Clearing the IDLEMODE field in SYSC.
-        m_instance.SYSC.b.IDLEMODE = 0x0;
 
-        // Programming the IDLEMODE field in SYSC.
+        m_instance.SYSC.b.IDLEMODE = 0x0;
         m_instance.SYSC.b.IDLEMODE = mode;
     }
 
@@ -575,10 +556,7 @@ namespace HAL::SERIAL
      */
     void  serial::wakeup_control(bool control)
     {
-        // Clearing the ENAWAKEUP bit in SYSC register.
         m_instance.SYSC.b.ENAWAKEUP = 0;
-
-        // Programming the ENAWAKEUP feature in SYSC register.
         m_instance.SYSC.b.ENAWAKEUP = control;
     }
 
@@ -595,10 +573,7 @@ namespace HAL::SERIAL
      */
     void  serial::auto_idle_mode_control(bool control)
     {
-        // Clearing the AUTOIDLE bit in SYSC register.
         m_instance.SYSC.b.AUTOIDLE = 0;
-
-        // Programming the AUTOIDLE bit in SYSC register.
         m_instance.SYSC.b.AUTOIDLE = control;
     }
 
@@ -690,7 +665,7 @@ namespace HAL::SERIAL
         char  ret_val = 0;
 
         // Switching to Register Operational Mode of operation.
-        SWITCH_OPERMODE(m_instance.LCR.reg);
+        switch_reg_config_mode(REGS::UART::OPERATIONAL_MODE,REGS::UART::ENH_DISABLE);
 
         // Waits indefinitely until a byte arrives in the RX FIFO(or RHR).
         while(m_instance.LSR_UART.b.RXFIFOE == 0)
@@ -711,7 +686,6 @@ namespace HAL::SERIAL
         if (m_user_callback != nullptr)
             m_user_callback(received);
 
-
-        REGS::INTC::AM335x_INTC->CONTROL.b.NewIRQAgr = 0x1;
+        REGS::INTC::new_IRQ_agree();
     }
 }
