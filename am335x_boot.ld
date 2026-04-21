@@ -3,7 +3,15 @@
 MEMORY
 {
     SRAM (rwx) : ORIGIN = 0x402F0400, LENGTH = 0x1FBFF
-    RTT_RAM (rw) : ORIGIN = 0x40300000, LENGTH = 0x10000   /* 64KB as in segger documentation */
+    RTT_RAM (rw) : ORIGIN = 0x40300000, LENGTH = 0x10000
+    /* 64KB as in segger documentation
+       Гранулярность MMU страниц: На ARMv7-A минимальный размер страницы MMU - 4KB (small page) или 64KB (large page).
+       Когда память кешируется/не кешируется, это делается на уровне страниц MMU.
+       RTT буфер должен быть в NON-CACHED памяти: Чтобы отладчик (J-Link/Ozone) мог читать данные
+       без проблем с когерентностью кеша.
+       SEGGER рекомендует выравнивание 64KB: Чтобы можно было легко настроить
+       атрибуты MMU для этого региона, не затрагивая соседние данные.
+     */
 }
 
 OUTPUT_FORMAT("elf32-littlearm")

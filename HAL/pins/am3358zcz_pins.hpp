@@ -26,7 +26,7 @@ namespace HAL::PINS
     };
 
     using MDIO = pin<e_MDIO, 0U, 0x948>;
-    inline MDIO mdio{REGS::GPIO::AM335x_GPIO_0}; // gpio0_0
+    extern MDIO mdio; // gpio0_0
 
 
     // ========================================================================
@@ -45,7 +45,7 @@ namespace HAL::PINS
     };
 
     using MDC = pin<e_MDC, 1U, 0x94C>;
-    inline MDC mdc{REGS::GPIO::AM335x_GPIO_0}; // gpio0_1
+    extern MDC mdc; // gpio0_1
 
 
     // ========================================================================
@@ -64,7 +64,7 @@ namespace HAL::PINS
     };
 
     using SPI0_SCLK = pin<e_SPI0_SCLK, 2U, 0x950>;
-    inline SPI0_SCLK spi0_sclk{REGS::GPIO::AM335x_GPIO_0}; // gpio0_2
+    extern SPI0_SCLK spi0_sclk; // gpio0_2
 
 
     // ========================================================================
@@ -83,7 +83,7 @@ namespace HAL::PINS
     };
 
     using SPI0_D0 = pin<e_SPI0_D0, 3U, 0x954>;
-    inline SPI0_D0 spi0_d0{REGS::GPIO::AM335x_GPIO_0}; // gpio0_3
+    extern SPI0_D0 spi0_d0; // gpio0_3
 
 
     // ========================================================================
@@ -102,7 +102,7 @@ namespace HAL::PINS
     };
 
     using SPI0_D1 = pin<e_SPI0_D1, 4U, 0x958>;
-    inline SPI0_D1 spi0_d1{REGS::GPIO::AM335x_GPIO_0}; // gpio0_4
+    extern SPI0_D1 spi0_d1; // gpio0_4
 
 
     // ========================================================================
@@ -121,7 +121,7 @@ namespace HAL::PINS
     };
 
     using SPI0_CS0 = pin<e_SPI0_CS0, 5U, 0x95C>;
-    inline SPI0_CS0 spi0_cs0{REGS::GPIO::AM335x_GPIO_0}; // gpio0_5
+    extern SPI0_CS0 spi0_cs0; // gpio0_5
 
 
     // ========================================================================
@@ -140,7 +140,7 @@ namespace HAL::PINS
     };
 
     using SPI0_CS1 = pin<e_SPI0_CS1, 6U, 0x960>;
-    inline SPI0_CS1 spi0_cs1{REGS::GPIO::AM335x_GPIO_0}; // gpio0_6
+    extern SPI0_CS1 spi0_cs1; // gpio0_6
 
 
     // ========================================================================
@@ -159,7 +159,7 @@ namespace HAL::PINS
     };
 
     using ECAP0_IN_PWM0_OUT = pin<e_ECAP0_IN_PWM0_OUT, 7U, 0x964>;
-    inline ECAP0_IN_PWM0_OUT ecap0_in_pwm0_out{REGS::GPIO::AM335x_GPIO_0}; // gpio0_7
+    extern ECAP0_IN_PWM0_OUT ecap0_in_pwm0_out; // gpio0_7
 
 
     // ========================================================================
@@ -178,7 +178,7 @@ namespace HAL::PINS
     };
 
     using LCD_DATA12 = pin<e_LCD_DATA12, 8U, 0x8D0>;
-    inline LCD_DATA12 lcd_data12{REGS::GPIO::AM335x_GPIO_0}; // gpio0_8
+    extern LCD_DATA12 lcd_data12; // gpio0_8
 
 
     // ========================================================================
@@ -197,7 +197,7 @@ namespace HAL::PINS
     };
 
     using LCD_DATA13 = pin<e_LCD_DATA13, 9U, 0x8D4>;
-    inline LCD_DATA13 lcd_data13{REGS::GPIO::AM335x_GPIO_0}; // gpio0_9
+    extern LCD_DATA13 lcd_data13; // gpio0_9
 
 
     // ========================================================================
@@ -216,7 +216,7 @@ namespace HAL::PINS
     };
 
     using LCD_DATA14 = pin<e_LCD_DATA14, 10U, 0x8D8>;
-    inline LCD_DATA14 lcd_data14{REGS::GPIO::AM335x_GPIO_0}; // gpio0_10
+    extern LCD_DATA14 lcd_data14; // gpio0_10
 
 
     // ========================================================================
@@ -235,7 +235,7 @@ namespace HAL::PINS
     };
 
     using LCD_DATA15 = pin<e_LCD_DATA15, 11U, 0x8DC>;
-    inline LCD_DATA15 lcd_data15{REGS::GPIO::AM335x_GPIO_0}; // gpio0_11
+    extern LCD_DATA15 lcd_data15; // gpio0_11
 
 
     // ========================================================================
@@ -254,7 +254,7 @@ namespace HAL::PINS
     };
 
     using UART1_CTSn = pin<e_UART1_CTSn, 12U, 0x978>;
-    inline UART1_CTSn uart1_ctsn{REGS::GPIO::AM335x_GPIO_0}; // gpio0_12
+    extern UART1_CTSn uart1_ctsn; // gpio0_12
 
 
     // ========================================================================
@@ -273,7 +273,7 @@ namespace HAL::PINS
     };
 
     using UART1_RTSn = pin<e_UART1_RTSn, 13U, 0x97C>;
-    inline UART1_RTSn uart1_rtsn{REGS::GPIO::AM335x_GPIO_0}; // gpio0_13
+    extern UART1_RTSn uart1_rtsn; // gpio0_13
 
 
     // ========================================================================
@@ -291,7 +291,7 @@ namespace HAL::PINS
     };
 
     using UART1_RXD = pin<e_UART1_RXD, 14U, 0x980>;
-    inline UART1_RXD uart1_rxd{REGS::GPIO::AM335x_GPIO_0}; // gpio0_14
+    extern UART1_RXD uart1_rxd; // gpio0_14
 
 
     // ========================================================================
@@ -309,7 +309,7 @@ namespace HAL::PINS
     };
 
     using UART1_TXD = pin<e_UART1_TXD, 15U, 0x984>;
-    inline UART1_TXD uart1_txd{REGS::GPIO::AM335x_GPIO_0}; // gpio0_15
+    extern UART1_TXD uart1_txd; // gpio0_15
 
 
     // ========================================================================
@@ -328,7 +328,7 @@ namespace HAL::PINS
     };
 
     using MII1_TXD3 = pin<e_MII1_TXD3, 16U, 0x91C>;
-    inline MII1_TXD3 mii1_txd3{REGS::GPIO::AM335x_GPIO_0}; // gpio0_16
+    extern MII1_TXD3 mii1_txd3; // gpio0_16
 
 
     // ========================================================================
@@ -347,7 +347,7 @@ namespace HAL::PINS
     };
 
     using MII1_TXD2 = pin<e_MII1_TXD2, 17U, 0x920>;
-    inline MII1_TXD2 mii1_txd2{REGS::GPIO::AM335x_GPIO_0}; // gpio0_17
+    extern MII1_TXD2 mii1_txd2; // gpio0_17
 
 
     // ========================================================================
@@ -360,7 +360,7 @@ namespace HAL::PINS
     };
 
     using USB0_DRVVBUS = pin<e_USB0_DRVVBUS, 18U, 0xA1C>;
-    inline USB0_DRVVBUS usb0_drvvbus{REGS::GPIO::AM335x_GPIO_0}; // gpio0_18
+    extern USB0_DRVVBUS usb0_drvvbus; // gpio0_18
 
 
     // ========================================================================
@@ -378,7 +378,7 @@ namespace HAL::PINS
     };
 
     using XDMA_EVENT_INTR0 = pin<e_XDMA_EVENT_INTR0, 19U, 0x9B0>;
-    inline XDMA_EVENT_INTR0 xdma_event_intr0{REGS::GPIO::AM335x_GPIO_0}; // gpio0_19
+    extern XDMA_EVENT_INTR0 xdma_event_intr0; // gpio0_19
 
 
     // ========================================================================
@@ -396,7 +396,7 @@ namespace HAL::PINS
     };
 
     using XDMA_EVENT_INTR1 = pin<e_XDMA_EVENT_INTR1, 20U, 0x9B4>;
-    inline XDMA_EVENT_INTR1 xdma_event_intr1{REGS::GPIO::AM335x_GPIO_0}; // gpio0_20
+    extern XDMA_EVENT_INTR1 xdma_event_intr1; // gpio0_20
 
 
     // ========================================================================
@@ -415,7 +415,7 @@ namespace HAL::PINS
     };
 
     using MII1_TXD1 = pin<e_MII1_TXD1, 21U, 0x924>;
-    inline MII1_TXD1 mii1_txd1{REGS::GPIO::AM335x_GPIO_0}; // gpio0_21
+    extern MII1_TXD1 mii1_txd1; // gpio0_21
 
 
     // ========================================================================
@@ -433,7 +433,7 @@ namespace HAL::PINS
     };
 
     using GPMC_AD8 = pin<e_GPMC_AD8, 22U, 0x820>;
-    inline GPMC_AD8 gpmc_ad8{REGS::GPIO::AM335x_GPIO_0}; // gpio0_22
+    extern GPMC_AD8 gpmc_ad8; // gpio0_22
 
 
     // ========================================================================
@@ -451,7 +451,7 @@ namespace HAL::PINS
     };
 
     using GPMC_AD9 = pin<e_GPMC_AD9, 23U, 0x824>;
-    inline GPMC_AD9 gpmc_ad9{REGS::GPIO::AM335x_GPIO_0}; // gpio0_23
+    extern GPMC_AD9 gpmc_ad9; // gpio0_23
 
 
     // ========================================================================
@@ -469,7 +469,7 @@ namespace HAL::PINS
     };
 
     using GPMC_AD10 = pin<e_GPMC_AD10, 26U, 0x828>;
-    inline GPMC_AD10 gpmc_ad10{REGS::GPIO::AM335x_GPIO_0}; // gpio0_26
+    extern GPMC_AD10 gpmc_ad10; // gpio0_26
 
 
     // ========================================================================
@@ -487,7 +487,7 @@ namespace HAL::PINS
     };
 
     using GPMC_AD11 = pin<e_GPMC_AD11, 27U, 0x82C>;
-    inline GPMC_AD11 gpmc_ad11{REGS::GPIO::AM335x_GPIO_0}; // gpio0_27
+    extern GPMC_AD11 gpmc_ad11; // gpio0_27
 
 
     // ========================================================================
@@ -506,7 +506,7 @@ namespace HAL::PINS
     };
 
     using MII1_TXD0 = pin<e_MII1_TXD0, 28U, 0x928>;
-    inline MII1_TXD0 mii1_txd0{REGS::GPIO::AM335x_GPIO_0}; // gpio0_28
+    extern MII1_TXD0 mii1_txd0; // gpio0_28
 
 
     // ========================================================================
@@ -525,7 +525,7 @@ namespace HAL::PINS
     };
 
     using RMII1_REF_CLK = pin<e_RMII1_REF_CLK, 29U, 0x944>;
-    inline RMII1_REF_CLK rmii1_ref_clk{REGS::GPIO::AM335x_GPIO_0}; // gpio0_29
+    extern RMII1_REF_CLK rmii1_ref_clk; // gpio0_29
 
 
     // ========================================================================
@@ -544,7 +544,7 @@ namespace HAL::PINS
     };
 
     using GPMC_WAIT0 = pin<e_GPMC_WAIT0, 30U, 0x870>;
-    inline GPMC_WAIT0 gpmc_wait0{REGS::GPIO::AM335x_GPIO_0}; // gpio0_30
+    extern GPMC_WAIT0 gpmc_wait0; // gpio0_30
 
 
     // ========================================================================
@@ -563,7 +563,7 @@ namespace HAL::PINS
     };
 
     using GPMC_WPn = pin<e_GPMC_WPn, 31U, 0x874>;
-    inline GPMC_WPn gpmc_wpn{REGS::GPIO::AM335x_GPIO_0}; // gpio0_31
+    extern GPMC_WPn gpmc_wpn; // gpio0_31
 
 
     // ========================================================================
@@ -577,7 +577,7 @@ namespace HAL::PINS
     };
 
     using GPMC_AD0 = pin<e_GPMC_AD0, 0U, 0x800>;
-    inline GPMC_AD0 gpmc_ad0{REGS::GPIO::AM335x_GPIO_1}; // gpio1_0
+    extern GPMC_AD0 gpmc_ad0; // gpio1_0
 
 
     // ========================================================================
@@ -591,7 +591,7 @@ namespace HAL::PINS
     };
 
     using GPMC_AD1 = pin<e_GPMC_AD1, 1U, 0x804>;
-    inline GPMC_AD1 gpmc_ad1{REGS::GPIO::AM335x_GPIO_1}; // gpio1_1
+    extern GPMC_AD1 gpmc_ad1; // gpio1_1
 
 
     // ========================================================================
@@ -605,7 +605,7 @@ namespace HAL::PINS
     };
 
     using GPMC_AD2 = pin<e_GPMC_AD2, 2U, 0x808>;
-    inline GPMC_AD2 gpmc_ad2{REGS::GPIO::AM335x_GPIO_1}; // gpio1_2
+    extern GPMC_AD2 gpmc_ad2; // gpio1_2
 
 
     // ========================================================================
@@ -619,7 +619,7 @@ namespace HAL::PINS
     };
 
     using GPMC_AD3 = pin<e_GPMC_AD3, 3U, 0x80C>;
-    inline GPMC_AD3 gpmc_ad3{REGS::GPIO::AM335x_GPIO_1}; // gpio1_3
+    extern GPMC_AD3 gpmc_ad3; // gpio1_3
 
 
     // ========================================================================
@@ -633,7 +633,7 @@ namespace HAL::PINS
     };
 
     using GPMC_AD4 = pin<e_GPMC_AD4, 4U, 0x810>;
-    inline GPMC_AD4 gpmc_ad4{REGS::GPIO::AM335x_GPIO_1}; // gpio1_4
+    extern GPMC_AD4 gpmc_ad4; // gpio1_4
 
 
     // ========================================================================
@@ -647,7 +647,7 @@ namespace HAL::PINS
     };
 
     using GPMC_AD5 = pin<e_GPMC_AD5, 5U, 0x814>;
-    inline GPMC_AD5 gpmc_ad5{REGS::GPIO::AM335x_GPIO_1}; // gpio1_5
+    extern GPMC_AD5 gpmc_ad5; // gpio1_5
 
 
     // ========================================================================
@@ -661,7 +661,7 @@ namespace HAL::PINS
     };
 
     using GPMC_AD6 = pin<e_GPMC_AD6, 6U, 0x818>;
-    inline GPMC_AD6 gpmc_ad6{REGS::GPIO::AM335x_GPIO_1}; // gpio1_6
+    extern GPMC_AD6 gpmc_ad6; // gpio1_6
 
 
     // ========================================================================
@@ -675,7 +675,7 @@ namespace HAL::PINS
     };
 
     using GPMC_AD7 = pin<e_GPMC_AD7, 7U, 0x81C>;
-    inline GPMC_AD7 gpmc_ad7{REGS::GPIO::AM335x_GPIO_1}; // gpio1_7
+    extern GPMC_AD7 gpmc_ad7; // gpio1_7
 
 
     // ========================================================================
@@ -694,7 +694,7 @@ namespace HAL::PINS
     };
 
     using UART0_CTSn = pin<e_UART0_CTSn, 8U, 0x968>;
-    inline UART0_CTSn uart0_ctsn{REGS::GPIO::AM335x_GPIO_1}; // gpio1_8
+    extern UART0_CTSn uart0_ctsn; // gpio1_8
 
 
     // ========================================================================
@@ -713,7 +713,7 @@ namespace HAL::PINS
     };
 
     using UART0_RTSn = pin<e_UART0_RTSn, 9U, 0x96C>;
-    inline UART0_RTSn uart0_rtsn{REGS::GPIO::AM335x_GPIO_1}; // gpio1_9
+    extern UART0_RTSn uart0_rtsn; // gpio1_9
 
 
     // ========================================================================
@@ -732,7 +732,7 @@ namespace HAL::PINS
     };
 
     using UART0_RXD = pin<e_UART0_RXD, 10U, 0x970>;
-    inline UART0_RXD uart0_rxd{REGS::GPIO::AM335x_GPIO_1}; // gpio1_10
+    extern UART0_RXD uart0_rxd; // gpio1_10
 
 
     // ========================================================================
@@ -751,7 +751,7 @@ namespace HAL::PINS
     };
 
     using UART0_TXD = pin<e_UART0_TXD, 11U, 0x974>;
-    inline UART0_TXD uart0_txd{REGS::GPIO::AM335x_GPIO_1}; // gpio1_11
+    extern UART0_TXD uart0_txd; // gpio1_11
 
 
     // ========================================================================
@@ -770,7 +770,7 @@ namespace HAL::PINS
     };
 
     using GPMC_AD12 = pin<e_GPMC_AD12, 12U, 0x830>;
-    inline GPMC_AD12 gpmc_ad12{REGS::GPIO::AM335x_GPIO_1}; // gpio1_12
+    extern GPMC_AD12 gpmc_ad12; // gpio1_12
 
 
     // ========================================================================
@@ -789,7 +789,7 @@ namespace HAL::PINS
     };
 
     using GPMC_AD13 = pin<e_GPMC_AD13, 13U, 0x834>;
-    inline GPMC_AD13 gpmc_ad13{REGS::GPIO::AM335x_GPIO_1}; // gpio1_13
+    extern GPMC_AD13 gpmc_ad13; // gpio1_13
 
 
     // ========================================================================
@@ -808,7 +808,7 @@ namespace HAL::PINS
     };
 
     using GPMC_AD14 = pin<e_GPMC_AD14, 14U, 0x838>;
-    inline GPMC_AD14 gpmc_ad14{REGS::GPIO::AM335x_GPIO_1}; // gpio1_14
+    extern GPMC_AD14 gpmc_ad14; // gpio1_14
 
 
     // ========================================================================
@@ -827,7 +827,7 @@ namespace HAL::PINS
     };
 
     using GPMC_AD15 = pin<e_GPMC_AD15, 15U, 0x83C>;
-    inline GPMC_AD15 gpmc_ad15{REGS::GPIO::AM335x_GPIO_1}; // gpio1_15
+    extern GPMC_AD15 gpmc_ad15; // gpio1_15
 
 
     // ========================================================================
@@ -846,7 +846,7 @@ namespace HAL::PINS
     };
 
     using GPMC_A0 = pin<e_GPMC_A0, 16U, 0x840>;
-    inline GPMC_A0 gpmc_a0{REGS::GPIO::AM335x_GPIO_1}; // gpio1_16
+    extern GPMC_A0 gpmc_a0; // gpio1_16
 
 
     // ========================================================================
@@ -865,7 +865,7 @@ namespace HAL::PINS
     };
 
     using GPMC_A1 = pin<e_GPMC_A1, 17U, 0x844>;
-    inline GPMC_A1 gpmc_a1{REGS::GPIO::AM335x_GPIO_1}; // gpio1_17
+    extern GPMC_A1 gpmc_a1; // gpio1_17
 
 
     // ========================================================================
@@ -884,7 +884,7 @@ namespace HAL::PINS
     };
 
     using GPMC_A2 = pin<e_GPMC_A2, 18U, 0x848>;
-    inline GPMC_A2 gpmc_a2{REGS::GPIO::AM335x_GPIO_1}; // gpio1_18
+    extern GPMC_A2 gpmc_a2; // gpio1_18
 
 
     // ========================================================================
@@ -903,7 +903,7 @@ namespace HAL::PINS
     };
 
     using GPMC_A3 = pin<e_GPMC_A3, 19U, 0x84C>;
-    inline GPMC_A3 gpmc_a3{REGS::GPIO::AM335x_GPIO_1}; // gpio1_19
+    extern GPMC_A3 gpmc_a3; // gpio1_19
 
 
     // ========================================================================
@@ -922,7 +922,7 @@ namespace HAL::PINS
     };
 
     using GPMC_A4 = pin<e_GPMC_A4, 20U, 0x850>;
-    inline GPMC_A4 gpmc_a4{REGS::GPIO::AM335x_GPIO_1}; // gpio1_20
+    extern GPMC_A4 gpmc_a4; // gpio1_20
 
 
     // ========================================================================
@@ -941,7 +941,7 @@ namespace HAL::PINS
     };
 
     using GPMC_A5 = pin<e_GPMC_A5, 21U, 0x854>;
-    inline GPMC_A5 gpmc_a5{REGS::GPIO::AM335x_GPIO_1}; // gpio1_21
+    extern GPMC_A5 gpmc_a5; // gpio1_21
 
 
     // ========================================================================
@@ -960,7 +960,7 @@ namespace HAL::PINS
     };
 
     using GPMC_A6 = pin<e_GPMC_A6, 22U, 0x858>;
-    inline GPMC_A6 gpmc_a6{REGS::GPIO::AM335x_GPIO_1}; // gpio1_22
+    extern GPMC_A6 gpmc_a6; // gpio1_22
 
 
     // ========================================================================
@@ -979,7 +979,7 @@ namespace HAL::PINS
     };
 
     using GPMC_A7 = pin<e_GPMC_A7, 23U, 0x85C>;
-    inline GPMC_A7 gpmc_a7{REGS::GPIO::AM335x_GPIO_1}; // gpio1_23
+    extern GPMC_A7 gpmc_a7; // gpio1_23
 
 
     // ========================================================================
@@ -998,7 +998,7 @@ namespace HAL::PINS
     };
 
     using GPMC_A8 = pin<e_GPMC_A8, 24U, 0x860>;
-    inline GPMC_A8 gpmc_a8{REGS::GPIO::AM335x_GPIO_1}; // gpio1_24
+    extern GPMC_A8 gpmc_a8; // gpio1_24
 
 
     // ========================================================================
@@ -1017,7 +1017,7 @@ namespace HAL::PINS
     };
 
     using GPMC_A9 = pin<e_GPMC_A9, 25U, 0x864>;
-    inline GPMC_A9 gpmc_a9{REGS::GPIO::AM335x_GPIO_1}; // gpio1_25
+    extern GPMC_A9 gpmc_a9; // gpio1_25
 
     // ========================================================================
     // GPMC_A10 (ZCZ: T16, ZCE: NA) -> gpio1_26
@@ -1035,7 +1035,7 @@ namespace HAL::PINS
     };
 
     using GPMC_A10 = pin<e_GPMC_A10, 26U, 0x868>;
-    inline GPMC_A10 gpmc_a10{REGS::GPIO::AM335x_GPIO_1}; // gpio1_26
+    extern GPMC_A10 gpmc_a10; // gpio1_26
 
 
     // ========================================================================
@@ -1054,7 +1054,7 @@ namespace HAL::PINS
     };
 
     using GPMC_A11 = pin<e_GPMC_A11, 27U, 0x86C>;
-    inline GPMC_A11 gpmc_a11{REGS::GPIO::AM335x_GPIO_1}; // gpio1_27
+    extern GPMC_A11 gpmc_a11; // gpio1_27
 
     // ========================================================================
     // GPMC_BEn1 (ZCZ: U18, ZCE: V18) -> gpio1_28
@@ -1072,7 +1072,7 @@ namespace HAL::PINS
     };
 
     using GPMC_BEn1 = pin<e_GPMC_BEn1, 28U, 0x878>;
-    inline GPMC_BEn1 gpmc_ben1{REGS::GPIO::AM335x_GPIO_1}; // gpio1_28
+    extern GPMC_BEn1 gpmc_ben1; // gpio1_28
 
 
     // ========================================================================
@@ -1085,7 +1085,7 @@ namespace HAL::PINS
     };
 
     using GPMC_CSn0 = pin<e_GPMC_CSn0, 29U, 0x87C>;
-    inline GPMC_CSn0 gpmc_csn0{REGS::GPIO::AM335x_GPIO_1}; // gpio1_29
+    extern GPMC_CSn0 gpmc_csn0; // gpio1_29
 
 
     // ========================================================================
@@ -1104,7 +1104,7 @@ namespace HAL::PINS
     };
 
     using GPMC_CSn1 = pin<e_GPMC_CSn1, 30U, 0x880>;
-    inline GPMC_CSn1 gpmc_csn1{REGS::GPIO::AM335x_GPIO_1}; // gpio1_30
+    extern GPMC_CSn1 gpmc_csn1; // gpio1_30
 
 
     // ========================================================================
@@ -1123,7 +1123,7 @@ namespace HAL::PINS
     };
 
     using GPMC_CSn2 = pin<e_GPMC_CSn2, 31U, 0x884>;
-    inline GPMC_CSn2 gpmc_csn2{REGS::GPIO::AM335x_GPIO_1}; // gpio1_31
+    extern GPMC_CSn2 gpmc_csn2; // gpio1_31
 
 
     // ========================================================================
@@ -1142,7 +1142,7 @@ namespace HAL::PINS
     };
 
     using GPMC_CSn3 = pin<e_GPMC_CSn3, 0U, 0x888>;
-    inline GPMC_CSn3 gpmc_csn3{REGS::GPIO::AM335x_GPIO_2}; // gpio2_0
+    extern GPMC_CSn3 gpmc_csn3; // gpio2_0
 
 
     // ========================================================================
@@ -1161,7 +1161,7 @@ namespace HAL::PINS
     };
 
     using GPMC_CLK = pin<e_GPMC_CLK, 1U, 0x88C>;
-    inline GPMC_CLK gpmc_clk{REGS::GPIO::AM335x_GPIO_2}; // gpio2_1
+    extern GPMC_CLK gpmc_clk; // gpio2_1
 
 
     // ========================================================================
@@ -1175,7 +1175,7 @@ namespace HAL::PINS
     };
 
     using GPMC_ADVn_ALE = pin<e_GPMC_ADVn_ALE, 2U, 0x890>;
-    inline GPMC_ADVn_ALE gpmc_advn_ale{REGS::GPIO::AM335x_GPIO_2}; // gpio2_2
+    extern GPMC_ADVn_ALE gpmc_advn_ale; // gpio2_2
 
 
     // ========================================================================
@@ -1189,7 +1189,7 @@ namespace HAL::PINS
     };
 
     using GPMC_OEn_REn = pin<e_GPMC_OEn_REn, 3U, 0x894>;
-    inline GPMC_OEn_REn gpmc_oen_ren{REGS::GPIO::AM335x_GPIO_2}; // gpio2_3
+    extern GPMC_OEn_REn gpmc_oen_ren; // gpio2_3
 
 
     // ========================================================================
@@ -1203,7 +1203,7 @@ namespace HAL::PINS
     };
 
     using GPMC_WEn = pin<e_GPMC_WEn, 4U, 0x898>;
-    inline GPMC_WEn gpmc_wen{REGS::GPIO::AM335x_GPIO_2}; // gpio2_4
+    extern GPMC_WEn gpmc_wen; // gpio2_4
 
 
     // ========================================================================
@@ -1217,7 +1217,7 @@ namespace HAL::PINS
     };
 
     using GPMC_BEn0_CLE = pin<e_GPMC_BEn0_CLE, 5U, 0x89C>;
-    inline GPMC_BEn0_CLE gpmc_ben0_cle{REGS::GPIO::AM335x_GPIO_2}; // gpio2_5
+    extern GPMC_BEn0_CLE gpmc_ben0_cle; // gpio2_5
 
 
     // ========================================================================
@@ -1235,7 +1235,7 @@ namespace HAL::PINS
     };
 
     using LCD_DATA0 = pin<e_LCD_DATA0, 6U, 0x8A0>;
-    inline LCD_DATA0 lcd_data0{REGS::GPIO::AM335x_GPIO_2}; // gpio2_6
+    extern LCD_DATA0 lcd_data0; // gpio2_6
 
 
     // ========================================================================
@@ -1253,7 +1253,7 @@ namespace HAL::PINS
     };
 
     using LCD_DATA1 = pin<e_LCD_DATA1, 7U, 0x8A4>;
-    inline LCD_DATA1 lcd_data1{REGS::GPIO::AM335x_GPIO_2}; // gpio2_7
+    extern LCD_DATA1 lcd_data1; // gpio2_7
 
 
     // ========================================================================
@@ -1271,7 +1271,7 @@ namespace HAL::PINS
     };
 
     using LCD_DATA2 = pin<e_LCD_DATA2, 8U, 0x8A8>;
-    inline LCD_DATA2 lcd_data2{REGS::GPIO::AM335x_GPIO_2}; // gpio2_8
+    extern LCD_DATA2 lcd_data2; // gpio2_8
 
 
     // ========================================================================
@@ -1289,7 +1289,7 @@ namespace HAL::PINS
     };
 
     using LCD_DATA3 = pin<e_LCD_DATA3, 9U, 0x8AC>;
-    inline LCD_DATA3 lcd_data3{REGS::GPIO::AM335x_GPIO_2}; // gpio2_9
+    extern LCD_DATA3 lcd_data3; // gpio2_9
 
 
     // ========================================================================
@@ -1307,7 +1307,7 @@ namespace HAL::PINS
     };
 
     using LCD_DATA4 = pin<e_LCD_DATA4, 10U, 0x8B0>;
-    inline LCD_DATA4 lcd_data4{REGS::GPIO::AM335x_GPIO_2}; // gpio2_10
+    extern LCD_DATA4 lcd_data4; // gpio2_10
 
 
     // ========================================================================
@@ -1325,7 +1325,7 @@ namespace HAL::PINS
     };
 
     using LCD_DATA5 = pin<e_LCD_DATA5, 11U, 0x8B4>;
-    inline LCD_DATA5 lcd_data5{REGS::GPIO::AM335x_GPIO_2}; // gpio2_11
+    extern LCD_DATA5 lcd_data5; // gpio2_11
 
 
     // ========================================================================
@@ -1344,7 +1344,7 @@ namespace HAL::PINS
     };
 
     using LCD_DATA6 = pin<e_LCD_DATA6, 12U, 0x8B8>;
-    inline LCD_DATA6 lcd_data6{REGS::GPIO::AM335x_GPIO_2}; // gpio2_12
+    extern LCD_DATA6 lcd_data6; // gpio2_12
 
 
     // ========================================================================
@@ -1363,7 +1363,7 @@ namespace HAL::PINS
     };
 
     using LCD_DATA7 = pin<e_LCD_DATA7, 13U, 0x8BC>;
-    inline LCD_DATA7 lcd_data7{REGS::GPIO::AM335x_GPIO_2}; // gpio2_13
+    extern LCD_DATA7 lcd_data7; // gpio2_13
 
 
     // ========================================================================
@@ -1382,7 +1382,7 @@ namespace HAL::PINS
     };
 
     using LCD_DATA8 = pin<e_LCD_DATA8, 14U, 0x8C0>;
-    inline LCD_DATA8 lcd_data8{REGS::GPIO::AM335x_GPIO_2}; // gpio2_14
+    extern LCD_DATA8 lcd_data8; // gpio2_14
 
 
     // ========================================================================
@@ -1401,7 +1401,7 @@ namespace HAL::PINS
     };
 
     using LCD_DATA9 = pin<e_LCD_DATA9, 15U, 0x8C4>;
-    inline LCD_DATA9 lcd_data9{REGS::GPIO::AM335x_GPIO_2}; // gpio2_15
+    extern LCD_DATA9 lcd_data9; // gpio2_15
 
 
     // ========================================================================
@@ -1419,7 +1419,7 @@ namespace HAL::PINS
     };
 
     using LCD_DATA10 = pin<e_LCD_DATA10, 16U, 0x8C8>;
-    inline LCD_DATA10 lcd_data10{REGS::GPIO::AM335x_GPIO_2}; // gpio2_16
+    extern LCD_DATA10 lcd_data10; // gpio2_16
 
 
     // ========================================================================
@@ -1438,7 +1438,7 @@ namespace HAL::PINS
     };
 
     using LCD_DATA11 = pin<e_LCD_DATA11, 17U, 0x8CC>;
-    inline LCD_DATA11 lcd_data11{REGS::GPIO::AM335x_GPIO_2}; // gpio2_17
+    extern LCD_DATA11 lcd_data11; // gpio2_17
 
 
     // ========================================================================
@@ -1457,7 +1457,7 @@ namespace HAL::PINS
     };
 
     using MII1_RXD3 = pin<e_MII1_RXD3, 18U, 0x934>;
-    inline MII1_RXD3 mii1_rxd3{REGS::GPIO::AM335x_GPIO_2}; // gpio2_18
+    extern MII1_RXD3 mii1_rxd3; // gpio2_18
 
 
     // ========================================================================
@@ -1476,7 +1476,7 @@ namespace HAL::PINS
     };
 
     using MII1_RXD2 = pin<e_MII1_RXD2, 19U, 0x938>;
-    inline MII1_RXD2 mii1_rxd2{REGS::GPIO::AM335x_GPIO_2}; // gpio2_19
+    extern MII1_RXD2 mii1_rxd2; // gpio2_19
 
 
     // ========================================================================
@@ -1495,7 +1495,7 @@ namespace HAL::PINS
     };
 
     using MII1_RXD1 = pin<e_MII1_RXD1, 20U, 0x93C>;
-    inline MII1_RXD1 mii1_rxd1{REGS::GPIO::AM335x_GPIO_2}; // gpio2_20
+    extern MII1_RXD1 mii1_rxd1; // gpio2_20
 
 
     // ========================================================================
@@ -1514,7 +1514,7 @@ namespace HAL::PINS
     };
 
     using MII1_RXD0 = pin<e_MII1_RXD0, 21U, 0x940>;
-    inline MII1_RXD0 mii1_rxd0{REGS::GPIO::AM335x_GPIO_2}; // gpio2_21
+    extern MII1_RXD0 mii1_rxd0; // gpio2_21
 
 
     // ========================================================================
@@ -1533,7 +1533,7 @@ namespace HAL::PINS
     };
 
     using LCD_VSYNC = pin<e_LCD_VSYNC, 22U, 0x8E0>;
-    inline LCD_VSYNC lcd_vsync{REGS::GPIO::AM335x_GPIO_2}; // gpio2_22
+    extern LCD_VSYNC lcd_vsync; // gpio2_22
 
 
     // ========================================================================
@@ -1552,7 +1552,7 @@ namespace HAL::PINS
     };
 
     using LCD_HSYNC = pin<e_LCD_HSYNC, 23U, 0x8E4>;
-    inline LCD_HSYNC lcd_hsync{REGS::GPIO::AM335x_GPIO_2}; // gpio2_23
+    extern LCD_HSYNC lcd_hsync; // gpio2_23
 
 
     // ========================================================================
@@ -1571,7 +1571,7 @@ namespace HAL::PINS
     };
 
     using LCD_PCLK = pin<e_LCD_PCLK, 24U, 0x8E8>;
-    inline LCD_PCLK lcd_pclk{REGS::GPIO::AM335x_GPIO_2}; // gpio2_24
+    extern LCD_PCLK lcd_pclk; // gpio2_24
 
 
     // ========================================================================
@@ -1590,7 +1590,7 @@ namespace HAL::PINS
     };
 
     using LCD_AC_BIAS_EN = pin<e_LCD_AC_BIAS_EN, 25U, 0x8EC>;
-    inline LCD_AC_BIAS_EN lcd_ac_bias_en{REGS::GPIO::AM335x_GPIO_2}; // gpio2_25
+    extern LCD_AC_BIAS_EN lcd_ac_bias_en; // gpio2_25
 
 
     // ========================================================================
@@ -1609,7 +1609,7 @@ namespace HAL::PINS
     };
 
     using MMC0_DAT3 = pin<e_MMC0_DAT3, 26U, 0x8F0>;
-    inline MMC0_DAT3 mmc0_dat3{REGS::GPIO::AM335x_GPIO_2}; // gpio2_26
+    extern MMC0_DAT3 mmc0_dat3; // gpio2_26
 
 
     // ========================================================================
@@ -1628,7 +1628,7 @@ namespace HAL::PINS
     };
 
     using MMC0_DAT2 = pin<e_MMC0_DAT2, 27U, 0x8F4>;
-    inline MMC0_DAT2 mmc0_dat2{REGS::GPIO::AM335x_GPIO_2}; // gpio2_27
+    extern MMC0_DAT2 mmc0_dat2; // gpio2_27
 
 
     // ========================================================================
@@ -1647,7 +1647,7 @@ namespace HAL::PINS
     };
 
     using MMC0_DAT1 = pin<e_MMC0_DAT1, 28U, 0x8F8>;
-    inline MMC0_DAT1 mmc0_dat1{REGS::GPIO::AM335x_GPIO_2}; // gpio2_28
+    extern MMC0_DAT1 mmc0_dat1; // gpio2_28
 
 
     // ========================================================================
@@ -1666,7 +1666,7 @@ namespace HAL::PINS
     };
 
     using MMC0_DAT0 = pin<e_MMC0_DAT0, 29U, 0x8FC>;
-    inline MMC0_DAT0 mmc0_dat0{REGS::GPIO::AM335x_GPIO_2}; // gpio2_29
+    extern MMC0_DAT0 mmc0_dat0; // gpio2_29
 
 
     // ========================================================================
@@ -1685,7 +1685,7 @@ namespace HAL::PINS
     };
 
     using MMC0_CLK = pin<e_MMC0_CLK, 30U, 0x900>;
-    inline MMC0_CLK mmc0_clk{REGS::GPIO::AM335x_GPIO_2}; // gpio2_30
+    extern MMC0_CLK mmc0_clk; // gpio2_30
 
 
     // ========================================================================
@@ -1704,7 +1704,7 @@ namespace HAL::PINS
     };
 
     using MMC0_CMD = pin<e_MMC0_CMD, 31U, 0x904>;
-    inline MMC0_CMD mmc0_cmd{REGS::GPIO::AM335x_GPIO_2}; // gpio2_31
+    extern MMC0_CMD mmc0_cmd; // gpio2_31
 
 
     // ========================================================================
@@ -1723,7 +1723,7 @@ namespace HAL::PINS
     };
 
     using MII1_COL = pin<e_MII1_COL, 0U, 0x908>;
-    inline MII1_COL mii1_col{REGS::GPIO::AM335x_GPIO_3}; // gpio3_0
+    extern MII1_COL mii1_col; // gpio3_0
 
 
     // ========================================================================
@@ -1742,7 +1742,7 @@ namespace HAL::PINS
     };
 
     using MII1_CRS = pin<e_MII1_CRS, 1U, 0x90C>;
-    inline MII1_CRS mii1_crs{REGS::GPIO::AM335x_GPIO_3}; // gpio3_1
+    extern MII1_CRS mii1_crs; // gpio3_1
 
 
     // ========================================================================
@@ -1761,7 +1761,7 @@ namespace HAL::PINS
     };
 
     using MII1_RX_ER = pin<e_MII1_RX_ER, 2U, 0x910>;
-    inline MII1_RX_ER mii1_rx_er{REGS::GPIO::AM335x_GPIO_3}; // gpio3_2
+    extern MII1_RX_ER mii1_rx_er; // gpio3_2
 
 
     // ========================================================================
@@ -1780,7 +1780,7 @@ namespace HAL::PINS
     };
 
     using MII1_TX_EN = pin<e_MII1_TX_EN, 3U, 0x914>;
-    inline MII1_TX_EN mii1_tx_en{REGS::GPIO::AM335x_GPIO_3}; // gpio3_3
+    extern MII1_TX_EN mii1_tx_en; // gpio3_3
 
 
     // ========================================================================
@@ -1799,7 +1799,7 @@ namespace HAL::PINS
     };
 
     using MII1_RX_DV = pin<e_MII1_RX_DV, 4U, 0x918>;
-    inline MII1_RX_DV mii1_rx_dv{REGS::GPIO::AM335x_GPIO_3}; // gpio3_4
+    extern MII1_RX_DV mii1_rx_dv; // gpio3_4
 
 
     // ========================================================================
@@ -1815,7 +1815,7 @@ namespace HAL::PINS
     };
 
     using I2C0_SDA = pin<e_I2C0_SDA, 5U, 0x988>;
-    inline I2C0_SDA i2c0_sda{REGS::GPIO::AM335x_GPIO_3}; // gpio3_5
+    extern I2C0_SDA i2c0_sda; // gpio3_5
 
 
     // ========================================================================
@@ -1831,7 +1831,7 @@ namespace HAL::PINS
     };
 
     using I2C0_SCL = pin<e_I2C0_SCL, 6U, 0x98C>;
-    inline I2C0_SCL i2c0_scl{REGS::GPIO::AM335x_GPIO_3}; // gpio3_6
+    extern I2C0_SCL i2c0_scl; // gpio3_6
 
 
     // ========================================================================
@@ -1844,7 +1844,7 @@ namespace HAL::PINS
     };
 
     using EMU0 = pin<e_EMU0, 7U, 0x9E4>;
-    inline EMU0 emu0{REGS::GPIO::AM335x_GPIO_3}; // gpio3_7
+    extern EMU0 emu0; // gpio3_7
 
 
     // ========================================================================
@@ -1857,7 +1857,7 @@ namespace HAL::PINS
     };
 
     using EMU1 = pin<e_EMU1, 8U, 0x9E8>;
-    inline EMU1 emu1{REGS::GPIO::AM335x_GPIO_3}; // gpio3_8
+    extern EMU1 emu1; // gpio3_8
 
 
     // ========================================================================
@@ -1876,7 +1876,7 @@ namespace HAL::PINS
     };
 
     using MII1_TX_CLK = pin<e_MII1_TX_CLK, 9U, 0x92C>;
-    inline MII1_TX_CLK mii1_tx_clk{REGS::GPIO::AM335x_GPIO_3}; // gpio3_9
+    extern MII1_TX_CLK mii1_tx_clk; // gpio3_9
 
 
     // ========================================================================
@@ -1895,7 +1895,7 @@ namespace HAL::PINS
     };
 
     using MII1_RX_CLK = pin<e_MII1_RX_CLK, 10U, 0x930>;
-    inline MII1_RX_CLK mii1_rx_clk{REGS::GPIO::AM335x_GPIO_3}; // gpio3_10
+    extern MII1_RX_CLK mii1_rx_clk; // gpio3_10
 
 
     // ========================================================================
@@ -1908,7 +1908,7 @@ namespace HAL::PINS
     };
 
     using USB1_DRVVBUS = pin<e_USB1_DRVVBUS, 13U, 0xA34>;
-    inline USB1_DRVVBUS usb1_drvvbus{REGS::GPIO::AM335x_GPIO_3}; // gpio3_13
+    extern USB1_DRVVBUS usb1_drvvbus; // gpio3_13
 
 
     // ========================================================================
@@ -1926,7 +1926,7 @@ namespace HAL::PINS
     };
 
     using MCASP0_ACLKX = pin<e_MCASP0_ACLKX, 14U, 0x990>;
-    inline MCASP0_ACLKX mcasp0_aclkx{REGS::GPIO::AM335x_GPIO_3}; // gpio3_14
+    extern MCASP0_ACLKX mcasp0_aclkx; // gpio3_14
 
 
     // ========================================================================
@@ -1944,7 +1944,7 @@ namespace HAL::PINS
     };
 
     using MCASP0_FSX = pin<e_MCASP0_FSX, 15U, 0x994>;
-    inline MCASP0_FSX mcasp0_fsx{REGS::GPIO::AM335x_GPIO_3}; // gpio3_15
+    extern MCASP0_FSX mcasp0_fsx; // gpio3_15
 
 
     // ========================================================================
@@ -1962,7 +1962,7 @@ namespace HAL::PINS
     };
 
     using MCASP0_AXR0 = pin<e_MCASP0_AXR0, 16U, 0x998>;
-    inline MCASP0_AXR0 mcasp0_axr0{REGS::GPIO::AM335x_GPIO_3}; // gpio3_16
+    extern MCASP0_AXR0 mcasp0_axr0; // gpio3_16
 
 
     // ========================================================================
@@ -1981,7 +1981,7 @@ namespace HAL::PINS
     };
 
     using MCASP0_AHCLKR = pin<e_MCASP0_AHCLKR, 17U, 0x99C>;
-    inline MCASP0_AHCLKR mcasp0_ahclkr{REGS::GPIO::AM335x_GPIO_3}; // gpio3_17
+    extern MCASP0_AHCLKR mcasp0_ahclkr; // gpio3_17
 
 
     // ========================================================================
@@ -2000,7 +2000,7 @@ namespace HAL::PINS
     };
 
     using MCASP0_ACLKR = pin<e_MCASP0_ACLKR, 18U, 0x9A0>;
-    inline MCASP0_ACLKR mcasp0_aclkr{REGS::GPIO::AM335x_GPIO_3}; // gpio3_18
+    extern MCASP0_ACLKR mcasp0_aclkr; // gpio3_18
 
 
     // ========================================================================
@@ -2019,7 +2019,7 @@ namespace HAL::PINS
     };
 
     using MCASP0_FSR = pin<e_MCASP0_FSR, 19U, 0x9A4>;
-    inline MCASP0_FSR mcasp0_fsr{REGS::GPIO::AM335x_GPIO_3}; // gpio3_19
+    extern MCASP0_FSR mcasp0_fsr; // gpio3_19
 
 
     // ========================================================================
@@ -2037,7 +2037,7 @@ namespace HAL::PINS
     };
 
     using MCASP0_AXR1 = pin<e_MCASP0_AXR1, 20U, 0x9A8>;
-    inline MCASP0_AXR1 mcasp0_axr1{REGS::GPIO::AM335x_GPIO_3}; // gpio3_20
+    extern MCASP0_AXR1 mcasp0_axr1; // gpio3_20
 
 
     // ========================================================================
@@ -2056,7 +2056,7 @@ namespace HAL::PINS
     };
 
     using MCASP0_AHCLKX = pin<e_MCASP0_AHCLKX, 21U, 0x9AC>;
-    inline MCASP0_AHCLKX mcasp0_ahclkx{REGS::GPIO::AM335x_GPIO_3}; // gpio3_21
+    extern MCASP0_AHCLKX mcasp0_ahclkx; // gpio3_21
 
 
 

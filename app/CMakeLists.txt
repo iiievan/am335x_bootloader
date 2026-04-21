@@ -2,6 +2,7 @@ set(APP_SOURCES init.cpp
                 main.cpp
                 ddr_calibration.cpp
                 board.hpp
+                board.cpp
 )
 
 add_executable(${APP}.elf ${APP_SOURCES})

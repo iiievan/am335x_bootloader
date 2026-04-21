@@ -14,6 +14,7 @@ set(DRV_HEADERS INTC.hpp
 
 set(DRV_SOURCES INTC.cpp
         hwTimer.cpp
+        pins/am3358zcz_pins.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${DRV_SOURCES})
