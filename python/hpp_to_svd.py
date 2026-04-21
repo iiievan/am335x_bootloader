@@ -118,6 +118,11 @@ PERIPHERAL_CONFIG = {
         'base_address': '0x44E01200',
         'description': 'Power Reset Module - CEFUSE'
     },
+    'UART': {
+        'struct_pattern': 'AM335x_UART_Type',
+        'base_address': '0x44E09000',
+        'description': 'UART0 module'
+    },
 }
 
 # Если True - парсить все найденные структуры, даже если их нет в PERIPHERAL_CONFIG

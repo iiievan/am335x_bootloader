@@ -176,10 +176,10 @@ namespace Board
         USR2.configure_as_gpio_output(HAL::PINS::e_GPMC_A7::gpio1_23);
         USR3.configure_as_gpio_output(HAL::PINS::e_GPMC_A8::gpio1_24);
 
-        USR0.set();
-        USR1.set();
-        USR2.set();
-        USR3.set();
+        USR0.clear();
+        USR1.clear();
+        USR2.clear();
+        USR3.clear();
     }
 
     void init_boot_button()

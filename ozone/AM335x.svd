@@ -7509,5 +7509,1777 @@
             </register>
           </registers>
         </peripheral>
+        <peripheral>
+          <name>  UART</name>
+          <description>UART0 module</description>
+          <baseAddress>0x44E09000</baseAddress>
+          <groupName>Peripherals</groupName>
+          <registers>
+            <register>
+              <name>THR</name>
+              <addressOffset>0x00</addressOffset>
+              <description>THR Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>THR</name>
+                  <description>Transmit holding register.[Value 0 to FFh.]</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>8</bitWidth>
+                  <access>write-only</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>RHR</name>
+              <addressOffset>0x00</addressOffset>
+              <description>RHR Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>RHR</name>
+                  <description>Receive holding register..[Value 0 to FFh.]</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>8</bitWidth>
+                  <access>read-only</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>DLL</name>
+              <addressOffset>0x00</addressOffset>
+              <description>DLL Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>CLOCK_LSB</name>
+                  <description>Divisor latches low.Stores the 8 LSB divisor value.[Value 0 to FFh.]</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>8</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>IER_IRDA</name>
+              <addressOffset>0x04</addressOffset>
+              <description>IER_IRDA Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>RHRIT</name>
+                  <description>bit: 0 (RW) RHR interrupt [0x0 = disable; 0x1 = enable ]</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>THRIT</name>
+                  <description>bit: 1 (RW) THR interrupt [0x0 = disable; 0x1 = enable ]</description>
+                  <bitOffset>1</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>LASTRXBYTEIT</name>
+                  <description>bit: 2 (RW) last byte of frame in RX FIFO interrupt [0x0 = disable; 0x1 = enable ]</description>
+                  <bitOffset>2</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RXOVERRUNIT</name>
+                  <description>bit: 3 (RW) RX overrun interrupt [0x0 = disable; 0x1 = enable ]</description>
+                  <bitOffset>3</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>STSFIFOTRIGIT</name>
+                  <description>bit: 4 (RW) status FIFO trigger level interrupt [0x0 = disable; 0x1 = enable ]</description>
+                  <bitOffset>4</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>TXSTATUSIT</name>
+                  <description>bit: 5 (RW) TX status interrupt [0x0 = disable; 0x1 = enable ]</description>
+                  <bitOffset>5</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>LINESTSIT</name>
+                  <description>bit: 6 (RW) receiver line status interrupt [0x0 = disable; 0x1 = enable ]</description>
+                  <bitOffset>6</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>EOFIT</name>
+                  <description>bit: 7 (RW) received EOF interrupt [0x0 = disable; 0x1 = enable ]</description>
+                  <bitOffset>7</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>IER_CIR</name>
+              <addressOffset>0x04</addressOffset>
+              <description>IER_CIR Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>RHRIT</name>
+                  <description>bit: 0 (RW) RHR interrupt [0x0 = disable; 0x1 = enable ]</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>THRIT</name>
+                  <description>bit: 1 (RW) THR interrupt [0x0 = disable; 0x1 = enable ]</description>
+                  <bitOffset>1</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RXSTOPIT</name>
+                  <description>bit: 2 (RW) RX stop interrupt [0x0 = disable; 0x1 = enable ]</description>
+                  <bitOffset>2</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RXOVERRUNIT</name>
+                  <description>bit: 3 (RW) RX overrun interrupt [0x0 = disable; 0x1 = enable ]</description>
+                  <bitOffset>3</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>TXSTATUSIT</name>
+                  <description>bit: 5 (RW) TX status interrupt [0x0 = disable; 0x1 = enable ]</description>
+                  <bitOffset>4</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>IER_UART</name>
+              <addressOffset>0x04</addressOffset>
+              <description>IER_UART Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>RHRIT</name>
+                  <description>bit: 0 (RW) RHR interrupt and time out interrupt [0x0 = disable; 0x1 = enable ]</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>THRIT</name>
+                  <description>bit: 1 (RW) THR interrupt [0x0 = disable; 0x1 = enable ]</description>
+                  <bitOffset>1</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>LINESTSIT</name>
+                  <description>bit: 2 (RW) receiver line status interrupt [0x0 = disable; 0x1 = enable ]</description>
+                  <bitOffset>2</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>MODEMSTSIT</name>
+                  <description>bit: 3 (RW) modem status register interrupt [0x0 = disable; 0x1 = enable ]</description>
+                  <bitOffset>3</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>SLEEPMODE</name>
+                  <description>bit: 4 (RW) Can be only written when EFR.ENHANCEDEN = 1. Sleep mode</description>
+                  <bitOffset>4</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>XOFFIT</name>
+                  <description>bit: 5 (RW) Can be written only when EFR.ENHANCEDEN = 1. XOFF interrupt [0x0 = disable; 0x1 = enable ]</description>
+                  <bitOffset>5</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RTSIT</name>
+                  <description>bit: 6 (RW) Can be written only when EFR.ENHANCEDEN = 1. RTS (active-low) interrupt [0x0 = disable; 0x1 = enable ]</description>
+                  <bitOffset>6</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>CTSIT</name>
+                  <description>bit: 7 (RW) Can be written only when EFR.ENHANCEDEN = 1. CTS (active-low) interrupt [0x0 = disable; 0x1 = enable ]</description>
+                  <bitOffset>7</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>DLH</name>
+              <addressOffset>0x04</addressOffset>
+              <description>DLH Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>CLOCK_MSB</name>
+                  <description>Divisor latches high. Stores the 6 MSB divisor value.[Value 0x0 to 0x3F.]</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>6</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>EFR</name>
+              <addressOffset>0x08</addressOffset>
+              <description>EFR Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>SWFLOWCONTROL</name>
+                  <description>Combinations of software flow control can be selected by programming this bit. [ see e_SW_TX_FLOW_CTRL and e_SW_RX_FLOW_CTRL]</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>4</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>ENHANCEDEN</name>
+                  <description>bit: 4 (RW) Enhanced functions write enable bit.Writing to IER[7:4], FCR[5:4], and MCR[7:5].[see e_ENH]</description>
+                  <bitOffset>4</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>SPECIALCHARDETECT</name>
+                  <description>bit: 5 (RW) Special character detect (UART mode only).[0x0 = Normal operation.; 0x1 = Special character</description>
+                  <bitOffset>5</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>AUTORTSEN</name>
+                  <description>bit: 6 (RW) Auto-RTS enable bit (UART mode only). [0x0 = Normal operation.; 0x1 = Auto-RTS flow control is enabled; RTS (active-low) pin goes</description>
+                  <bitOffset>6</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>AUTOCTSEN</name>
+                  <description>bit: 7 (RW) Auto-CTS enable bit (UART mode only). [0x0 = Normal operation.; 0x1 = Auto-CTS flow control is enabled; transmission is halted when</description>
+                  <bitOffset>7</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>IIR_UART</name>
+              <addressOffset>0x08</addressOffset>
+              <description>IIR_UART Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>IT_PENDING</name>
+                  <description>bit: 0 (RW) Interrupt pending. [0x0 = An interrupt is pending.; 0x1 = No interrupt is pending.]</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>IT_TYPE</name>
+                  <description>Seven possible interrupts in UART mode. Other combinations never occur: [see e_IT_TYPES]</description>
+                  <bitOffset>1</bitOffset>
+                  <bitWidth>5</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>FCR_MIRROR</name>
+                  <description>Mirror the contents of FCR[0] on both bits.</description>
+                  <bitOffset>6</bitOffset>
+                  <bitWidth>2</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>IIR_CIR</name>
+              <addressOffset>0x08</addressOffset>
+              <description>IIR_CIR Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>RHRIT</name>
+                  <description>bit: 0 (RW) RHR interrupt [0x0 = inactive; 0x1 = active ]</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>THRIT</name>
+                  <description>bit: 1 (RW) THR interrupt [0x0 = inactive; 0x1 = active ]</description>
+                  <bitOffset>1</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RXSTOPIT</name>
+                  <description>bit: 2 (RW) Receive stop interrupt [0x0 = inactive; 0x1 = active ]</description>
+                  <bitOffset>2</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RXOEIT</name>
+                  <description>bit: 3 (RW) RX overrun interrupt [0x0 = inactive; 0x1 = active ]</description>
+                  <bitOffset>3</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>TXSTATUSIT</name>
+                  <description>bit: 5 (RW) TX status interrupt [0x0 = inactive; 0x1 = active ]</description>
+                  <bitOffset>4</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>FCR</name>
+              <addressOffset>0x08</addressOffset>
+              <description>FCR Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>FIFO_EN</name>
+                  <description>bit: 0 (W) Can be changed only when the baud clock is not running (DLL and DLH cleared to 0). [0x0 = Disables rcv FIFO; 0x1 = Enables rcv FIFO ]</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RX_FIFO_CLEAR</name>
+                  <description>bit: 1 (W) [ 0x0 = No change.;</description>
+                  <bitOffset>1</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>TX_FIFO_CLEAR</name>
+                  <description>bit: 2 (W) [ 0x0 = No change.;</description>
+                  <bitOffset>2</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>DMA_MODE</name>
+                  <description>bit: 3 (W) Can be changed only when the baud clock is not running (DLL and DLH cleared to 0).</description>
+                  <bitOffset>3</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>TX_FIFO_TRIG</name>
+                  <description>bit: 4,5 (W) Can be written only if EFR.ENHANCEDEN = 1. Sets the trigger level for the TX FIFO: If SCR[6] = 0 and TLR[3] to</description>
+                  <bitOffset>4</bitOffset>
+                  <bitWidth>2</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RX_FIFO_TRIG</name>
+                  <description>bit: 6,7 (RW) Sets the trigger level for the RX FIFO: If SCR[7] = 0 and TLR[7] to</description>
+                  <bitOffset>6</bitOffset>
+                  <bitWidth>2</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>IIR_IRDA</name>
+              <addressOffset>0x08</addressOffset>
+              <description>IIR_IRDA Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>RHRIT</name>
+                  <description>bit: 0 (R) RHR interrupt [0x0 = inactive; 0x1 = active ]</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>THRIT</name>
+                  <description>bit: 1 (R) THR interrupt [0x0 = inactive; 0x1 = active ]</description>
+                  <bitOffset>1</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RX_FIFO_LAST_BYTE_IT</name>
+                  <description>bit: 2 (R) Last byte of frame in RX FIFO interrupt [0x0 = inactive; 0x1 = active ]</description>
+                  <bitOffset>2</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RXOEIT</name>
+                  <description>bit: 3 (R) RX overrun interrupt [0x0 = inactive; 0x1 = active ]</description>
+                  <bitOffset>3</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>STS_FIFO_IT</name>
+                  <description>bit: 4 (R) Status FIFO trigger level interrupt [0x0 = inactive; 0x1 = active ]</description>
+                  <bitOffset>4</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>TX_STATUS_IT</name>
+                  <description>bit: 5 (R) TX status interrupt [0x0 = inactive; 0x1 = active ]</description>
+                  <bitOffset>5</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>LINE_STS_IT</name>
+                  <description>bit: 6 (R) Receiver line status interrupt [0x0 = inactive; 0x1 = active ]</description>
+                  <bitOffset>6</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>EOF_IT</name>
+                  <description>bit: 7 (R) Received EOF [0x0 = inactive; 0x1 = active ]</description>
+                  <bitOffset>7</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>LCR</name>
+              <addressOffset>0x0C</addressOffset>
+              <description>LCR Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>CHAR_LENGTH</name>
+                  <description>bit: 0,1 (RW) Specifies the word length to be transmitted or received. [ see e_CHAR_LENGHT ]</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>2</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>NB_STOP</name>
+                  <description>bit: 2 (RW) Specifies the number of stop bits. [0x0 = 1 stop bit (word length = 5, 6, 7, 8).;</description>
+                  <bitOffset>2</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>PARITY_EN</name>
+                  <description>bit: 3 (RW) Parity bit. [0x0 = No parity;</description>
+                  <bitOffset>3</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>PARITY_TYPE1</name>
+                  <description>bit: 4 (RW) If LCR[3] = 1, then: [0x0 = Odd parity is generated.; 0x1 = Even parity is generated. ]</description>
+                  <bitOffset>4</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>PARITY_TYPE2</name>
+                  <description>bit: 5 (RW) If LCR[3] = 1, then: [0x0 = If LCR[5] = 0, LCR[4] selects the forced parity format.;</description>
+                  <bitOffset>5</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>BREAK_EN</name>
+                  <description>bit: 6 (RW) Break control bit. Note: When LCR[6] is set to 1, the TX line is forced to 0 and remains</description>
+                  <bitOffset>6</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>DIV_EN</name>
+                  <description>bit: 7 (RW) Divisor latch enable. [0x0 = Normal operating condition.;</description>
+                  <bitOffset>7</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>MCR</name>
+              <addressOffset>0x10</addressOffset>
+              <description>MCR Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>DTR</name>
+                  <description>bit: 0 (RW) DTR. [0x0 = Force DTR (active-low) output (used in loopback mode) to inactive (high).;</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RTS</name>
+                  <description>bit: 1 (RW) In loopback mode, controls MSR[4]. If auto-RTS is enabled, the RTS (active-low) output is controlled by</description>
+                  <bitOffset>1</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RISTSCH</name>
+                  <description>bit: 2 (RW) RISTSCH. [ 0x0 = In loopback mode, forces RI (active-low) input inactive (high).;</description>
+                  <bitOffset>2</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>CDSTSCH</name>
+                  <description>bit: 3 (RW) CDSTSCH. [0x0 = In loopback mode, forces DCD (active-low) input high and IRQ outputs to INACTIVE state.;</description>
+                  <bitOffset>3</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>LOOPBACKEN</name>
+                  <description>bit: 4 (RW) Loopback mode enable. [0x0 = Normal operating mode.; 0x1 = Enable local loopback mode (internal). In this mode, the</description>
+                  <bitOffset>4</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>XONEN</name>
+                  <description>bit: 5 (RW) Can be written only when EFR.ENHANCEDEN = 1. [0x0 = Disable XON any function.; 0x1 = Enable XON any function. ]</description>
+                  <bitOffset>5</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>TCRTLR</name>
+                  <description>bit: 6 (RW) Can be written only when EFR.ENHANCEDEN = 1. [0x0 = No action.; 0x1 = Enables access to the TCR and TLR registers. ]</description>
+                  <bitOffset>6</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>XON1_ADDR1</name>
+              <addressOffset>0x10</addressOffset>
+              <description>XON1_ADDR1 Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>XONWORD1</name>
+                  <description>Stores the 8 bit XON1 character in UART modes and ADDR1 address 1 in IrDA modes.</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>8</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>XON2_ADDR2</name>
+              <addressOffset>0x14</addressOffset>
+              <description>XON2_ADDR2 Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>XONWORD2</name>
+                  <description>Stores the 8 bit XON2 character in UART modes and ADDR2 address 2 in IrDA modes.</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>8</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>LSR_CIR</name>
+              <addressOffset>0x14</addressOffset>
+              <description>LSR_CIR Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>RXFIFOE</name>
+                  <description>bit: 0 (R) RXFIFOE. [0x0 = At least one data character in the RX FIFO.;</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RXSTOP</name>
+                  <description>bit: 2 (R) The RXSTOP is generated based on the value set in the BOF</description>
+                  <bitOffset>1</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>THREMPTY</name>
+                  <description>bit: 4 (R) THREMPTY. [ 0x0 = Transmit holding register (TX FIFO) is not empty.;</description>
+                  <bitOffset>2</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>LSR_IRDA</name>
+              <addressOffset>0x14</addressOffset>
+              <description>LSR_IRDA Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>RX_FIFO_E</name>
+                  <description>bit: 0 (R) [0x0 = At least one data character in the RX FIFO.; 0x1 = No data in the receive FIFO. ]</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>STS_FIFO_E</name>
+                  <description>bit: 1 (R) [0x0 = Status FIFO is not empty.; 0x1 = Status FIFO is empty. ]</description>
+                  <bitOffset>1</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>CRC</name>
+                  <description>bit: 2 (R) [0x0 = No CRC error in frame.; 0x1 = CRC error in the frame at the top of the status FIFO (next character to be read). ]</description>
+                  <bitOffset>2</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>ABORT</name>
+                  <description>bit: 3 (R) [0x0 = No abort pattern error in frame.; 0x1 = Abort pattern received. SIR and MIabort pattern. FIR: Illegal symbol. ]</description>
+                  <bitOffset>3</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>FRAME_TOO_LONG</name>
+                  <description>bit: 4 (R) [0x0 = No frame-too-long error in frame.; 0x1 = Frame-too-long error in the frame at the top of the status FIFO</description>
+                  <bitOffset>4</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RX_LAST_BYTE</name>
+                  <description>bit: 5 (R) [0x0 = The RX FIFO (RHR) does not contain the last byte of the frame to be read.;</description>
+                  <bitOffset>5</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>STS_FIFO_FULL</name>
+                  <description>bit: 6 (R) [0x0 = Status FIFO is not full.; 0x1 = Status FIFO is full. ]</description>
+                  <bitOffset>6</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>THR_EMPTY</name>
+                  <description>bit: 7 (R) [0x0 = Transmit holding register (TX FIFO) is not empty;</description>
+                  <bitOffset>7</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>LSR_UART</name>
+              <addressOffset>0x14</addressOffset>
+              <description>LSR_UART Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>RXFIFOE</name>
+                  <description>bit: 0 (R) [0x0 = No data in the receive FIFO.; 0x1 = At least one data character in the RX FIFO. ]</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RXOE</name>
+                  <description>bit: 1 (R) [0x0 = No overrun error.; 0x1 = Overrun error occurred. Set when the character held in the</description>
+                  <bitOffset>1</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RXPE</name>
+                  <description>bit: 2 (R) [0x0 = No parity error in data being read from RX FIFO.; 0x1 = Parity error in data being read from RX FIFO. ]</description>
+                  <bitOffset>2</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RXFE</name>
+                  <description>bit: 3 (R) [0x0 = No framing error in data being read from RX FIFO.;</description>
+                  <bitOffset>3</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RXBI</name>
+                  <description>bit: 4 (R) [0x0 = No break condition.; 0x1 = A break was detected while the data being read from the RX</description>
+                  <bitOffset>4</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>TXFIFOE</name>
+                  <description>bit: 5 (R) [0x0 = Transmit hold register (TX FIFO) is not empty.;</description>
+                  <bitOffset>5</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>TXSRE</name>
+                  <description>bit: 6 (R) [0x0 = Transmitter hold (TX FIFO) and shift registers are not empty.;</description>
+                  <bitOffset>6</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RXFIFOSTS</name>
+                  <description>bit: 7 (R) [0x0 = Normal operation.;</description>
+                  <bitOffset>7</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>TCR</name>
+              <addressOffset>0x18</addressOffset>
+              <description>TCR Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>RXFIFOTRIGHALT</name>
+                  <description>RX FIFO trigger level to HALT transmission (0 to 60).</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>4</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RXFIFOTRIGSTART</name>
+                  <description>RX FIFO trigger level to RESTORE transmission (0 to 60).</description>
+                  <bitOffset>4</bitOffset>
+                  <bitWidth>4</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>MSR</name>
+              <addressOffset>0x18</addressOffset>
+              <description>MSR Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>CTS_STS</name>
+                  <description>bit: 0 (R) CTS_STS.[0x0 = No change.; 0x1 = Indicates that CTS (active-low) input (or MCR[1] in loopback</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>DSR_STS</name>
+                  <description>bit: 1 (R) DSR_STS.[0x0 = No change.; 0x1 = Indicates that DSR (active-low) input (or MCR[0] in loopback</description>
+                  <bitOffset>1</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RI_STS</name>
+                  <description>bit: 2 (R) RI_STS. [0x0 = No change.; 0x1 = Indicates that RI (active-low) input (or MCR[2] in loopback</description>
+                  <bitOffset>2</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>DCD_STS</name>
+                  <description>bit: 3 (R) DCD_STS.[0x0 = No change.; 0x1 = Indicates that DCD (active-low) input (or MCR[3] in loopback</description>
+                  <bitOffset>3</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>NCTS_STS</name>
+                  <description>bit: 4 (R) This bit is the complement of the CTS (active-low) input.</description>
+                  <bitOffset>4</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>NDSR_STS</name>
+                  <description>bit: 5 (R) This bit is the complement of the DSR (active-low) input.</description>
+                  <bitOffset>5</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>NRI_STS</name>
+                  <description>bit: 6 (R) This bit is the complement of the RI (active-low) input.</description>
+                  <bitOffset>6</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>NCD_STS</name>
+                  <description>bit: 7 (R) This bit is the complement of the DCD (active-low) input.</description>
+                  <bitOffset>7</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>XOFF1</name>
+              <addressOffset>0x18</addressOffset>
+              <description>XOFF1 Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>XOFFWORD1</name>
+                  <description>Stores the 8 bit XOFF1 character in UART modes.</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>8</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>SPR</name>
+              <addressOffset>0x1C</addressOffset>
+              <description>SPR Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>SPR_WORD</name>
+                  <description>Scratchpad register.</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>8</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>TLR</name>
+              <addressOffset>0x1C</addressOffset>
+              <description>TLR Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>TX_FIFO_TRIG_DMA</name>
+                  <description>Transmit FIFO trigger level.</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>4</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>RX_FIFO_TRIG_DMA</name>
+                  <description>Receive FIFO trigger level.</description>
+                  <bitOffset>4</bitOffset>
+                  <bitWidth>4</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>XOFF2</name>
+              <addressOffset>0x1C</addressOffset>
+              <description>XOFF2 Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>XOFFWORD2</name>
+                  <description>Stores the 8 bit XOFF2 character in UART modes.</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>8</bitWidth>
+                  <access>read-write</access>
+                </field>
+              </fields>
+            </register>
+            <register>
+              <name>MDR1</name>
+              <addressOffset>0x20</addressOffset>
+              <description>MDR1 Register</description>
+              <size>32</size>
+              <access>read-write</access>
+              <resetValue>0x00000000</resetValue>
+              <fields>
+                <field>
+                  <name>MODESELECT</name>
+                  <description>UART/IrDA/CIR mode selection. [ see e_MODESELECT ]</description>
+                  <bitOffset>0</bitOffset>
+                  <bitWidth>3</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>IRSLEEP</name>
+                  <description>bit: 3 (RW) IrDA/CIR sleep mode. [0x0 = disabled; 0x1 = enabled ]</description>
+                  <bitOffset>3</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                <field>
+                  <name>SETTXIR</name>
+                  <description>bit: 4 (RW) Used to configure the infrared transceiver. [0x0 = If MDR2[7] = 0, no action; if MDR2[7] = 1, TXIR pin output is forced low.;</description>
+                  <bitOffset>4</bitOffset>
+                  <bitWidth>1</bitWidth>
+                  <access>read-write</access>
+                </field>
+                 <field>
+                   <name>SCT</name>
+                   <description>bit: 5 (RW) Store and control the transmission. [0x0 = Starts the infrared transmission when a value is written to the THR register.;</description>
+                   <bitOffset>5</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>SIPMODE</name>
+                   <description>bit: 6 (RW) MIR/FIR modes only. [0x0 = Manual SIP mode: SIP is generated with the control of ACREG[3].;</description>
+                   <bitOffset>6</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>FRAMEENDMODE</name>
+                   <description>bit: 7 (RW) IrDA mode only. [0x0 = Frame-length method.; 0x1 = Set EOT bit method. ]</description>
+                   <bitOffset>7</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>MDR2</name>
+               <addressOffset>0x24</addressOffset>
+               <description>MDR2 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>IRTXUNDERRUN</name>
+                   <description>bit: 0 (R) IrDA transmission status interrupt. [0x0 = frame was transmitted successfully without error.;</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>STSFIFOTRIG</name>
+                   <description>bit: 1,2 (RW) Only for IrDA mode.Frame status FIFO threshold select: [see e_IRDA_FIFO_TIRGLVL ]</description>
+                   <bitOffset>1</bitOffset>
+                   <bitWidth>2</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>UARTPULSE</name>
+                   <description>bit: 3 (RW) UART mode only.Used to allow pulse shaping in UART mode.[0x0 = Normal UART mode.; 0x1 = UART mode with pulse shaping. ]</description>
+                   <bitOffset>3</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>CIRPULSEMODE</name>
+                   <description>bit: 4,5 (RW) CIR pulse modulation definition. Defines high level of the pulse width associated with a digit:[ see e_CIRPULSE_MODULATION ]</description>
+                   <bitOffset>4</bitOffset>
+                   <bitWidth>2</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>IRRXINVERT</name>
+                   <description>bit: 6 (RW) Only for IR mode (IrDA and CIR).</description>
+                   <bitOffset>6</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>SETTXIRALT</name>
+                   <description>bit: 7 (RW) Provides alternate functionality for MDR1[4]. [0x0 = Normal mode; 0x1 = Alternate mode for SETTXIR ]</description>
+                   <bitOffset>7</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>TXFLL</name>
+               <addressOffset>0x28</addressOffset>
+               <description>TXFLL Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>TXFLL</name>
+                   <description>LSB register used to specify the frame length.</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>8</bitWidth>
+                   <access>write-only</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>SFLSR</name>
+               <addressOffset>0x28</addressOffset>
+               <description>SFLSR Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>CRC_ERROR</name>
+                   <description>bit: 1 (R) [0x0 = No error; 0x1 = CRC error in frame at top of RX FIFO. ]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>ABORT_DETECT</name>
+                   <description>bit: 2 (R) [0x0 = No error; 0x1 = Abort pattern detected in frame at top of RX FIFO. ]</description>
+                   <bitOffset>1</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>FRAME_TOO_LONG_ERROR</name>
+                   <description>bit: 3 (R) [0x0 = No error; 0x1 = Frame-length too long error in frame at top of RX FIFO. ]</description>
+                   <bitOffset>2</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>OE_ERROR</name>
+                   <description>bit: 4 (R) [0x0 = No error; 0x1 = Overrun error in RX FIFO when frame at top of RX FIFO was received. ]</description>
+                   <bitOffset>3</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>RESUME</name>
+               <addressOffset>0x2C</addressOffset>
+               <description>RESUME Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>RESUME</name>
+                   <description>Dummy read to restart the TX or RX, value 0 to FFh.</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>8</bitWidth>
+                   <access>read-only</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>TXFLH</name>
+               <addressOffset>0x2C</addressOffset>
+               <description>TXFLH Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>TXFLH</name>
+                   <description>MSB register used to specify the frame length, value 0 to 1Fh.</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>5</bitWidth>
+                   <access>write-only</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>RXFLL</name>
+               <addressOffset>0x30</addressOffset>
+               <description>RXFLL Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>RXFLL</name>
+                   <description>LSB register used to specify the frame length in reception, value 0 to FFh.</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>8</bitWidth>
+                   <access>write-only</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>SFREGL</name>
+               <addressOffset>0x30</addressOffset>
+               <description>SFREGL Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>SFREGL</name>
+                   <description>LSB register used to specify the frame length in reception, value 0 to FFh.</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>8</bitWidth>
+                   <access>read-only</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>SFREGH</name>
+               <addressOffset>0x34</addressOffset>
+               <description>SFREGH Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>SFREGH</name>
+                   <description>MSB part of the frame length, value 0 to Fh.</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>4</bitWidth>
+                   <access>read-only</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>RXFLH</name>
+               <addressOffset>0x34</addressOffset>
+               <description>RXFLH Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>RXFLH</name>
+                   <description>MSB register used to specify the frame length in reception, value 0 to Fh.</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>4</bitWidth>
+                   <access>write-only</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>BLR</name>
+               <addressOffset>0x38</addressOffset>
+               <description>BLR Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>XBOFTYPE</name>
+                   <description>bit: 6 (RW) SIR xBOF select.[0x0 = FFh start pattern is used.; 0x1 = C0h start pattern is used. ]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>STSFIFORESET</name>
+                   <description>bit: 7 (RW) Status FIFO reset.This bit is self-clearing.</description>
+                   <bitOffset>1</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>UASR</name>
+               <addressOffset>0x38</addressOffset>
+               <description>UASR Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>SPEED</name>
+                   <description>Speed. [ see e_AUTOBAUD_SPEED ]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>5</bitWidth>
+                   <access>read-only</access>
+                 </field>
+                 <field>
+                   <name>BITBYCHAR</name>
+                   <description>bit: 5 (R) Number of bits by characters. [ 0x0 = 7-bit character identified.;</description>
+                   <bitOffset>5</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>PARITYTYPE</name>
+                   <description>bit: 6,7 (R) Type of the parity in UART autobauding mode. [ see e_PARITY_TYPE ]</description>
+                   <bitOffset>6</bitOffset>
+                   <bitWidth>2</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>ACREG</name>
+               <addressOffset>0x3C</addressOffset>
+               <description>ACREG Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>EOTEN</name>
+                   <description>bit: 0 (RW) EOT (end-of-transmission) bit. The LH writes 1 to this bit just before it writes the last byte to the TX</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>ABORTEN</name>
+                   <description>bit: 1 (RW) Frame abort. The LH can intentionally abort transmission of a frame by writing 1 to</description>
+                   <bitOffset>1</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>SCTXEN</name>
+                   <description>bit: 2 (RW) Store and control TX start. When MDR1[5] = 1 and the LH writes 1 to this bit, the TX statemachine</description>
+                   <bitOffset>2</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>SENDSIP</name>
+                   <description>bit: 3 (RW) MIR/FIR modes only. Send serial infrared interaction pulse (SIP).</description>
+                   <bitOffset>3</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>DISTXUNDERRUN</name>
+                   <description>bit: 4 (RW) Disable TX underrun. [ 0x0 = Long stop bits cannot be transmitted. TX underrun is enabled.;</description>
+                   <bitOffset>4</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>DISIRRX</name>
+                   <description>bit: 5 (RW) Disable RX input. [0x0 = Normal operation (RX input automatically disabled during</description>
+                   <bitOffset>5</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>SDMOD</name>
+                   <description>bit: 6 (RW) Primary output used to configure transceivers.Connected to the SD/MODE input pin of IrDA transceivers.[0x0 = SD pin is set to high.;</description>
+                   <bitOffset>6</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>PULSETYPE</name>
+                   <description>bit: 7 (RW) SIR pulse-width select: [0x0 = 3/16 of baud-rate pulse width; 0x1 = 1.6 microseconds ]</description>
+                   <bitOffset>7</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>SCR</name>
+               <addressOffset>0x40</addressOffset>
+               <description>SCR Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>DMAMODECTL</name>
+                   <description>bit: 0 (RW) [0x0 = The DMAMODE is set with FCR[3].; 0x1 = The DMAMODE is set with SCR[2:1]. ]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>DMAMODE2</name>
+                   <description>bit: 1,2 (RW) Specifies the DMA mode valid if SCR[0] = 1, then:[ see e_SCR_DMA_MODE ]</description>
+                   <bitOffset>1</bitOffset>
+                   <bitWidth>2</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>TXEMPTYCTLIT</name>
+                   <description>bit: 3 (RW) [0x0 = Normal mode for THR interrupt.; 0x1 = THR interrupt is generated when TX FIFO and TX shift register are empty. ]</description>
+                   <bitOffset>3</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>RXCTSDSRWAKEUPENABLE</name>
+                   <description>bit: 4 (RW) [0x0 = Disables the WAKE UP interrupt and clears SSR[1].;</description>
+                   <bitOffset>4</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>DSRIT</name>
+                   <description>bit: 5 (RW) [0x0 = Disables DSR (active-low) interrupt.; 0x1 = Enables DSR (active-low) interrupt. ]</description>
+                   <bitOffset>5</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>TXTRIGGRANU1</name>
+                   <description>bit: 6 (RW) [0x0 = Disables the granularity of 1 for trigger TX level.; 0x1 = Enables the granularity of 1 for trigger TX level. ]</description>
+                   <bitOffset>6</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>RXTRIGGRANU1</name>
+                   <description>bit: 7 (RW) [0x0 = Disables the granularity of 1 for trigger RX level.; 0x1 = Enables the granularity of 1 for trigger RX level. ]</description>
+                   <bitOffset>7</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>SSR</name>
+               <addressOffset>0x44</addressOffset>
+               <description>SSR Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>TXFIFOFULL</name>
+                   <description>bit: 0 (R) [ 0x0 = TX FIFO is not full.; 0x1 = TX FIFO is full. ]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>RXCTSDSRWAKEUPSTS</name>
+                   <description>bit: 1 (R) Pin falling edge detection: Reset only when SCR[4] is reset to 0. [0x0 = No falling-edge event on RX, CTS (active-low), and DSR</description>
+                   <bitOffset>1</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>DMACOUNTERRST</name>
+                   <description>bit: 2 (RW) [ 0x0 = The DMA counter will not be reset, if the corresponding FIFO is reset (via FCR[1] or FCR[2]).;</description>
+                   <bitOffset>2</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>EBLR</name>
+               <addressOffset>0x48</addressOffset>
+               <description>EBLR Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>EBLR</name>
+                   <description>IrDA mode: This register allows definition of up to 176 xBOFs, the</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>8</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>MVR</name>
+               <addressOffset>0x50</addressOffset>
+               <description>MVR Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>MINORREV_</name>
+                   <description>Minor revision number of the module.</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>6</bitWidth>
+                   <access>read-only</access>
+                 </field>
+                 <field>
+                   <name>MAJORREV</name>
+                   <description>Major revision number of the module.</description>
+                   <bitOffset>6</bitOffset>
+                   <bitWidth>3</bitWidth>
+                   <access>read-only</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>SYSC</name>
+               <addressOffset>0x54</addressOffset>
+               <description>SYSC Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>AUTOIDLE</name>
+                   <description>bit: 0 (RW) Internal interface clock-gating strategy. [0x0 = Clock is running.; 0x1 = Reserved. ]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-only</access>
+                 </field>
+                 <field>
+                   <name>SOFTRESET</name>
+                   <description>bit: 1 (RW) Software reset. Set this bit to 1 to trigger a module reset.</description>
+                   <bitOffset>1</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>ENAWAKEUP</name>
+                   <description>bit: 2 (RW) Wakeup control. [0x0 = Wakeup is disabled.; 0x1 = Wakeup capability is enabled. ]</description>
+                   <bitOffset>2</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>IDLEMODE</name>
+                   <description>bit: 3,4 (RW) Power management req/ack control. [ see e_IDLEMODE]</description>
+                   <bitOffset>3</bitOffset>
+                   <bitWidth>2</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>SYSS</name>
+               <addressOffset>0x58</addressOffset>
+               <description>SYSS Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>RESETDONE</name>
+                   <description>bit: 0 (RW) Internal reset monitoring. [0x0 = Internal module reset is ongoing.; 0x1 = Reset complete. ]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>WER</name>
+               <addressOffset>0x5C</addressOffset>
+               <description>WER Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>CTS__ACTIVITY</name>
+                   <description>bit: 0 (RW) [0x0 = Event is not allowed to wake up the system.;</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>DSR_ACTIVITY</name>
+                   <description>bit: 1 (RW) [0x0 = Event is not allowed to wake up the system.;</description>
+                   <bitOffset>1</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>RI__ACTIVITY</name>
+                   <description>bit: 2 (RW) [0x0 = Event is not allowed to wake up the system.;</description>
+                   <bitOffset>2</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>DCD_ACTIVITY</name>
+                   <description>bit: 3 (RW) [0x0 = Event is not allowed to wake up the system.;</description>
+                   <bitOffset>3</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>RX__ACTIVITY</name>
+                   <description>bit: 4 (RW) [0x0 = Event is not allowed to wake up the system.;</description>
+                   <bitOffset>4</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>RHR__INTERRUPT</name>
+                   <description>bit: 5 (RW) [0x0 = Event is not allowed to wake up the system.;</description>
+                   <bitOffset>5</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>RLS__INTERRUPT</name>
+                   <description>bit: 6 (RW) Receiver line status interrupt. [0x0 = Event is not allowed to wake up the system.;</description>
+                   <bitOffset>6</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>TXWAKEUPEN</name>
+                   <description>bit: 7 (RW) Wake-up interrupt. [0x0 = Event is not allowed to wake up the system.;</description>
+                   <bitOffset>7</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>CFPS</name>
+               <addressOffset>0x60</addressOffset>
+               <description>CFPS Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>CFPS</name>
+                   <description>bit: 0 System clock frequency prescaler at (12x multiple).CFPS = 0 is not supported. [ see e_TARGET_CIR_FREQ]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>8</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>RXFIFO_LVL</name>
+               <addressOffset>0x64</addressOffset>
+               <description>RXFIFO_LVL Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>RXFIFO_LVL</name>
+                   <description>Level of the RX FIFO.</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>8</bitWidth>
+                   <access>read-only</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>TXFIFO_LVL</name>
+               <addressOffset>0x68</addressOffset>
+               <description>TXFIFO_LVL Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>TXFIFO_LVL</name>
+                   <description>Level of the TX FIFO</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>8</bitWidth>
+                   <access>read-only</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IER2</name>
+               <addressOffset>0x6C</addressOffset>
+               <description>IER2 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>EN_RXFIFO_EMPTY</name>
+                   <description>bit: 0 (R) [0x0 = Disables EN_RXFIFO_EMPTY interrupt.; 0x1 = Enables EN_RXFIFO_EMPTY interrupt. ]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>EN_TXFIFO_EMPTY</name>
+                   <description>bit: 1 (R) [0x0 = Disables EN_TXFIFO_EMPTY interrupt.; 0x1 = Enables EN_TXFIFO_EMPTY interrupt. ]</description>
+                   <bitOffset>1</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>ISR2</name>
+               <addressOffset>0x70</addressOffset>
+               <description>ISR2 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>TXFIFO_EMPTY_STS</name>
+                   <description>bit: 0 (R) [0x0 = TXFIFO_EMPTY interrupt not pending.; 0x1 = TXFIFO_EMPTY interrupt pending. ]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>RXFIFO_EMPTY_STS</name>
+                   <description>bit: 1 (R) [0x0 = RXFIFO_EMPTY interrupt not pending.; 0x1 = RXFIFO_EMPTY interrupt pending. ]</description>
+                   <bitOffset>1</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>FREQ_SEL</name>
+               <addressOffset>0x74</addressOffset>
+               <description>FREQ_SEL Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>FREQ_SEL</name>
+                   <description>Sets the sample per bit if non default frequency is used.</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>8</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>MDR3</name>
+               <addressOffset>0x80</addressOffset>
+               <description>MDR3 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>DISABLE_CIR_RX_DEMOD</name>
+                   <description>bit: 0 (RW) [ 0x0 = Enables CIR RX demodulation.;</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>NONDEFAULT_FREQ</name>
+                   <description>bit: 1 (RW) [ 0x0 = Disables using NONDEFAULT fclk frequencies.;</description>
+                   <bitOffset>1</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>SET_DMA_TX_THRESHOLD</name>
+                   <description>bit: 2 (RW) [ 0x0 = Disable use of TX DMA Threshold register. Use 64-TX trigger as DMA threshold.;</description>
+                   <bitOffset>2</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>TX_DMA_THRESHOLD</name>
+               <addressOffset>0x84</addressOffset>
+               <description>TX_DMA_THRESHOLD Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>TX_DMA_THRESHOLD</name>
+                   <description>Used to manually set the TX DMA threshold level.</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>6</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+           </registers>
+         </peripheral>
+
+
   </peripherals>
 </device>

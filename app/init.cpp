@@ -8,12 +8,15 @@
 #include "ddr_calibration.hpp"
 #include "HAL/INTC.hpp"
 #include "HAL/sysTimer.hpp"
+#include "HAL/serial.hpp"
 #include "board.hpp"
 
 #define DDR_TEST_SIZE            (32 * 1024 * 1024)
 #define TAG "brd_ini"
 
 #define DLY_100US    (10160)  //11830
+
+
 
 void delay_100us(uint32_t delay)
 {
@@ -73,6 +76,7 @@ static void ddr_init();
 static bool ddr_check();
 
 extern HAL::TIMERS::sysTimer<SYST_t> sys_time;
+HAL::SERIAL::serial serial_uart_0(REGS::UART::AM335X_UART_0);
 //extern HAL::TIMERS::sysTimer<REGS::DMTIMER::AM335x_DMTIMER_Type> dm_timer_2;
 
 static void copy_vector_table()
@@ -97,6 +101,13 @@ static void rtt_cache_clean()
     cp15_I_cache_flush_buff(0x40300000, 0x10000);
     cp15_DSB_ISB_sync_barrier();
 }
+
+void input_callback(char c)
+{
+    // echo input back out
+    serial_uart_0.put_char(c);
+}
+
 
 bool init_board()
 {
@@ -125,9 +136,14 @@ bool init_board()
 
     HAL::INTC::init();  //Initializing the ARM Interrupt Controller.
     HAL::TIMERS::sys_time.init();    // setup system timer for 1ms interrupt
+
+    serial_uart_0.init(input_callback);
     HAL::INTC::master_IRQ_enable();
 
     Board::init_user_leds();
+
+    serial_uart_0.put_string((char *)"\r\nbootloader started... \r\n");
+    serial_uart_0.put_string((char *)"UART initialized... \r\n");
 
     ddr_init();
 
@@ -146,6 +162,7 @@ bool init_board()
         return false;
     }
 
+    serial_uart_0.put_string((char *)"DDR initialization successful! \r\n");
     RTT_LOG_I(TAG, "DDR initialization successful!");
 
     return true;

@@ -10,11 +10,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(DRV_HEADERS INTC.hpp
         hwTimer.hpp
-        sysTimer.hpp)
+        sysTimer.hpp
+        serial.hpp)
 
 set(DRV_SOURCES INTC.cpp
         hwTimer.cpp
         pins/am3358zcz_pins.cpp
+        serial.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${DRV_SOURCES})
