@@ -2,31 +2,19 @@
 /*  Includes                                                             */
 /*=======================================================================*/
 #include "init.h"
-#include "cp15.h"
-#include "REGS/REGS.hpp"
-#include "rtt_log.h"
+#include "startup/cp15.h"
+#include "regs/REGS.hpp"
+#include "rtt/rtt_log.h"
 #include "ddr_calibration.hpp"
-#include "HAL/INTC.hpp"
-#include "HAL/sysTimer.hpp"
-#include "HAL/serial.hpp"
-#include "board.hpp"
+#include "hal/INTC.hpp"
+#include "hal/sysTimer.hpp"
+#include "hal/serial.hpp"
+#include "hal/boards/beaglebone_black.hpp"
 
 #define DDR_TEST_SIZE            (32 * 1024 * 1024)
 #define TAG "brd_ini"
 
 #define DLY_100US    (10160)  //11830
-
-
-
-void delay_100us(uint32_t delay)
-{
-    for(; delay; delay--)
-    {
-        for(volatile uint32_t j = DLY_100US; j; j--)//7 operations per cycle
-        {
-        }
-    }
-}
 
 extern "C"
 {

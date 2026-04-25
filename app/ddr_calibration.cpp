@@ -1,7 +1,7 @@
 #include "ddr_calibration.hpp"
-#include "EMIF.hpp"
-#include "rtt_log.h"
-#include "cp15.h"
+#include "regs/EMIF.hpp"
+#include "rtt/rtt_log.h"
+#include "startup/cp15.h"
 
 #define TAG "ddr_calib"
 

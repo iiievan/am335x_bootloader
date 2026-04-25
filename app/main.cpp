@@ -1,11 +1,19 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "init.h"
-#include "rtt_log.h"
-#include "board.hpp"
+#include "rtt/rtt_log.h"
+#include "hal/boards/beaglebone_black.hpp"
+#include "hal/sysTimer.hpp"
 
 
 #define TAG "main"
+
+void delay_ms(const uint32_t ms)
+{
+    using namespace HAL::TIMERS;
+    const volatile uint32_t start = sys_time.get_ms();
+    while((sys_time.get_ms() - start) < ms);
+}
 
 int main ()
 {
@@ -22,7 +30,7 @@ int main ()
     RTT_LOG_I(TAG, "Board initialization seccess!");
     while(true)
     {
-        delay_100us(200);
+        delay_ms(200);
         Board::USR3.toggle();
     }
 

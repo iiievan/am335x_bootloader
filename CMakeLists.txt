@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.24)
 
-if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/toolchain.cmake)
-    include(${CMAKE_SOURCE_DIR}/cmake/toolchain.cmake)
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/am335x_bsp/cmake/toolchain.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/am335x_bsp/cmake/toolchain.cmake)
+elseif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cmake/toolchain.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/toolchain.cmake)
 endif()
 
 # project settings
@@ -23,13 +25,29 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-u,Entry")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-u,__aeabi_uidiv")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-u,__aeabi_idiv")
 
-set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+add_subdirectory(am335x_bsp)
 
-add_subdirectory(startup)
-add_subdirectory(REGS)
-add_subdirectory(HAL)
-add_subdirectory(app)
-add_subdirectory(thirdparty)
-add_subdirectory(rtt_log)
+set(APP_SOURCES app/init.cpp
+                app/main.cpp
+                app/ddr_calibration.cpp)
+
+add_executable(${APP}.elf ${APP_SOURCES})
+
+target_link_libraries(${APP}.elf am335x_bsp )
+
+target_link_options(${APP}.elf PRIVATE
+        -nostartfiles
+        -lc
+        -lgcc
+)
+
+set(HEX_FILE ${APP}.hex)
+set(BIN_FILE ${APP}.bin)
+
+add_custom_command(TARGET ${APP}.elf POST_BUILD
+        COMMAND ${CMAKE_OBJCOPY} -Oihex $<TARGET_FILE:${APP}.elf> ${HEX_FILE}
+        COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${APP}.elf> ${BIN_FILE}
+        COMMAND ${SIZE} $<TARGET_FILE:${APP}.elf>
+        COMMENT "Building ${HEX_FILE}\nBuilding ${BIN_FILE}\nSize information:"
+)
+
