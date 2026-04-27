@@ -465,7 +465,13 @@ namespace HAL::UART
     }
 
     public:
-        uart(TXPin& tx, RXPin& rx, TXMode tx_mode, RXMode rx_mode);
+            uart(TXPin& tx, RXPin& rx, TXMode tx_mode, RXMode rx_mode)
+                : uart_base<Derived>(reinterpret_cast<REGS::UART::AM335x_UART_Type*>(UARTBase))
+                , m_tx(tx)
+                , m_rx(rx)
+                , m_tx_mode(tx_mode)
+                , m_rx_mode(rx_mode)
+                { m_save_LCR(); }
     };
 
     template <typename Derived, typename TXPin, typename RXPin, uint32_t UARTBase, uint32_t IRQNum>

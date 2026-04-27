@@ -11,7 +11,7 @@
 #include "hal/serial.hpp"
 #include "hal/boards/beaglebone_black.hpp"
 
-//#define RII_UART
+#define RII_UART
 
 #ifdef RII_UART
 #include "hal/UART.hpp"
