@@ -130,6 +130,10 @@ SECTIONS
         __heap_end = .;
     } > SRAM
 
+    PROVIDE(end = __heap_end);
+    PROVIDE(_end = __heap_end);
+    PROVIDE(__end = __heap_end);
+
     .rtt (NOLOAD) : ALIGN(64) {  /* Выравнивание по 64 байта (размер кэш-линии) */
         __rtt_start = .;
         KEEP(*(.rtt))

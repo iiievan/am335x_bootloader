@@ -21,13 +21,13 @@ namespace Board
     BSP_VOLATILE HAL::PINS::UART0_TXD& UART0_TX = HAL::PINS::uart0_txd;
     BSP_VOLATILE HAL::PINS::UART0_RXD& UART0_RX = HAL::PINS::uart0_rxd;
 
-/*
+
     // ========================================================================
     // UART1
     // ========================================================================
-    HAL::PINS::UART1_TXD& UART1_TX = HAL::PINS::uart1_txd;
-    HAL::PINS::UART1_RXD& UART1_RX = HAL::PINS::uart1_rxd;
-
+    BSP_VOLATILE HAL::PINS::UART1_TXD& UART1_TX = HAL::PINS::uart1_txd;
+    BSP_VOLATILE HAL::PINS::UART1_RXD& UART1_RX = HAL::PINS::uart1_rxd;
+    /*
     // ========================================================================
     // UART2
     // ========================================================================

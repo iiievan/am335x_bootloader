@@ -95,6 +95,7 @@ namespace HAL::SERIAL
     };
 
     extern serial serial_uart_0;
+    extern serial serial_uart_1;
 }
 
 #endif //__SERIAL_HPP

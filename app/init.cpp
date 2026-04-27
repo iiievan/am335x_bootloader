@@ -11,6 +11,14 @@
 #include "hal/serial.hpp"
 #include "hal/boards/beaglebone_black.hpp"
 
+//#define RII_UART
+
+#ifdef RII_UART
+#include "hal/UART.hpp"
+#else
+#include "hal/serial.hpp"
+#endif
+
 #define DDR_TEST_SIZE            (32 * 1024 * 1024)
 #define TAG "brd_ini"
 
@@ -24,17 +32,6 @@ extern "C"
     void AbortHandler(void);
     void IRQHandler(void);
     void FIQHandler(void);
-
-    void cp15_vector_base_addr_set(unsigned int addr);
-    void cp15_D_cache_disable(void);
-    void cp15_I_cache_disable(void);
-    void cp15_D_cache_clean_flush(void);
-    void cp15_I_cache_flush(void);
-    void cp15_TLB_invalidate(void);
-    void cp15_MMU_disable(void);
-    void cp15_branch_prediction_disable(void);
-    void cp15_D_cache_enable(void);
-    void cp15_I_cache_enable(void);
 }
 
 static uint32_t const vec_tbl[14] =
@@ -64,18 +61,15 @@ static void ddr_init();
 static bool ddr_check();
 
 extern HAL::TIMERS::sysTimer<SYST_t> sys_time;
-HAL::SERIAL::serial serial_uart_0(REGS::UART::AM335X_UART_0);
-//extern HAL::TIMERS::sysTimer<REGS::DMTIMER::AM335x_DMTIMER_Type> dm_timer_2;
 
 static void copy_vector_table()
 {
-    uint32_t *dest = (uint32_t *)AM335X_VECTOR_BASE;
-    uint32_t *src  = (uint32_t *)vec_tbl;
-    uint32_t count;
+    auto *dest = reinterpret_cast<uint32_t*>(AM335X_VECTOR_BASE);
+    auto *src  = const_cast<uint32_t*>(vec_tbl);
 
     cp15_vector_base_addr_set(AM335X_VECTOR_BASE);
 
-    for(count = 0; count < sizeof(vec_tbl)/sizeof(vec_tbl[0]); count++)
+    for(uint32_t count = 0; count < sizeof(vec_tbl)/sizeof(vec_tbl[0]); count++)
     {
         dest[count] = src[count];
     }
@@ -90,12 +84,30 @@ static void rtt_cache_clean()
     cp15_DSB_ISB_sync_barrier();
 }
 
-void input_callback(char c)
+
+static void input_callback(char c);
+
+#ifdef RII_UART
+static HAL::UART::uart0_t& get_uart0()
 {
-    // echo input back out
-    serial_uart_0.put_char(c);
+    static HAL::UART::uart0_t serial_0(Board::UART0_TX, Board::UART0_RX);
+    return serial_0;
 }
 
+static HAL::UART::uart1_t& get_uart1()
+{
+    static HAL::UART::uart1_t serial_1(Board::UART1_TX, Board::UART1_RX);
+    return serial_1;
+}
+#define USBTTL0 get_uart0()
+#define USBTTL1 get_uart1()
+#else
+// Старый serial
+HAL::SERIAL::serial serial_uart_0(REGS::UART::AM335X_UART_0);
+HAL::SERIAL::serial serial_uart_1(REGS::UART::AM335X_UART_1);
+#define USBTTL0 serial_uart_0
+#define USBTTL1 serial_uart_1
+#endif
 
 bool init_board()
 {
@@ -123,15 +135,21 @@ bool init_board()
     RTT_CHECK_MODULE_SIZE(REGS::RTC::AM335x_RTC_Type,0x9C);
 
     HAL::INTC::init();  //Initializing the ARM Interrupt Controller.
-    HAL::TIMERS::sys_time.init();    // setup system timer for 1ms interrupt
+    HAL::TIMERS::sys_time.init();    // setup system timer for 1ms interruptf
 
-    serial_uart_0.init(input_callback);
+    USBTTL0.init(input_callback);
+    USBTTL1.init(input_callback);
+
+    //serial_uart_0.init(input_callback);
     HAL::INTC::master_IRQ_enable();
 
     Board::init_user_leds();
 
-    serial_uart_0.put_string((char *)"\r\nbootloader started... \r\n");
-    serial_uart_0.put_string((char *)"UART initialized... \r\n");
+
+    USBTTL0.put_string((char *)"\r\nbootloader started... \r\n");
+    USBTTL0.put_string((char *)"UART0 initialized... \r\n");
+
+    USBTTL1.put_string((char *)"\r\nHello from UART1... \r\n");
 
     ddr_init();
 
@@ -147,13 +165,24 @@ bool init_board()
     if (!ddr_check())
     {
         RTT_LOG_E(TAG,"DDR check failed!");
+        USBTTL1.put_string((char *)"DDR check failed!\r\n");
         return false;
     }
 
-    serial_uart_0.put_string((char *)"DDR initialization successful! \r\n");
+    USBTTL0.put_string((char *)"DDR initialization successful! \r\n");
     RTT_LOG_I(TAG, "DDR initialization successful!");
 
     return true;
+}
+
+void input_callback(char c)
+{
+#ifndef RII_UART
+    // echo input back out
+    serial_uart_0.put_char(c);
+#else
+    get_uart0().put_char(c);
+#endif
 }
 
 static void mpu_pll_init()

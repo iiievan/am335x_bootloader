@@ -38,6 +38,8 @@ set(BSP_SOURCES
         src/startup/cpu.s
         src/startup/exceptionhandlers.s
         src/startup/cxx_support.cpp
+        include/hal/UART.hpp
+        src/hal/UART.cpp
 )
 
 

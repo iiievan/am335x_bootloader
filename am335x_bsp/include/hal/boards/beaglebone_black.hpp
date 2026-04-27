@@ -26,13 +26,13 @@ namespace Board
     extern BSP_VOLATILE HAL::PINS::UART0_TXD& UART0_TX;    // GPIO1_11, J1.4
     extern BSP_VOLATILE HAL::PINS::UART0_RXD& UART0_RX;    // GPIO1_10, J1.5
 
-    /*
+
     // ========================================================================
     // UART1 (Available on P9.24, P9.26)
     // ========================================================================
-    extern HAL::PINS::UART1_TXD& UART1_TX;    // GPIO0_15, P9.24
-    extern HAL::PINS::UART1_RXD& UART1_RX;    // GPIO0_14, P9.26
-
+    extern BSP_VOLATILE HAL::PINS::UART1_TXD& UART1_TX;    // GPIO0_15, P9.24
+    extern BSP_VOLATILE HAL::PINS::UART1_RXD& UART1_RX;    // GPIO0_14, P9.26
+    /*
     // ========================================================================
     // UART2 (Available on P8.37, P8.38)
     // ========================================================================

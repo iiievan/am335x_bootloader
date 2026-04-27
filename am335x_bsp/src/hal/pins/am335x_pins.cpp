@@ -25,8 +25,8 @@ namespace HAL::PINS
      //LCD_DATA15 lcd_data15{REGS::GPIO::AM335x_GPIO_0};                  // gpio0_11
      //UART1_CTSn uart1_ctsn{REGS::GPIO::AM335x_GPIO_0};                  // gpio0_12
      //UART1_RTSn uart1_rtsn{REGS::GPIO::AM335x_GPIO_0};                  // gpio0_13
-     //UART1_RXD uart1_rxd{REGS::GPIO::AM335x_GPIO_0};                    // gpio0_14
-     //UART1_TXD uart1_txd{REGS::GPIO::AM335x_GPIO_0};                    // gpio0_15
+     UART1_RXD uart1_rxd{REGS::GPIO::AM335x_GPIO_0};                    // gpio0_14
+     UART1_TXD uart1_txd{REGS::GPIO::AM335x_GPIO_0};                    // gpio0_15
      //MII1_TXD3 mii1_txd3{REGS::GPIO::AM335x_GPIO_0};                    // gpio0_16
      //MII1_TXD2 mii1_txd2{REGS::GPIO::AM335x_GPIO_0};                    // gpio0_17
      //USB0_DRVVBUS usb0_drvvbus{REGS::GPIO::AM335x_GPIO_0};              // gpio0_18

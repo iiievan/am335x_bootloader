@@ -8,7 +8,7 @@
 namespace HAL::SERIAL
 {
     static void uart_isr(void *p_obj);
-    static serial_user_callback m_user_callback = NULL;
+    static serial_user_callback m_user_callback = nullptr;
 
     serial::serial(REGS::UART::AM335x_UART_Type *uart_regs)
     : m_instance(*uart_regs),

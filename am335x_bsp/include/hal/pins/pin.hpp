@@ -107,6 +107,8 @@ namespace HAL::PINS
                      m_pinnum(pinnum)
                 { m_pinbitmsk = (1 << m_pinnum); }
 
+                using pinmode_type = T;
+
                 ~pin()= default;
 
                 void  gpio_module_init() BSP_VOLATILE noexcept
