@@ -43,11 +43,35 @@ target_link_options(${APP}.elf PRIVATE
 
 set(HEX_FILE ${APP}.hex)
 set(BIN_FILE ${APP}.bin)
-
 add_custom_command(TARGET ${APP}.elf POST_BUILD
         COMMAND ${CMAKE_OBJCOPY} -Oihex $<TARGET_FILE:${APP}.elf> ${HEX_FILE}
         COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${APP}.elf> ${BIN_FILE}
         COMMAND ${SIZE} $<TARGET_FILE:${APP}.elf>
         COMMENT "Building ${HEX_FILE}\nBuilding ${BIN_FILE}\nSize information:"
 )
+
+# ============================================================
+# Release-only: MLO generation (ПРОСТОЙ РАБОЧИЙ ВАРИАНТ)
+# ============================================================
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    # Проверяем есть ли gen_mlo.c
+    set(GEN_MLO_SRC ${CMAKE_CURRENT_SOURCE_DIR}/am335x_bsp/tools/gen_mlo/gen_mlo.c)
+    set(GEN_MLO_EXE ${CMAKE_CURRENT_BINARY_DIR}/gen_mlo)
+
+    # Добавляем команду прямо в POST_BUILD основного таргета
+    add_custom_command(TARGET ${APP}.elf POST_BUILD
+            # Компилируем gen_mlo если он еще не скомпилирован
+            COMMAND test -f ${GEN_MLO_EXE} || gcc -O2 -Wall -o ${GEN_MLO_EXE} ${GEN_MLO_SRC}
+            # Создаем MLO
+            COMMAND ${CMAKE_COMMAND} -E echo "=========================================="
+            COMMAND ${CMAKE_COMMAND} -E echo "🔨 Generating MLO from ${BIN_FILE}"
+            COMMAND ${CMAKE_COMMAND} -E echo "=========================================="
+            COMMAND ${GEN_MLO_EXE} ${CMAKE_CURRENT_BINARY_DIR}/${BIN_FILE} ${CMAKE_CURRENT_BINARY_DIR}/MLO
+            COMMAND ${CMAKE_COMMAND} -E echo "✅ MLO created at ${CMAKE_CURRENT_BINARY_DIR}/MLO"
+            COMMAND ${CMAKE_COMMAND} -E echo "   Size: "
+            COMMAND ls -lh ${CMAKE_CURRENT_BINARY_DIR}/MLO
+            COMMAND ${CMAKE_COMMAND} -E echo "=========================================="
+            COMMENT "Building MLO boot image for SD card"
+    )
+endif()
 
