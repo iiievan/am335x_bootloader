@@ -22,11 +22,9 @@ endif()
 
 add_subdirectory(thirdparty/SEGGER_RTT)
 
-# Список исходников
 set(BSP_SOURCES
         src/hal/INTC.cpp
         src/hal/hwTimer.cpp
-        src/hal/serial.cpp
         src/hal/pins/am335x_pins.cpp
         src/hal/boards/beaglebone_black.cpp
         src/regs/CONTROL_MODULE.cpp
@@ -38,7 +36,7 @@ set(BSP_SOURCES
         src/startup/cpu.s
         src/startup/exceptionhandlers.s
         src/startup/cxx_support.cpp
-        include/hal/UART.hpp
+        src/hal/UART.cpp
 )
 
 

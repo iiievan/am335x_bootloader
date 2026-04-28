@@ -9280,6 +9280,2059 @@
            </registers>
          </peripheral>
 
+         <peripheral>
+               <name>GPIO0</name>
+               <description>GPIO0 module</description>
+               <baseAddress>0x44E07000</baseAddress>
+               <groupName>GPIO</groupName>
+               <registers>
+                 <register>
+                   <name>REVISION</name>
+                   <addressOffset>0x0</addressOffset>
+                   <description>GPIO_REVISION Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>MINOR</name>
+                       <description>Minor Revision</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>6</bitWidth>
+                       <access>read-only</access>
+                     </field>
+                     <field>
+                       <name>CUSTOM</name>
+                       <description>bit: 6,7 (R) Indicates a special version for a particular device.</description>
+                       <bitOffset>6</bitOffset>
+                       <bitWidth>2</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                     <field>
+                       <name>MAJOR</name>
+                       <description>Major Revision</description>
+                       <bitOffset>8</bitOffset>
+                       <bitWidth>3</bitWidth>
+                       <access>read-only</access>
+                     </field>
+                     <field>
+                       <name>RTL</name>
+                       <description>RTL version</description>
+                       <bitOffset>11</bitOffset>
+                       <bitWidth>5</bitWidth>
+                       <access>read-only</access>
+                     </field>
+                     <field>
+                       <name>FUNC</name>
+                       <description>Indicates a software compatible module family.</description>
+                       <bitOffset>16</bitOffset>
+                       <bitWidth>12</bitWidth>
+                       <access>read-only</access>
+                     </field>
+                     <field>
+                       <name>SCHEME</name>
+                       <description>bit: 30,31 (R) Used to distinguish between old Scheme and current.</description>
+                       <bitOffset>28</bitOffset>
+                       <bitWidth>2</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>SYSCONFIG</name>
+                   <addressOffset>0x10</addressOffset>
+                   <description>GPIO_SYSCONFIG Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>AUTOIDLE</name>
+                       <description>bit: 0 (RW) Internal interface clock gating strategy</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>1</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                     <field>
+                       <name>SOFTRESET</name>
+                       <description>bit: 1 (RW) Software reset. This bit is automatically reset by the hardware. During reads, it always returns 0</description>
+                       <bitOffset>1</bitOffset>
+                       <bitWidth>1</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                     <field>
+                       <name>ENAWAKEUP</name>
+                       <description>bit: 2 (RW) Enable wakeup</description>
+                       <bitOffset>2</bitOffset>
+                       <bitWidth>1</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                     <field>
+                       <name>IDLEMODE</name>
+                       <description>bit: 3,4 (RW) Power Management, Req/Ack control. [see e_GPIO_IDLEMODE]</description>
+                       <bitOffset>3</bitOffset>
+                       <bitWidth>2</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>EOI</name>
+                   <addressOffset>0x20</addressOffset>
+                   <description>GPIO_EOI Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>DMAEvent_Ack</name>
+                       <description>bit: 0 (RW) Write 0 to acknowledge DMA event has been completed.</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>1</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>IRQSTATUS_RAW_0</name>
+                   <addressOffset>0x24</addressOffset>
+                   <description>GPIO_IRQSTATUS_RAW_0 Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>INTLINE</name>
+                       <description>Interrupt n status. [0x0 = No effect, 0x1 = IRQ is triggered]</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>32</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>IRQSTATUS_RAW_1</name>
+                   <addressOffset>0x28</addressOffset>
+                   <description>GPIO_IRQSTATUS_RAW_1 Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>INTLINE</name>
+                       <description>Interrupt n status. [0x0 = No effect, 0x1 = IRQ is triggered]</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>32</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>IRQSTATUS_0</name>
+                   <addressOffset>0x2C</addressOffset>
+                   <description>GPIO_IRQSTATUS_0 Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>INTLINE</name>
+                       <description>(RW1C) Interrupt n status.</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>32</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>IRQSTATUS_1</name>
+                   <addressOffset>0x30</addressOffset>
+                   <description>GPIO_IRQSTATUS_1 Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>INTLINE</name>
+                       <description>(RW1C) Interrupt n status.</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>32</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>IRQSTATUS_SET_0</name>
+                   <addressOffset>0x34</addressOffset>
+                   <description>GPIO_IRQSTATUS_SET_0 Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>INTLINE</name>
+                       <description>Interrupt n enable. [0x0 = No effect, 0x1 = Enable IRQ generation]</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>32</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>IRQSTATUS_SET_1</name>
+                   <addressOffset>0x38</addressOffset>
+                   <description>GPIO_IRQSTATUS_SET_1 Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>INTLINE</name>
+                       <description>Interrupt n enable. [0x0 = No effect, 0x1 = Enable IRQ generation]</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>32</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>IRQSTATUS_CLR_0</name>
+                   <addressOffset>0x3C</addressOffset>
+                   <description>GPIO_IRQSTATUS_CLR_0 Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>INTLINE</name>
+                       <description>Interrupt n enable. [0x0 = No effect, 0x1 = Disable IRQ generation]</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>32</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>IRQSTATUS_CLR_1</name>
+                   <addressOffset>0x40</addressOffset>
+                   <description>GPIO_IRQSTATUS_CLR_1 Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>INTLINE</name>
+                       <description>Interrupt n enable. [0x0 = No effect, 0x1 = Disable IRQ generation]</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>32</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>IRQWAKEN_0</name>
+                   <addressOffset>0x44</addressOffset>
+                   <description>GPIO_IRQWAKEN_0 Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>INTLINE</name>
+                       <description>Interrupt n enable. [0x0 = No effect, 0x1 = Disable IRQ generation]</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>32</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>IRQWAKEN_1</name>
+                   <addressOffset>0x48</addressOffset>
+                   <description>GPIO_IRQWAKEN_1 Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>INTLINE</name>
+                       <description>Interrupt n enable. [0x0 = No effect, 0x1 = Disable IRQ generation]</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>32</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>SYSSTATUS</name>
+                   <addressOffset>0x114</addressOffset>
+                   <description>GPIO_SYSSTATUS Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>RESETDONE</name>
+                       <description>bit: 0 (R) Reset status information. [0x0 = Internal Reset is on-going, 0x1 = Reset completed]</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>1</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>CTRL</name>
+                   <addressOffset>0x130</addressOffset>
+                   <description>GPIO_CTRL Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>DISABLEMODULE</name>
+                       <description>bit: 0 (RW) Module Disable [0x0 = Module is enabled, clk are not gated, 0x1 = Module is disabled, clk are gated]</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>1</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                     <field>
+                       <name>GATINGRATIO</name>
+                       <description>Gating Ratio. Controls the clock gating for the event detection logic. [see e_GPIO_GATINGRATIO]</description>
+                       <bitOffset>1</bitOffset>
+                       <bitWidth>2</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>OE</name>
+                   <addressOffset>0x134</addressOffset>
+                   <description>GPIO_OE Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>OUTPUTEN</name>
+                       <description>Output Data Enable [0x0 = The corresponding GPIO port is configured as an output, 0x1 = configured as an input]</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>32</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>DATAIN</name>
+                   <addressOffset>0x138</addressOffset>
+                   <description>GPIO_DATAIN Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>DATAIN</name>
+                       <description>Sampled Input Data</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>32</bitWidth>
+                       <access>read-only</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>DATAOUT</name>
+                   <addressOffset>0x13C</addressOffset>
+                   <description>GPIO_DATAOUT Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>DATAOUT</name>
+                       <description>Data to set on output pins</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>32</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>LEVELDETECT0</name>
+                   <addressOffset>0x140</addressOffset>
+                   <description>GPIO_LEVELDETECT0 Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>LEVELDETECT0</name>
+                       <description>Low Level Interrupt Enable [0x0 = Disable the IRQ assertion on low-level detect, 0x1 = Enable]</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>32</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>LEVELDETECT1</name>
+                   <addressOffset>0x144</addressOffset>
+                   <description>GPIO_LEVELDETECT1 Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>LEVELDETECT1</name>
+                       <description>High Level Interrupt Enable [0x0 = Disable the IRQ assertion on high-level detect, 0x1 = Enable]</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>32</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>RISINGDETECT</name>
+                   <addressOffset>0x148</addressOffset>
+                   <description>GPIO_RISINGDETECT Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>RISINGDETECT</name>
+                       <description>Rising Edge Interrupt Enable [0x0 = Disable IRQ on rising-edge detect, 0x1 = Enable]</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>32</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>FALLINGDETECT</name>
+                   <addressOffset>0x14C</addressOffset>
+                   <description>GPIO_FALLINGDETECT Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>FALLINGDETECT</name>
+                       <description>Falling Edge Interrupt Enable [0x0 = Disable IRQ on falling-edge detect, 0x1 = Enable]</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>32</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>DEBOUNCENABLE</name>
+                   <addressOffset>0x150</addressOffset>
+                   <description>GPIO_DEBOUNCENABLE Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>DEBOUNCEENABLE</name>
+                       <description>Input Debounce Enable [0x0 = Disable debouncing feature on the corresponding input port, 0x1 = Enable]</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>32</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>DEBOUNCINGTIME</name>
+                   <addressOffset>0x154</addressOffset>
+                   <description>GPIO_DEBOUNCINGTIME Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>DEBOUNCETIME</name>
+                       <description>Input Debouncing Value in 31 microsecond steps. Debouncing Value = (DEBOUNCETIME + 1) * 31 microseconds</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>8</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>CLEARDATAOUT</name>
+                   <addressOffset>0x190</addressOffset>
+                   <description>GPIO_CLEARDATAOUT Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>INTLINE</name>
+                       <description>Clear Data Output Register [0x0 = No effect, 0x1 = Clear the corresponding bit in the GPIO_DATAOUT register]</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>32</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+                 <register>
+                   <name>SETDATAOUT</name>
+                   <addressOffset>0x194</addressOffset>
+                   <description>GPIO_SETDATAOUT Register</description>
+                   <size>32</size>
+                   <access>read-write</access>
+                   <resetValue>0x00000000</resetValue>
+                   <fields>
+                     <field>
+                       <name>INTLINE</name>
+                       <description>Set Data Output Register [0x0 = No effect, 0x1 = Set the corresponding bit in the GPIO_DATAOUT register]</description>
+                       <bitOffset>0</bitOffset>
+                       <bitWidth>32</bitWidth>
+                       <access>read-write</access>
+                     </field>
+                   </fields>
+                 </register>
+               </registers>
+         </peripheral>
+         <peripheral>
+           <name>GPIO1</name>
+           <description>GPIO1 module</description>
+           <baseAddress>0x4804C000</baseAddress>
+           <groupName>GPIO</groupName>
+           <registers>
+             <register>
+               <name>REVISION</name>
+               <addressOffset>0x0</addressOffset>
+               <description>GPIO_REVISION Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>MINOR</name>
+                   <description>Minor Revision</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>6</bitWidth>
+                   <access>read-only</access>
+                 </field>
+                 <field>
+                   <name>CUSTOM</name>
+                   <description>bit: 6,7 (R) Indicates a special version for a particular device.</description>
+                   <bitOffset>6</bitOffset>
+                   <bitWidth>2</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>MAJOR</name>
+                   <description>Major Revision</description>
+                   <bitOffset>8</bitOffset>
+                   <bitWidth>3</bitWidth>
+                   <access>read-only</access>
+                 </field>
+                 <field>
+                   <name>RTL</name>
+                   <description>RTL version</description>
+                   <bitOffset>11</bitOffset>
+                   <bitWidth>5</bitWidth>
+                   <access>read-only</access>
+                 </field>
+                 <field>
+                   <name>FUNC</name>
+                   <description>Indicates a software compatible module family.</description>
+                   <bitOffset>16</bitOffset>
+                   <bitWidth>12</bitWidth>
+                   <access>read-only</access>
+                 </field>
+                 <field>
+                   <name>SCHEME</name>
+                   <description>bit: 30,31 (R) Used to distinguish between old Scheme and current.</description>
+                   <bitOffset>28</bitOffset>
+                   <bitWidth>2</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>SYSCONFIG</name>
+               <addressOffset>0x10</addressOffset>
+               <description>GPIO_SYSCONFIG Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>AUTOIDLE</name>
+                   <description>bit: 0 (RW) Internal interface clock gating strategy</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>SOFTRESET</name>
+                   <description>bit: 1 (RW) Software reset. This bit is automatically reset by the hardware. During reads, it always returns 0</description>
+                   <bitOffset>1</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>ENAWAKEUP</name>
+                   <description>bit: 2 (RW) Enable wakeup</description>
+                   <bitOffset>2</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>IDLEMODE</name>
+                   <description>bit: 3,4 (RW) Power Management, Req/Ack control. [see e_GPIO_IDLEMODE]</description>
+                   <bitOffset>3</bitOffset>
+                   <bitWidth>2</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>EOI</name>
+               <addressOffset>0x20</addressOffset>
+               <description>GPIO_EOI Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>DMAEvent_Ack</name>
+                   <description>bit: 0 (RW) Write 0 to acknowledge DMA event has been completed.</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_RAW_0</name>
+               <addressOffset>0x24</addressOffset>
+               <description>GPIO_IRQSTATUS_RAW_0 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n status. [0x0 = No effect, 0x1 = IRQ is triggered]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_RAW_1</name>
+               <addressOffset>0x28</addressOffset>
+               <description>GPIO_IRQSTATUS_RAW_1 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n status. [0x0 = No effect, 0x1 = IRQ is triggered]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_0</name>
+               <addressOffset>0x2C</addressOffset>
+               <description>GPIO_IRQSTATUS_0 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>(RW1C) Interrupt n status.</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_1</name>
+               <addressOffset>0x30</addressOffset>
+               <description>GPIO_IRQSTATUS_1 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>(RW1C) Interrupt n status.</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_SET_0</name>
+               <addressOffset>0x34</addressOffset>
+               <description>GPIO_IRQSTATUS_SET_0 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n enable. [0x0 = No effect, 0x1 = Enable IRQ generation]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_SET_1</name>
+               <addressOffset>0x38</addressOffset>
+               <description>GPIO_IRQSTATUS_SET_1 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n enable. [0x0 = No effect, 0x1 = Enable IRQ generation]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_CLR_0</name>
+               <addressOffset>0x3C</addressOffset>
+               <description>GPIO_IRQSTATUS_CLR_0 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n enable. [0x0 = No effect, 0x1 = Disable IRQ generation]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_CLR_1</name>
+               <addressOffset>0x40</addressOffset>
+               <description>GPIO_IRQSTATUS_CLR_1 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n enable. [0x0 = No effect, 0x1 = Disable IRQ generation]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQWAKEN_0</name>
+               <addressOffset>0x44</addressOffset>
+               <description>GPIO_IRQWAKEN_0 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n enable. [0x0 = No effect, 0x1 = Disable IRQ generation]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQWAKEN_1</name>
+               <addressOffset>0x48</addressOffset>
+               <description>GPIO_IRQWAKEN_1 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n enable. [0x0 = No effect, 0x1 = Disable IRQ generation]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>SYSSTATUS</name>
+               <addressOffset>0x114</addressOffset>
+               <description>GPIO_SYSSTATUS Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>RESETDONE</name>
+                   <description>bit: 0 (R) Reset status information. [0x0 = Internal Reset is on-going, 0x1 = Reset completed]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>CTRL</name>
+               <addressOffset>0x130</addressOffset>
+               <description>GPIO_CTRL Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>DISABLEMODULE</name>
+                   <description>bit: 0 (RW) Module Disable [0x0 = Module is enabled, clk are not gated, 0x1 = Module is disabled, clk are gated]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>GATINGRATIO</name>
+                   <description>Gating Ratio. Controls the clock gating for the event detection logic. [see e_GPIO_GATINGRATIO]</description>
+                   <bitOffset>1</bitOffset>
+                   <bitWidth>2</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>OE</name>
+               <addressOffset>0x134</addressOffset>
+               <description>GPIO_OE Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>OUTPUTEN</name>
+                   <description>Output Data Enable [0x0 = The corresponding GPIO port is configured as an output, 0x1 = configured as an input]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>DATAIN</name>
+               <addressOffset>0x138</addressOffset>
+               <description>GPIO_DATAIN Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>DATAIN</name>
+                   <description>Sampled Input Data</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-only</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>DATAOUT</name>
+               <addressOffset>0x13C</addressOffset>
+               <description>GPIO_DATAOUT Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>DATAOUT</name>
+                   <description>Data to set on output pins</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>LEVELDETECT0</name>
+               <addressOffset>0x140</addressOffset>
+               <description>GPIO_LEVELDETECT0 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>LEVELDETECT0</name>
+                   <description>Low Level Interrupt Enable [0x0 = Disable the IRQ assertion on low-level detect, 0x1 = Enable]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>LEVELDETECT1</name>
+               <addressOffset>0x144</addressOffset>
+               <description>GPIO_LEVELDETECT1 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>LEVELDETECT1</name>
+                   <description>High Level Interrupt Enable [0x0 = Disable the IRQ assertion on high-level detect, 0x1 = Enable]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>RISINGDETECT</name>
+               <addressOffset>0x148</addressOffset>
+               <description>GPIO_RISINGDETECT Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>RISINGDETECT</name>
+                   <description>Rising Edge Interrupt Enable [0x0 = Disable IRQ on rising-edge detect, 0x1 = Enable]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>FALLINGDETECT</name>
+               <addressOffset>0x14C</addressOffset>
+               <description>GPIO_FALLINGDETECT Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>FALLINGDETECT</name>
+                   <description>Falling Edge Interrupt Enable [0x0 = Disable IRQ on falling-edge detect, 0x1 = Enable]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>DEBOUNCENABLE</name>
+               <addressOffset>0x150</addressOffset>
+               <description>GPIO_DEBOUNCENABLE Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>DEBOUNCEENABLE</name>
+                   <description>Input Debounce Enable [0x0 = Disable debouncing feature on the corresponding input port, 0x1 = Enable]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>DEBOUNCINGTIME</name>
+               <addressOffset>0x154</addressOffset>
+               <description>GPIO_DEBOUNCINGTIME Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>DEBOUNCETIME</name>
+                   <description>Input Debouncing Value in 31 microsecond steps. Debouncing Value = (DEBOUNCETIME + 1) * 31 microseconds</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>8</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>CLEARDATAOUT</name>
+               <addressOffset>0x190</addressOffset>
+               <description>GPIO_CLEARDATAOUT Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Clear Data Output Register [0x0 = No effect, 0x1 = Clear the corresponding bit in the GPIO_DATAOUT register]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>SETDATAOUT</name>
+               <addressOffset>0x194</addressOffset>
+               <description>GPIO_SETDATAOUT Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Set Data Output Register [0x0 = No effect, 0x1 = Set the corresponding bit in the GPIO_DATAOUT register]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+           </registers>
+         </peripheral>
+         <peripheral>
+           <name>GPIO2</name>
+           <description>GPIO2 module</description>
+           <baseAddress>0x481AC000</baseAddress>
+           <groupName>GPIO</groupName>
+           <registers>
+             <register>
+               <name>REVISION</name>
+               <addressOffset>0x0</addressOffset>
+               <description>GPIO_REVISION Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>MINOR</name>
+                   <description>Minor Revision</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>6</bitWidth>
+                   <access>read-only</access>
+                 </field>
+                 <field>
+                   <name>CUSTOM</name>
+                   <description>bit: 6,7 (R) Indicates a special version for a particular device.</description>
+                   <bitOffset>6</bitOffset>
+                   <bitWidth>2</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>MAJOR</name>
+                   <description>Major Revision</description>
+                   <bitOffset>8</bitOffset>
+                   <bitWidth>3</bitWidth>
+                   <access>read-only</access>
+                 </field>
+                 <field>
+                   <name>RTL</name>
+                   <description>RTL version</description>
+                   <bitOffset>11</bitOffset>
+                   <bitWidth>5</bitWidth>
+                   <access>read-only</access>
+                 </field>
+                 <field>
+                   <name>FUNC</name>
+                   <description>Indicates a software compatible module family.</description>
+                   <bitOffset>16</bitOffset>
+                   <bitWidth>12</bitWidth>
+                   <access>read-only</access>
+                 </field>
+                 <field>
+                   <name>SCHEME</name>
+                   <description>bit: 30,31 (R) Used to distinguish between old Scheme and current.</description>
+                   <bitOffset>28</bitOffset>
+                   <bitWidth>2</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>SYSCONFIG</name>
+               <addressOffset>0x10</addressOffset>
+               <description>GPIO_SYSCONFIG Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>AUTOIDLE</name>
+                   <description>bit: 0 (RW) Internal interface clock gating strategy</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>SOFTRESET</name>
+                   <description>bit: 1 (RW) Software reset. This bit is automatically reset by the hardware. During reads, it always returns 0</description>
+                   <bitOffset>1</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>ENAWAKEUP</name>
+                   <description>bit: 2 (RW) Enable wakeup</description>
+                   <bitOffset>2</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>IDLEMODE</name>
+                   <description>bit: 3,4 (RW) Power Management, Req/Ack control. [see e_GPIO_IDLEMODE]</description>
+                   <bitOffset>3</bitOffset>
+                   <bitWidth>2</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>EOI</name>
+               <addressOffset>0x20</addressOffset>
+               <description>GPIO_EOI Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>DMAEvent_Ack</name>
+                   <description>bit: 0 (RW) Write 0 to acknowledge DMA event has been completed.</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_RAW_0</name>
+               <addressOffset>0x24</addressOffset>
+               <description>GPIO_IRQSTATUS_RAW_0 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n status. [0x0 = No effect, 0x1 = IRQ is triggered]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_RAW_1</name>
+               <addressOffset>0x28</addressOffset>
+               <description>GPIO_IRQSTATUS_RAW_1 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n status. [0x0 = No effect, 0x1 = IRQ is triggered]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_0</name>
+               <addressOffset>0x2C</addressOffset>
+               <description>GPIO_IRQSTATUS_0 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>(RW1C) Interrupt n status.</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_1</name>
+               <addressOffset>0x30</addressOffset>
+               <description>GPIO_IRQSTATUS_1 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>(RW1C) Interrupt n status.</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_SET_0</name>
+               <addressOffset>0x34</addressOffset>
+               <description>GPIO_IRQSTATUS_SET_0 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n enable. [0x0 = No effect, 0x1 = Enable IRQ generation]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_SET_1</name>
+               <addressOffset>0x38</addressOffset>
+               <description>GPIO_IRQSTATUS_SET_1 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n enable. [0x0 = No effect, 0x1 = Enable IRQ generation]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_CLR_0</name>
+               <addressOffset>0x3C</addressOffset>
+               <description>GPIO_IRQSTATUS_CLR_0 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n enable. [0x0 = No effect, 0x1 = Disable IRQ generation]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_CLR_1</name>
+               <addressOffset>0x40</addressOffset>
+               <description>GPIO_IRQSTATUS_CLR_1 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n enable. [0x0 = No effect, 0x1 = Disable IRQ generation]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQWAKEN_0</name>
+               <addressOffset>0x44</addressOffset>
+               <description>GPIO_IRQWAKEN_0 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n enable. [0x0 = No effect, 0x1 = Disable IRQ generation]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQWAKEN_1</name>
+               <addressOffset>0x48</addressOffset>
+               <description>GPIO_IRQWAKEN_1 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n enable. [0x0 = No effect, 0x1 = Disable IRQ generation]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>SYSSTATUS</name>
+               <addressOffset>0x114</addressOffset>
+               <description>GPIO_SYSSTATUS Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>RESETDONE</name>
+                   <description>bit: 0 (R) Reset status information. [0x0 = Internal Reset is on-going, 0x1 = Reset completed]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>CTRL</name>
+               <addressOffset>0x130</addressOffset>
+               <description>GPIO_CTRL Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>DISABLEMODULE</name>
+                   <description>bit: 0 (RW) Module Disable [0x0 = Module is enabled, clk are not gated, 0x1 = Module is disabled, clk are gated]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>GATINGRATIO</name>
+                   <description>Gating Ratio. Controls the clock gating for the event detection logic. [see e_GPIO_GATINGRATIO]</description>
+                   <bitOffset>1</bitOffset>
+                   <bitWidth>2</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>OE</name>
+               <addressOffset>0x134</addressOffset>
+               <description>GPIO_OE Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>OUTPUTEN</name>
+                   <description>Output Data Enable [0x0 = The corresponding GPIO port is configured as an output, 0x1 = configured as an input]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>DATAIN</name>
+               <addressOffset>0x138</addressOffset>
+               <description>GPIO_DATAIN Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>DATAIN</name>
+                   <description>Sampled Input Data</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-only</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>DATAOUT</name>
+               <addressOffset>0x13C</addressOffset>
+               <description>GPIO_DATAOUT Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>DATAOUT</name>
+                   <description>Data to set on output pins</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>LEVELDETECT0</name>
+               <addressOffset>0x140</addressOffset>
+               <description>GPIO_LEVELDETECT0 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>LEVELDETECT0</name>
+                   <description>Low Level Interrupt Enable [0x0 = Disable the IRQ assertion on low-level detect, 0x1 = Enable]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>LEVELDETECT1</name>
+               <addressOffset>0x144</addressOffset>
+               <description>GPIO_LEVELDETECT1 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>LEVELDETECT1</name>
+                   <description>High Level Interrupt Enable [0x0 = Disable the IRQ assertion on high-level detect, 0x1 = Enable]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>RISINGDETECT</name>
+               <addressOffset>0x148</addressOffset>
+               <description>GPIO_RISINGDETECT Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>RISINGDETECT</name>
+                   <description>Rising Edge Interrupt Enable [0x0 = Disable IRQ on rising-edge detect, 0x1 = Enable]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>FALLINGDETECT</name>
+               <addressOffset>0x14C</addressOffset>
+               <description>GPIO_FALLINGDETECT Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>FALLINGDETECT</name>
+                   <description>Falling Edge Interrupt Enable [0x0 = Disable IRQ on falling-edge detect, 0x1 = Enable]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>DEBOUNCENABLE</name>
+               <addressOffset>0x150</addressOffset>
+               <description>GPIO_DEBOUNCENABLE Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>DEBOUNCEENABLE</name>
+                   <description>Input Debounce Enable [0x0 = Disable debouncing feature on the corresponding input port, 0x1 = Enable]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>DEBOUNCINGTIME</name>
+               <addressOffset>0x154</addressOffset>
+               <description>GPIO_DEBOUNCINGTIME Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>DEBOUNCETIME</name>
+                   <description>Input Debouncing Value in 31 microsecond steps. Debouncing Value = (DEBOUNCETIME + 1) * 31 microseconds</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>8</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>CLEARDATAOUT</name>
+               <addressOffset>0x190</addressOffset>
+               <description>GPIO_CLEARDATAOUT Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Clear Data Output Register [0x0 = No effect, 0x1 = Clear the corresponding bit in the GPIO_DATAOUT register]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>SETDATAOUT</name>
+               <addressOffset>0x194</addressOffset>
+               <description>GPIO_SETDATAOUT Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Set Data Output Register [0x0 = No effect, 0x1 = Set the corresponding bit in the GPIO_DATAOUT register]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+           </registers>
+         </peripheral>
+         <peripheral>
+           <name>GPIO3</name>
+           <description>GPIO3 module</description>
+           <baseAddress>0x481AE000</baseAddress>
+           <groupName>GPIO</groupName>
+           <registers>
+             <register>
+               <name>REVISION</name>
+               <addressOffset>0x0</addressOffset>
+               <description>GPIO_REVISION Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>MINOR</name>
+                   <description>Minor Revision</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>6</bitWidth>
+                   <access>read-only</access>
+                 </field>
+                 <field>
+                   <name>CUSTOM</name>
+                   <description>bit: 6,7 (R) Indicates a special version for a particular device.</description>
+                   <bitOffset>6</bitOffset>
+                   <bitWidth>2</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>MAJOR</name>
+                   <description>Major Revision</description>
+                   <bitOffset>8</bitOffset>
+                   <bitWidth>3</bitWidth>
+                   <access>read-only</access>
+                 </field>
+                 <field>
+                   <name>RTL</name>
+                   <description>RTL version</description>
+                   <bitOffset>11</bitOffset>
+                   <bitWidth>5</bitWidth>
+                   <access>read-only</access>
+                 </field>
+                 <field>
+                   <name>FUNC</name>
+                   <description>Indicates a software compatible module family.</description>
+                   <bitOffset>16</bitOffset>
+                   <bitWidth>12</bitWidth>
+                   <access>read-only</access>
+                 </field>
+                 <field>
+                   <name>SCHEME</name>
+                   <description>bit: 30,31 (R) Used to distinguish between old Scheme and current.</description>
+                   <bitOffset>28</bitOffset>
+                   <bitWidth>2</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>SYSCONFIG</name>
+               <addressOffset>0x10</addressOffset>
+               <description>GPIO_SYSCONFIG Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>AUTOIDLE</name>
+                   <description>bit: 0 (RW) Internal interface clock gating strategy</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>SOFTRESET</name>
+                   <description>bit: 1 (RW) Software reset. This bit is automatically reset by the hardware. During reads, it always returns 0</description>
+                   <bitOffset>1</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>ENAWAKEUP</name>
+                   <description>bit: 2 (RW) Enable wakeup</description>
+                   <bitOffset>2</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>IDLEMODE</name>
+                   <description>bit: 3,4 (RW) Power Management, Req/Ack control. [see e_GPIO_IDLEMODE]</description>
+                   <bitOffset>3</bitOffset>
+                   <bitWidth>2</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>EOI</name>
+               <addressOffset>0x20</addressOffset>
+               <description>GPIO_EOI Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>DMAEvent_Ack</name>
+                   <description>bit: 0 (RW) Write 0 to acknowledge DMA event has been completed.</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_RAW_0</name>
+               <addressOffset>0x24</addressOffset>
+               <description>GPIO_IRQSTATUS_RAW_0 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n status. [0x0 = No effect, 0x1 = IRQ is triggered]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_RAW_1</name>
+               <addressOffset>0x28</addressOffset>
+               <description>GPIO_IRQSTATUS_RAW_1 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n status. [0x0 = No effect, 0x1 = IRQ is triggered]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_0</name>
+               <addressOffset>0x2C</addressOffset>
+               <description>GPIO_IRQSTATUS_0 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>(RW1C) Interrupt n status.</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_1</name>
+               <addressOffset>0x30</addressOffset>
+               <description>GPIO_IRQSTATUS_1 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>(RW1C) Interrupt n status.</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_SET_0</name>
+               <addressOffset>0x34</addressOffset>
+               <description>GPIO_IRQSTATUS_SET_0 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n enable. [0x0 = No effect, 0x1 = Enable IRQ generation]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_SET_1</name>
+               <addressOffset>0x38</addressOffset>
+               <description>GPIO_IRQSTATUS_SET_1 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n enable. [0x0 = No effect, 0x1 = Enable IRQ generation]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_CLR_0</name>
+               <addressOffset>0x3C</addressOffset>
+               <description>GPIO_IRQSTATUS_CLR_0 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n enable. [0x0 = No effect, 0x1 = Disable IRQ generation]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQSTATUS_CLR_1</name>
+               <addressOffset>0x40</addressOffset>
+               <description>GPIO_IRQSTATUS_CLR_1 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n enable. [0x0 = No effect, 0x1 = Disable IRQ generation]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQWAKEN_0</name>
+               <addressOffset>0x44</addressOffset>
+               <description>GPIO_IRQWAKEN_0 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n enable. [0x0 = No effect, 0x1 = Disable IRQ generation]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>IRQWAKEN_1</name>
+               <addressOffset>0x48</addressOffset>
+               <description>GPIO_IRQWAKEN_1 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Interrupt n enable. [0x0 = No effect, 0x1 = Disable IRQ generation]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>SYSSTATUS</name>
+               <addressOffset>0x114</addressOffset>
+               <description>GPIO_SYSSTATUS Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>RESETDONE</name>
+                   <description>bit: 0 (R) Reset status information. [0x0 = Internal Reset is on-going, 0x1 = Reset completed]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>CTRL</name>
+               <addressOffset>0x130</addressOffset>
+               <description>GPIO_CTRL Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>DISABLEMODULE</name>
+                   <description>bit: 0 (RW) Module Disable [0x0 = Module is enabled, clk are not gated, 0x1 = Module is disabled, clk are gated]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>1</bitWidth>
+                   <access>read-write</access>
+                 </field>
+                 <field>
+                   <name>GATINGRATIO</name>
+                   <description>Gating Ratio. Controls the clock gating for the event detection logic. [see e_GPIO_GATINGRATIO]</description>
+                   <bitOffset>1</bitOffset>
+                   <bitWidth>2</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>OE</name>
+               <addressOffset>0x134</addressOffset>
+               <description>GPIO_OE Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>OUTPUTEN</name>
+                   <description>Output Data Enable [0x0 = The corresponding GPIO port is configured as an output, 0x1 = configured as an input]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>DATAIN</name>
+               <addressOffset>0x138</addressOffset>
+               <description>GPIO_DATAIN Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>DATAIN</name>
+                   <description>Sampled Input Data</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-only</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>DATAOUT</name>
+               <addressOffset>0x13C</addressOffset>
+               <description>GPIO_DATAOUT Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>DATAOUT</name>
+                   <description>Data to set on output pins</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>LEVELDETECT0</name>
+               <addressOffset>0x140</addressOffset>
+               <description>GPIO_LEVELDETECT0 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>LEVELDETECT0</name>
+                   <description>Low Level Interrupt Enable [0x0 = Disable the IRQ assertion on low-level detect, 0x1 = Enable]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>LEVELDETECT1</name>
+               <addressOffset>0x144</addressOffset>
+               <description>GPIO_LEVELDETECT1 Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>LEVELDETECT1</name>
+                   <description>High Level Interrupt Enable [0x0 = Disable the IRQ assertion on high-level detect, 0x1 = Enable]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>RISINGDETECT</name>
+               <addressOffset>0x148</addressOffset>
+               <description>GPIO_RISINGDETECT Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>RISINGDETECT</name>
+                   <description>Rising Edge Interrupt Enable [0x0 = Disable IRQ on rising-edge detect, 0x1 = Enable]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>FALLINGDETECT</name>
+               <addressOffset>0x14C</addressOffset>
+               <description>GPIO_FALLINGDETECT Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>FALLINGDETECT</name>
+                   <description>Falling Edge Interrupt Enable [0x0 = Disable IRQ on falling-edge detect, 0x1 = Enable]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>DEBOUNCENABLE</name>
+               <addressOffset>0x150</addressOffset>
+               <description>GPIO_DEBOUNCENABLE Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>DEBOUNCEENABLE</name>
+                   <description>Input Debounce Enable [0x0 = Disable debouncing feature on the corresponding input port, 0x1 = Enable]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>DEBOUNCINGTIME</name>
+               <addressOffset>0x154</addressOffset>
+               <description>GPIO_DEBOUNCINGTIME Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>DEBOUNCETIME</name>
+                   <description>Input Debouncing Value in 31 microsecond steps. Debouncing Value = (DEBOUNCETIME + 1) * 31 microseconds</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>8</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>CLEARDATAOUT</name>
+               <addressOffset>0x190</addressOffset>
+               <description>GPIO_CLEARDATAOUT Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Clear Data Output Register [0x0 = No effect, 0x1 = Clear the corresponding bit in the GPIO_DATAOUT register]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+             <register>
+               <name>SETDATAOUT</name>
+               <addressOffset>0x194</addressOffset>
+               <description>GPIO_SETDATAOUT Register</description>
+               <size>32</size>
+               <access>read-write</access>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                 <field>
+                   <name>INTLINE</name>
+                   <description>Set Data Output Register [0x0 = No effect, 0x1 = Set the corresponding bit in the GPIO_DATAOUT register]</description>
+                   <bitOffset>0</bitOffset>
+                   <bitWidth>32</bitWidth>
+                   <access>read-write</access>
+                 </field>
+               </fields>
+             </register>
+           </registers>
+         </peripheral>
+
 
   </peripherals>
 </device>

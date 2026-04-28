@@ -3,9 +3,14 @@
 
 #include "regs/REGS.hpp"
 
+#if defined(__GNUC__)
+#pragma GCC push_options
+#pragma GCC optimize ("-O0")
+#endif
+
 namespace HAL::PINS
 {
-        inline void run_clk_GPIO0()
+        [[gnu::noinline]] static void run_clk_GPIO0() noexcept
         {
             using namespace REGS::PRCM;
             auto& wkup = *AM335x_CM_WKUP;
@@ -29,7 +34,7 @@ namespace HAL::PINS
             initialized = true;
         }
 
-        inline void run_clk_GPIO1()
+        [[gnu::noinline]] static void run_clk_GPIO1() noexcept
         {
             using namespace REGS::PRCM;
             auto& per = *AM335x_CM_PER;
@@ -46,7 +51,7 @@ namespace HAL::PINS
             initialized = true;
         }
 
-        inline void run_clk_GPIO2()
+        [[gnu::noinline]] static void run_clk_GPIO2() noexcept
         {
             using namespace REGS::PRCM;
             auto& per = *AM335x_CM_PER;
@@ -63,7 +68,7 @@ namespace HAL::PINS
             initialized = true;
         }
 
-        inline void run_clk_GPIO3()
+        [[gnu::noinline]] static void run_clk_GPIO3() noexcept
         {
             using namespace REGS::PRCM;
             auto& per = *AM335x_CM_PER;
@@ -83,26 +88,20 @@ namespace HAL::PINS
     #define CTRLMREG(x)                              \
     (*((REGS::CONTROL_MODULE::conf_module_pin_reg_t *)(REGS::CONTROL_MODULE::AM335x_CONTROL_MODULE_BASE + x)))
 
-#if BSP_VOLATILE_OVERLOADS
-    #define BSP_VOLATILE volatile
-#else
-    #define BSP_VOLATILE
-#endif
-
     template <typename T, uint32_t pinnum, uint32_t ctrlm_reg> 
     class pin
     {
     private:
 
-                       REGS::GPIO::AM335x_GPIO_Type &m_gpio_regs;
-                                    const uint32_t  m_gpio_regs_adr;
-        REGS::CONTROL_MODULE::conf_module_pin_reg_t &m_cntrmdl_reg;
-                                           uint32_t  m_pinnum;
-                                           uint32_t  m_pinbitmsk;
+                  volatile REGS::GPIO::AM335x_GPIO_Type& m_gpio_regs;
+                            volatile const uint32_t  m_gpio_regs_adr;
+ volatile REGS::CONTROL_MODULE::conf_module_pin_reg_t &m_cntrmdl_reg;
+                                   volatile const uint32_t  m_pinnum;
+                                     volatile  uint32_t  m_pinbitmsk;
     public:   
                  explicit pin(REGS::GPIO::AM335x_GPIO_Type *gpio_module) noexcept
                    : m_gpio_regs(*gpio_module),
-                    m_gpio_regs_adr((uint32_t)gpio_module),
+                    m_gpio_regs_adr(reinterpret_cast<uint32_t>(gpio_module)),
                      m_cntrmdl_reg(CTRLMREG(ctrlm_reg)),
                      m_pinnum(pinnum)
                 { m_pinbitmsk = (1 << m_pinnum); }
@@ -111,18 +110,50 @@ namespace HAL::PINS
 
                 ~pin()= default;
 
-                void  gpio_module_init() BSP_VOLATILE noexcept
+                void  gpio_module_init() volatile noexcept
                 {
                     using namespace REGS::GPIO;
-                    static bool module_initialized = false;
-                    if (module_initialized) return;
+                    using namespace REGS::PRCM;
 
-                    //check whether the module is hardware initialized or not.
-                    if (m_gpio_regs.SYSSTATUS.b.RESETDONE &&
-                        m_gpio_regs.CTRL.b.DISABLEMODULE == 0x0)
+                    bool clk_already_enabled = false;
+
+                    switch(m_gpio_regs_adr)
                     {
-                        module_initialized = true;
+                    case AM335x_GPIO_0_BASE:
+                        {
+                            auto& wkup = *AM335x_CM_WKUP;
+                            clk_already_enabled = (wkup.GPIO0_CLKCTRL.b.MODULEMODE == MODULEMODE_ENABLE);
+                            break;
+                        }
+                    case AM335x_GPIO_1_BASE:
+                        {
+                            auto& per = *AM335x_CM_PER;
+                            clk_already_enabled = (per.GPIO1_CLKCTRL.b.MODULEMODE == MODULEMODE_ENABLE);
+                            break;
+                        }
+                    case AM335x_GPIO_2_BASE:
+                        {
+                            auto& per = *AM335x_CM_PER;
+                            clk_already_enabled = (per.GPIO2_CLKCTRL.b.MODULEMODE == MODULEMODE_ENABLE);
+                            break;
+                        }
+                    case AM335x_GPIO_3_BASE:
+                        {
+                            auto& per = *AM335x_CM_PER;
+                            clk_already_enabled = (per.GPIO3_CLKCTRL.b.MODULEMODE == MODULEMODE_ENABLE);
+                            break;
+                        }
+                    default:
                         return;
+                    }
+
+                    if (clk_already_enabled)
+                    {
+                        if (m_gpio_regs.SYSSTATUS.b.RESETDONE &&
+                            m_gpio_regs.CTRL.b.DISABLEMODULE == 0x0)
+                        {
+                            return;
+                        }
                     }
 
                     switch(m_gpio_regs_adr)
@@ -145,14 +176,12 @@ namespace HAL::PINS
 
                     gpio_module_enable();
                     gpio_module_reset();
-
-                    module_initialized = true;
                 }
 
-                void  gpio_module_enable() BSP_VOLATILE noexcept { m_gpio_regs.CTRL.b.DISABLEMODULE = 0x0; }
-                void  gpio_module_disable() BSP_VOLATILE noexcept { m_gpio_regs.CTRL.b.DISABLEMODULE = 0x1; }
+                void  gpio_module_enable() volatile noexcept { m_gpio_regs.CTRL.b.DISABLEMODULE = 0x0; }
+                void  gpio_module_disable() volatile noexcept { m_gpio_regs.CTRL.b.DISABLEMODULE = 0x1; }
 
-                void  gpio_module_reset() BSP_VOLATILE noexcept
+                void  gpio_module_reset() volatile noexcept
                 {
                     m_gpio_regs.SYSCONFIG.b.SOFTRESET = 0x1;
                     while(!m_gpio_regs.SYSSTATUS.b.RESETDONE);
@@ -162,7 +191,7 @@ namespace HAL::PINS
                  * @brief Удобная настройка пина как GPIO Output в один вызов
                  * @param gpio_mode  нужный mux-режим (например e_GPMC_A5::gpio1_21)
                  */
-                void configure_as_gpio_output(T gpio_mode) BSP_VOLATILE noexcept
+                void configure_as_gpio_output(T gpio_mode) volatile noexcept
                 {
                     gpio_module_init();
                     sel_pinmode(gpio_mode);
@@ -175,7 +204,7 @@ namespace HAL::PINS
                  * @brief Удобная настройка пина как GPIO Input в один вызов
                  * @param gpio_mode  нужный mux-режим
                  */
-                void configure_as_gpio_input(T gpio_mode) BSP_VOLATILE noexcept
+                void configure_as_gpio_input(T gpio_mode) volatile noexcept
                 {
                     gpio_module_init();
                     sel_pinmode(gpio_mode);
@@ -187,7 +216,7 @@ namespace HAL::PINS
                 * @brief  This API configures the periph mode of the pin.
                 * @param  pinmode     The enum pinmode of the pin 0..7 see datasheet
                 **/
-                void  sel_pinmode(T pinmode) BSP_VOLATILE noexcept
+                void  sel_pinmode(T pinmode) volatile noexcept
                 {
                     m_cntrmdl_reg.b.mode = (uint8_t)(pinmode);
                 }
@@ -200,7 +229,7 @@ namespace HAL::PINS
                 *  - true - enables the pullup.
                 *  - false - disable the pullup.
                 **/
-                void  pullup_enable(bool pull_en) BSP_VOLATILE noexcept
+                void  pullup_enable(bool pull_en) volatile noexcept
                 {
                     if(pull_en)
                         m_cntrmdl_reg.b.puden = REGS::CONTROL_MODULE::PULL_ENABLED;
@@ -216,7 +245,7 @@ namespace HAL::PINS
                 *  - REGS::GPIO::PULL_DOWN - pin pulled down
                 *  - REGS::GPIO::PULL_UP - pin pulled up
                 **/
-                void  sel_pull_type(REGS::CONTROL_MODULE::e_PUTYPESEL putypesel) BSP_VOLATILE noexcept { m_cntrmdl_reg.b.putypesel = putypesel; }
+                void  sel_pull_type(REGS::CONTROL_MODULE::e_PUTYPESEL putypesel) volatile noexcept { m_cntrmdl_reg.b.putypesel = putypesel; }
 
                 /**
                 * @brief  This API enables input function of the pin
@@ -226,7 +255,7 @@ namespace HAL::PINS
                 *  - REGS::GPIO::INPUT_DISABLE - pin as a input
                 *  - REGS::GPIO::INPUT_ENABLE - pin as a output
                 **/
-                void  sel_rxactive(REGS::CONTROL_MODULE::e_RXACTIVE rxactive) BSP_VOLATILE noexcept { m_cntrmdl_reg.b.rxactive = rxactive; }
+                void  sel_rxactive(REGS::CONTROL_MODULE::e_RXACTIVE rxactive) volatile noexcept { m_cntrmdl_reg.b.rxactive = rxactive; }
 
                 /**
                 * @brief  This API select slew rate of the pin
@@ -236,7 +265,7 @@ namespace HAL::PINS
                 *  - REGS::GPIO::FAST - fast slew rate
                 *  - REGS::GPIO::SLOW - slow slew rate
                 **/
-                void  sel_slewrate(REGS::CONTROL_MODULE::e_SLEWCTRL slewctrl) BSP_VOLATILE noexcept { m_cntrmdl_reg.b.slewctrl = slewctrl; }
+                void  sel_slewrate(REGS::CONTROL_MODULE::e_SLEWCTRL slewctrl) volatile noexcept { m_cntrmdl_reg.b.slewctrl = slewctrl; }
 
                 /**
                 * @brief  This API configures the direction of a specified GPIO pin as being
@@ -247,7 +276,7 @@ namespace HAL::PINS
                 *  - REGS::GPIO::GPIO_INPUT - pindir configure the pin as an input pin\n
                 *  - REGS::GPIO::GPIO_OUTPUT - to configure the pin as an output pin\n
                 */
-                void  dir_set(REGS::GPIO::e_PINDIR pindir) BSP_VOLATILE noexcept
+                void  dir_set(REGS::GPIO::e_PINDIR pindir) volatile noexcept
                 {
                     if(REGS::GPIO::GPIO_INPUT == pindir)
                     {
@@ -270,7 +299,7 @@ namespace HAL::PINS
                 *          - REGS::GPIO::GPIO_DIR_OUTPUT - signifying that the pin is an output pin\n
                 *
                 */
-                REGS::GPIO::e_PINDIR  dir_get() BSP_VOLATILE noexcept
+                REGS::GPIO::e_PINDIR  dir_get() volatile noexcept
                 {
                     REGS::GPIO::e_PINDIR result = REGS::GPIO::GPIO_INPUT;
 
@@ -283,17 +312,17 @@ namespace HAL::PINS
                 /**
                 * @brief  This API drives an output GPIO pin to a logic HIGH state.
                 **/
-                void  set() BSP_VOLATILE noexcept { m_gpio_regs.SETDATAOUT.reg = m_pinbitmsk; }
+                void  set() volatile noexcept { m_gpio_regs.SETDATAOUT.reg = m_pinbitmsk; }
 
                 /**
                 * @brief  This API drives an output GPIO pin to a logic LOW state.
                 **/
-                void  clear() BSP_VOLATILE noexcept { m_gpio_regs.CLEARDATAOUT.reg = m_pinbitmsk; }
+                void  clear() volatile noexcept { m_gpio_regs.CLEARDATAOUT.reg = m_pinbitmsk; }
 
                 /**
                 * @brief  This API toggle state an output GPIO pin .
                 **/
-                void  toggle() BSP_VOLATILE noexcept
+                void  toggle() volatile noexcept
                 {
                     if(m_gpio_regs.DATAOUT.reg & m_pinbitmsk)
                         m_gpio_regs.CLEARDATAOUT.reg = m_pinbitmsk;
@@ -311,7 +340,7 @@ namespace HAL::PINS
                  *  - false - indicating to drive a logic LOW(logic 0) on the pin.
                  *  - true - indicating to drive a logic HIGH(logic 1) on the pin.
                  */
-                void  write(bool value) BSP_VOLATILE noexcept
+                void  write(bool value) volatile noexcept
                 {
                     if(value)
                         m_gpio_regs.SETDATAOUT.reg = m_pinbitmsk;
@@ -327,7 +356,7 @@ namespace HAL::PINS
                 *  - false - indicating a logic LOW(logic 0) on the pin.
                 *  - true  - indicating a logic HIGH(logic 1) on the pin.
                 */
-         inline bool  read_input() const BSP_VOLATILE noexcept { return (bool)(m_gpio_regs.DATAIN.reg & m_pinbitmsk); }
+         inline bool  read_input() const volatile noexcept { return (bool)(m_gpio_regs.DATAIN.reg & m_pinbitmsk); }
 
                 /**
                 * @brief   This API determines the logic level(value) on a specified
@@ -337,7 +366,7 @@ namespace HAL::PINS
                 *  - false - indicating a logic LOW(logic 0) on the pin.
                 *  - true  - indicating a logic HIGH(logic 1) on the pin.
                 */
-         inline bool  read_output() const  BSP_VOLATILE noexcept { return (bool)(m_gpio_regs.DATAOUT.reg & m_pinbitmsk); }
+         inline bool  read_output() const  volatile noexcept { return (bool)(m_gpio_regs.DATAOUT.reg & m_pinbitmsk); }
 
 
                 /**
@@ -345,7 +374,7 @@ namespace HAL::PINS
                  *         GPIO pin.Debounce time configured in the corresponding GPIO module
                  *         see debounce_time_config(uint32_t debounce_time).
                  */
-                void  debounce_enable() BSP_VOLATILE noexcept
+                void  debounce_enable() volatile noexcept
                 {
                     m_gpio_regs.DEBOUNCENABLE.reg &= ~m_pinbitmsk;  // clear bit in register
                     m_gpio_regs.DEBOUNCENABLE.reg |= m_pinbitmsk;   // program bit in register
@@ -356,7 +385,7 @@ namespace HAL::PINS
                  *         GPIO pin. Debounce time configured in the corresponding GPIO module
                  *         see debounce_time_config(uint32_t debounce_time).
                  */
-                void  debounce_disable() BSP_VOLATILE noexcept
+                void  debounce_disable() volatile noexcept
                 {
                     m_gpio_regs.DEBOUNCENABLE.reg &= ~m_pinbitmsk;  // clear bit in register
                     m_gpio_regs.DEBOUNCENABLE.reg &= ~m_pinbitmsk;  // program bit in register
@@ -373,7 +402,7 @@ namespace HAL::PINS
                  *  - REGS::GPIO::GPIO_INT_LINE_1 - interrupt request be propagated over interrupt line 1\n
                  *  - REGS::GPIO::GPIO_INT_LINE_2 - interrupt request be propagated over interrupt line 2\n
                  */
-                void  int_enable(uint32_t intline) BSP_VOLATILE noexcept
+                void  int_enable(uint32_t intline) volatile noexcept
                 {
                     if(REGS::GPIO::INT_LINE_1 == intline)
                         m_gpio_regs.IRQSTATUS_SET_0.reg = m_pinbitmsk;
@@ -391,7 +420,7 @@ namespace HAL::PINS
                  *  - REGS::GPIO::GPIO_INT_LINE_2 - signifying that the Interrupt Line 2 be disabled to
                  *    transmit interrupt requests due to transitions on specified pin\n
                  */
-                void  int_disable(uint32_t intline) BSP_VOLATILE noexcept
+                void  int_disable(uint32_t intline) volatile noexcept
                 {
                     if(REGS::GPIO::INT_LINE_1 == intline)
                         m_gpio_regs.IRQSTATUS_CLR_0.reg = m_pinbitmsk;
@@ -436,7 +465,7 @@ namespace HAL::PINS
                  *        'INT_TYPE_LEVEL_HIGH' as the parameter. Doing this ensures that
                  *        logic LOW level trigger for interrupts is disabled.
                  */
-                void  int_type_set(REGS::GPIO::e_INT_TYPE evnt_type) BSP_VOLATILE noexcept
+                void  int_type_set(REGS::GPIO::e_INT_TYPE evnt_type) volatile noexcept
                 {
                     switch(evnt_type)
                     {
@@ -546,7 +575,7 @@ namespace HAL::PINS
                  * - INT_TYPE_BOTH_EDGE - both rising and falling edge events for
                  *   interrupt request are enabled\n
                  */
-                uint32_t  int_type_get() BSP_VOLATILE noexcept
+                uint32_t  int_type_get() volatile noexcept
                 {
                     uint32_t int_event = (REGS::GPIO::INT_TYPE_NO_LEVEL |
                                           REGS::GPIO::INT_TYPE_NO_EDGE);
@@ -597,7 +626,7 @@ namespace HAL::PINS
                  * @return The enabled interrupt status of the pin on the specified interrupt
                  *         line. This could either be a non-zero or a zero value.
                  */
-                bool  int_status(uint32_t intline) BSP_VOLATILE noexcept
+                bool  int_status(uint32_t intline) volatile noexcept
                 {
                     bool int_sts = false;
 
@@ -624,7 +653,7 @@ namespace HAL::PINS
                  * @return  The raw interrupt status of the specified pins of the GPIO instance
                  *          corresponding to a specified interrupt line.
                  */
-                bool  raw_int_status(uint32_t intline) BSP_VOLATILE noexcept
+                bool  raw_int_status(uint32_t intline) volatile noexcept
                 {
                     bool int_sts = false;
 
@@ -650,7 +679,7 @@ namespace HAL::PINS
                  * - REGS::GPIO::GPIO_INT_LINE_2 - to access the enabled interrupt status register
                  *   corresponding to interrupt line 2\n *
                 */
-                void  int_clear(uint32_t intline) BSP_VOLATILE noexcept
+                void  int_clear(uint32_t intline) volatile noexcept
                 {
                     if(REGS::GPIO::INT_LINE_1 == intline)
                         m_gpio_regs.IRQSTATUS_0.reg = m_pinbitmsk;
@@ -676,7 +705,7 @@ namespace HAL::PINS
                  *        pre-requisite, the interrupt generation should be enabled for the
                  *        GPIO pin.
                  */
-                void  trigger_int(uint32_t intline) BSP_VOLATILE noexcept
+                void  trigger_int(uint32_t intline) volatile noexcept
                 {
                     if(REGS::GPIO::INT_LINE_1 == intline)
                         m_gpio_regs.IRQSTATUS_RAW_0.reg = m_pinbitmsk;
@@ -705,7 +734,7 @@ namespace HAL::PINS
                  *           An expected transition on an Input GPIO Pin can generate a Wakeup
                  *           request.\n
                  */
-                void  int_wakeup_enable(uint32_t intline) BSP_VOLATILE noexcept
+                void  int_wakeup_enable(uint32_t intline) volatile noexcept
                 {
                     if(REGS::GPIO::INT_LINE_1 == intline)
                         m_gpio_regs.IRQWAKEN_0.reg |= m_pinbitmsk;
@@ -727,7 +756,7 @@ namespace HAL::PINS
                  * - REGS::GPIO::GPIO_INT_LINE_2 - to propagate the wakeup request over Smart
                  *   Wakeup Interrupt Line 2\n
                  */
-                void  int_wakeup_disable(uint32_t intline) BSP_VOLATILE noexcept
+                void  int_wakeup_disable(uint32_t intline) volatile noexcept
                 {
                     if(REGS::GPIO::INT_LINE_1 == intline)
                         m_gpio_regs.IRQWAKEN_0.reg &= ~m_pinbitmsk;
@@ -738,5 +767,9 @@ namespace HAL::PINS
     };
 
 }  // namespace HAL::PINS
+
+#if defined(__GNUC__)
+#pragma GCC pop_options
+#endif
 
 #endif // _PIN_HPP

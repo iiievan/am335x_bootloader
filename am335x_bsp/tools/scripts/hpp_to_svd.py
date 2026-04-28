@@ -123,6 +123,26 @@ PERIPHERAL_CONFIG = {
         'base_address': '0x44E09000',
         'description': 'UART0 module'
     },
+    #'GPIO0': {
+    #    'struct_pattern': 'AM335x_GPIO_Type',
+    #    'base_address': '0x44E07000',
+    #    'description': 'GPIO0 module'
+    #},
+    #'GPIO1': {
+    #    'struct_pattern': 'AM335x_GPIO_Type',
+    #    'base_address': '0x4804C000',
+    #    'description': 'GPIO1 module'
+    #},
+    'GPIO2': {
+        'struct_pattern': 'AM335x_GPIO_Type',
+        'base_address': '0x481AC000',
+        'description': 'GPIO2 module'
+    }
+    #'GPIO3': {
+    #    'struct_pattern': 'AM335x_GPIO_Type',
+    #    'base_address': '0x481AE000',
+    #    'description': 'GPIO3 module'
+    #},
 }
 
 # Если True - парсить все найденные структуры, даже если их нет в PERIPHERAL_CONFIG
@@ -447,6 +467,8 @@ def generate_svd(registers_info, peripherals_info):
             SubElement(periph_elem, 'groupName').text = 'Clock Modules'
         elif 'PRM_' in p_name:
             SubElement(periph_elem, 'groupName').text = 'Power Reset Modules'
+        elif 'GPIO' in p_name:
+            SubElement(periph_elem, 'groupName').text = 'GPIO'
         else:
             SubElement(periph_elem, 'groupName').text = 'Peripherals'
 

@@ -28,10 +28,33 @@ int main ()
     }
 
     RTT_LOG_I(TAG, "Board initialization seccess!");
+
+    uint8_t counter = 0;
     while(true)
     {
-        delay_ms(200);
-        Board::USR3.toggle();
+        delay_ms(150);
+        switch (counter)
+        {
+            case 0:
+                Board::USR0.toggle();
+                counter++;
+                break;
+            case 1:
+                Board::USR1.toggle();
+                counter++;
+                break;
+            case 2:
+                Board::USR2.toggle();
+                counter++;
+                break;
+            case 3:
+                Board::USR3.toggle();
+                counter++;
+                break;
+            default:
+                counter = 0;
+                break;
+        }
     }
 
     return(0);

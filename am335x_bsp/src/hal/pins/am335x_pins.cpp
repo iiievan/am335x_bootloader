@@ -25,15 +25,15 @@ namespace HAL::PINS
      //LCD_DATA15 lcd_data15{REGS::GPIO::AM335x_GPIO_0};                  // gpio0_11
      //UART1_CTSn uart1_ctsn{REGS::GPIO::AM335x_GPIO_0};                  // gpio0_12
      //UART1_RTSn uart1_rtsn{REGS::GPIO::AM335x_GPIO_0};                  // gpio0_13
-     UART1_RXD uart1_rxd{REGS::GPIO::AM335x_GPIO_0};                    // gpio0_14
-     UART1_TXD uart1_txd{REGS::GPIO::AM335x_GPIO_0};                    // gpio0_15
+     //UART1_RXD uart1_rxd{REGS::GPIO::AM335x_GPIO_0};                    // gpio0_14
+     //UART1_TXD uart1_txd{REGS::GPIO::AM335x_GPIO_0};                    // gpio0_15
      //MII1_TXD3 mii1_txd3{REGS::GPIO::AM335x_GPIO_0};                    // gpio0_16
      //MII1_TXD2 mii1_txd2{REGS::GPIO::AM335x_GPIO_0};                    // gpio0_17
      //USB0_DRVVBUS usb0_drvvbus{REGS::GPIO::AM335x_GPIO_0};              // gpio0_18
      //XDMA_EVENT_INTR0 xdma_event_intr0{REGS::GPIO::AM335x_GPIO_0};      // gpio0_19
      //XDMA_EVENT_INTR1 xdma_event_intr1{REGS::GPIO::AM335x_GPIO_0};      // gpio0_20
      //MII1_TXD1 mii1_txd1{REGS::GPIO::AM335x_GPIO_0};                    // gpio0_21
-     GPMC_AD8 gpmc_ad8{REGS::GPIO::AM335x_GPIO_0};                      // gpio0_22
+     //GPMC_AD8 gpmc_ad8{REGS::GPIO::AM335x_GPIO_0};                      // gpio0_22
      //GPMC_AD9 gpmc_ad9{REGS::GPIO::AM335x_GPIO_0};                      // gpio0_23
      //GPMC_AD10 gpmc_ad10{REGS::GPIO::AM335x_GPIO_0};                    // gpio0_26
      //GPMC_AD11 gpmc_ad11{REGS::GPIO::AM335x_GPIO_0};                    // gpio0_27
@@ -53,8 +53,8 @@ namespace HAL::PINS
      //GPMC_AD7 gpmc_ad7{REGS::GPIO::AM335x_GPIO_1};      // gpio1_7
      //UART0_CTSn uart0_ctsn{REGS::GPIO::AM335x_GPIO_1};  // gpio1_8
      //UART0_RTSn uart0_rtsn{REGS::GPIO::AM335x_GPIO_1};  // gpio1_9
-     UART0_RXD uart0_rxd{REGS::GPIO::AM335x_GPIO_1};    // gpio1_10
-     UART0_TXD uart0_txd{REGS::GPIO::AM335x_GPIO_1};    // gpio1_11
+     //UART0_RXD uart0_rxd{REGS::GPIO::AM335x_GPIO_1};    // gpio1_10
+     //UART0_TXD uart0_txd{REGS::GPIO::AM335x_GPIO_1};    // gpio1_11
      //GPMC_AD12 gpmc_ad12{REGS::GPIO::AM335x_GPIO_1};    // gpio1_12
      //GPMC_AD13 gpmc_ad13{REGS::GPIO::AM335x_GPIO_1};    // gpio1_13
      //GPMC_AD14 gpmc_ad14{REGS::GPIO::AM335x_GPIO_1};    // gpio1_14
@@ -64,10 +64,10 @@ namespace HAL::PINS
      //GPMC_A2 gpmc_a2{REGS::GPIO::AM335x_GPIO_1};        // gpio1_18
      //GPMC_A3 gpmc_a3{REGS::GPIO::AM335x_GPIO_1};        // gpio1_19
      //GPMC_A4 gpmc_a4{REGS::GPIO::AM335x_GPIO_1};        // gpio1_20
-     GPMC_A5 gpmc_a5{REGS::GPIO::AM335x_GPIO_1};        // gpio1_21
-     GPMC_A6 gpmc_a6{REGS::GPIO::AM335x_GPIO_1};        // gpio1_22
-     GPMC_A7 gpmc_a7{REGS::GPIO::AM335x_GPIO_1};        // gpio1_23
-     GPMC_A8 gpmc_a8{REGS::GPIO::AM335x_GPIO_1};        // gpio1_24
+     //GPMC_A5 gpmc_a5{REGS::GPIO::AM335x_GPIO_1};        // gpio1_21
+     //GPMC_A6 gpmc_a6{REGS::GPIO::AM335x_GPIO_1};        // gpio1_22
+     //GPMC_A7 gpmc_a7{REGS::GPIO::AM335x_GPIO_1};        // gpio1_23
+     //GPMC_A8 gpmc_a8{REGS::GPIO::AM335x_GPIO_1};        // gpio1_24
      //GPMC_A9 gpmc_a9{REGS::GPIO::AM335x_GPIO_1};        // gpio1_25
      //GPMC_A10 gpmc_a10{REGS::GPIO::AM335x_GPIO_1};      // gpio1_26
      //GPMC_A11 gpmc_a11{REGS::GPIO::AM335x_GPIO_1};      // gpio1_27

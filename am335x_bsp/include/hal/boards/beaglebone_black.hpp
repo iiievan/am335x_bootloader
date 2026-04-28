@@ -2,6 +2,12 @@
 #define __BOARD_HPP
 
 #include "hal/pins/am3359_pins.hpp"
+#include "hal/UART.hpp"
+
+#if defined(__GNUC__)
+#pragma GCC push_options
+#pragma GCC optimize ("-O0")
+#endif
 
 namespace Board
 {
@@ -10,28 +16,28 @@ namespace Board
     // ========================================================================
     // USER LEDs (BeagleBone Black)
     // ========================================================================
-    extern BSP_VOLATILE HAL::PINS::GPMC_A5& USR0;   // GPIO1_21, P9.25
-    extern BSP_VOLATILE HAL::PINS::GPMC_A6& USR1;   // GPIO1_22, P9.27
-    extern BSP_VOLATILE HAL::PINS::GPMC_A7& USR2;   // GPIO1_23, P9.28
-    extern BSP_VOLATILE HAL::PINS::GPMC_A8& USR3;   // GPIO1_24, P9.30
+    extern volatile HAL::PINS::GPMC_A5 USR0;   // GPIO1_21, P9.25
+    extern volatile HAL::PINS::GPMC_A6 USR1;   // GPIO1_22, P9.27
+    extern volatile HAL::PINS::GPMC_A7 USR2;   // GPIO1_23, P9.28
+    extern volatile HAL::PINS::GPMC_A8 USR3;   // GPIO1_24, P9.30
 
     // ========================================================================
     // BOOT BUTTON (BeagleBone Black)
     // ========================================================================
-    extern BSP_VOLATILE HAL::PINS::GPMC_AD8& BOOT_BUTTON;  // GPIO0_22, P8.19 (active low, pull-up)
+    extern volatile HAL::PINS::GPMC_AD8 BOOT_BUTTON;  // GPIO0_22, P8.19 (active low, pull-up)
 
     // ========================================================================
     // UART0 (Debug Console - FTDI header J1)
     // ========================================================================
-    extern BSP_VOLATILE HAL::PINS::UART0_TXD& UART0_TX;    // GPIO1_11, J1.4
-    extern BSP_VOLATILE HAL::PINS::UART0_RXD& UART0_RX;    // GPIO1_10, J1.5
-
+    extern volatile HAL::PINS::UART0_TXD& UART0_TX;    // GPIO1_11, J1.4
+    extern volatile HAL::PINS::UART0_RXD& UART0_RX;    // GPIO1_10, J1.5
+    extern HAL::UART::uart0_t& get_uart0();
 
     // ========================================================================
     // UART1 (Available on P9.24, P9.26)
     // ========================================================================
-    extern BSP_VOLATILE HAL::PINS::UART1_TXD& UART1_TX;    // GPIO0_15, P9.24
-    extern BSP_VOLATILE HAL::PINS::UART1_RXD& UART1_RX;    // GPIO0_14, P9.26
+    extern volatile HAL::PINS::UART1_TXD UART1_TX;    // GPIO0_15, P9.24
+    extern volatile HAL::PINS::UART1_RXD UART1_RX;    // GPIO0_14, P9.26
     /*
     // ========================================================================
     // UART2 (Available on P8.37, P8.38)
@@ -176,10 +182,12 @@ namespace Board
 
     void init_user_leds();
     void init_boot_button();
-    void init_uart0();
-    void init_i2c0();
     void init_all();
 
 } // namespace Board
+
+#if defined(__GNUC__)
+#pragma GCC pop_options
+#endif
 
 #endif //__BOARD_HPP

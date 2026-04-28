@@ -1,32 +1,42 @@
 #include "hal/boards/beaglebone_black.hpp"
 
+#if defined(__GNUC__)
+#pragma GCC push_options
+#pragma GCC optimize ("-O0")
+#endif
+
 namespace Board
 {
     // ========================================================================
     // USER LEDs
     // ========================================================================
-    BSP_VOLATILE HAL::PINS::GPMC_A5& USR0 = HAL::PINS::gpmc_a5;
-    BSP_VOLATILE HAL::PINS::GPMC_A6& USR1 = HAL::PINS::gpmc_a6;
-    BSP_VOLATILE HAL::PINS::GPMC_A7& USR2 = HAL::PINS::gpmc_a7;
-    BSP_VOLATILE HAL::PINS::GPMC_A8& USR3 = HAL::PINS::gpmc_a8;
+    volatile HAL::PINS::GPMC_A5 USR0{REGS::GPIO::AM335x_GPIO_1};
+    volatile HAL::PINS::GPMC_A6 USR1{REGS::GPIO::AM335x_GPIO_1};
+    volatile HAL::PINS::GPMC_A7 USR2{REGS::GPIO::AM335x_GPIO_1};
+    volatile HAL::PINS::GPMC_A8 USR3{REGS::GPIO::AM335x_GPIO_1};
 
     // ========================================================================
     // BOOT BUTTON
     // ========================================================================
-    BSP_VOLATILE HAL::PINS::GPMC_AD8& BOOT_BUTTON = HAL::PINS::gpmc_ad8;
+    volatile HAL::PINS::GPMC_AD8 BOOT_BUTTON{REGS::GPIO::AM335x_GPIO_0};
 
     // ========================================================================
     // UART0
     // ========================================================================
-    BSP_VOLATILE HAL::PINS::UART0_TXD& UART0_TX = HAL::PINS::uart0_txd;
-    BSP_VOLATILE HAL::PINS::UART0_RXD& UART0_RX = HAL::PINS::uart0_rxd;
+    volatile HAL::PINS::UART0_TXD uart0_tx{REGS::GPIO::AM335x_GPIO_1};
+    volatile HAL::PINS::UART0_RXD uart0_rx{REGS::GPIO::AM335x_GPIO_1};
 
+    HAL::UART::uart0_t& get_uart0()
+    {
+        static HAL::UART::uart0_t uart_0(uart0_tx, uart0_rx);
+        return uart_0;
+    }
 
     // ========================================================================
     // UART1
     // ========================================================================
-    BSP_VOLATILE HAL::PINS::UART1_TXD& UART1_TX = HAL::PINS::uart1_txd;
-    BSP_VOLATILE HAL::PINS::UART1_RXD& UART1_RX = HAL::PINS::uart1_rxd;
+    volatile HAL::PINS::UART1_TXD UART1_TX{REGS::GPIO::AM335x_GPIO_0};
+    volatile HAL::PINS::UART1_RXD UART1_RX{REGS::GPIO::AM335x_GPIO_0};
     /*
     // ========================================================================
     // UART2
@@ -187,24 +197,14 @@ namespace Board
         BOOT_BUTTON.configure_as_gpio_input(HAL::PINS::e_GPMC_AD8::gpio0_22);
     }
 
-    void init_uart0()
-    {
-        //UART0_TX.configure_pinmux(HAL::PINS::e_UART0_TXD::uart0_txd);
-        //UART0_RX.configure_pinmux(HAL::PINS::e_UART0_RXD::uart0_rxd);
-    }
-
-    void init_i2c0()
-    {
-        //I2C0_SDA.configure_pinmux(HAL::PINS::e_I2C0_SDA::i2c0_sda);
-        //I2C0_SCL.configure_pinmux(HAL::PINS::e_I2C0_SCL::i2c0_scl);
-    }
-
     void init_all()
     {
         init_user_leds();
         init_boot_button();
-        init_uart0();
-        init_i2c0();
     }
 
 } // namespace Board
+
+#if defined(__GNUC__)
+#pragma GCC pop_options
+#endif
