@@ -29,8 +29,8 @@ cmake --build cmake-build-release
 Use the provided script in to create the required partition layout automatically.
 ```bash 
 cd /am335x_bsp/tools
-chmod +x setup_sd_card.sh
-sudo ./setup_sd_card.sh
+chmod +x prepare_sd_card.sh
+sudo ./prepare_sd_card.sh
 ```
 The script will:  
 - Create a 128 MB FAT32 partition (type b) with 512-byte sectors.  
