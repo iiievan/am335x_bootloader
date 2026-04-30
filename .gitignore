@@ -5,3 +5,6 @@ settings/
 *.ewt
 *.dep
 *.html
+*.idea
+*.venv
+
