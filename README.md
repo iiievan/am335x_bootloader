@@ -39,7 +39,7 @@ The script will:
 
 Then connect usb-ttl converter to UART0 on BeagleBone, start the terminal you are comfortable with, press reset(hold it) and power up the beaglebone black.
 After few seconds, if initialization is successful, the bootloader will output the following lines to UART0 on the board:
-> bootloader started... 
+> bootloader started...   
 > UART initialized...  
 > DDR initialization successful!" 
 
@@ -53,7 +53,7 @@ That's it, you can load any application via debugger directly into ddr and debug
 > **WARNING**  
 > For normal operation of the secondary bootloader it is necessary to format   
 > section (usually 128M) of SD card in FAT32 file system with sector size 512 and place MLO file on it.   
-> It is also very important that **SYSTEMSTART** section and **Entry** symbol in it is located at    
+> It is also very important that **startup** section and **Entry** symbol in it is located at    
 > address **0x402f0400**. To do this you need check **.map** file after compilation:
 ```
 .text.startup   0x402f0400      0x140
