@@ -1,17 +1,61 @@
 #include <stdint.h>
+#include <stdbool.h>
 #include "init.h"
-#include "board.hpp"
-#include "utils.h"
+#include "rtt/rtt_log.h"
+#include "hal/boards/beaglebone_black.hpp"
+#include "hal/sysTimer.hpp"
 
-int main()
-{     
-    init_board();
-    
-    for ever
+
+#define TAG "main"
+
+void delay_ms(const uint32_t ms)
+{
+    using namespace HAL::TIMERS;
+    const volatile uint32_t start = sys_time.get_ms();
+    while((sys_time.get_ms() - start) < ms);
+}
+
+int main ()
+{
+    bool init_sts = false;
+
+    init_sts = init_board();
+
+    if (!init_sts)
     {
-        delay_100us(200);
-        USR_LED_3.toggle();
+        RTT_LOG_E(TAG, "Board initialization failed!");
+        while (1);
     }
-} 
 
-/******************************* End of file *********************************/
+    RTT_LOG_I(TAG, "Board initialization seccess!");
+
+    uint8_t counter = 0;
+    while(true)
+    {
+        delay_ms(150);
+        switch (counter)
+        {
+            case 0:
+                Board::USR0.toggle();
+                counter++;
+                break;
+            case 1:
+                Board::USR1.toggle();
+                counter++;
+                break;
+            case 2:
+                Board::USR2.toggle();
+                counter++;
+                break;
+            case 3:
+                Board::USR3.toggle();
+                counter++;
+                break;
+            default:
+                counter = 0;
+                break;
+        }
+    }
+
+    return(0);
+}

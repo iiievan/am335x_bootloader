@@ -1,16 +1,16 @@
-#ifndef __INIT_H
-#define __INIT_H
+#ifndef INIT_H
+#define INIT_H
 
-void init_board(void);
+#include "stdint.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void mpu_pll_init(void);
-void core_pll_init(void); 
-void per_pll_init(void);
-void ddr_pll_init(void);
-void interface_clocks_init(void);
+bool init_board(void);
+void delay_ms(const uint32_t ms);
 
-void ddr_init(void);
-uint8_t ddr_check(void);
+#ifdef __cplusplus
+}
+#endif
 
-#endif  //__INIT_H
-
+#endif /* INIT_H */

@@ -1,10 +1,10 @@
-Debug/
-Release/
-settings/
-.metadata/
-*.ewt
-*.dep
-*.html
 *.idea
 *.venv
+/.idea
+/cmake-*
+tests/cmake-*
+/Debug
+/Release
+/build
+
 

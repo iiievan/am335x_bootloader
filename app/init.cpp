@@ -1,41 +1,32 @@
-#include "stdint.h"
+/*=======================================================================*/
+/*  Includes                                                             */
+/*=======================================================================*/
 #include "init.h"
-#include "board.hpp"
-#include "cp15.h"
-#include "am335x_intc.h"
-#include "am335x_dmtimer.h"
-#include "am335x_edma.h"
-#include "am335x_gpio.h"
-#include "pin.h"
-#include "sys_timer.h"
-#include "PRCM.h"
-#include "DMTIMER1MS.h"
-#include "prcm_.h"
-#include "control.h"
-#include "emif.h"
-#include "EMIF.hpp"
-#include "MMCHS.hpp"
-#include "serial.hpp"
-#include "common.h"
+#include "startup/cp15.h"
+#include "regs/REGS.hpp"
+#include "rtt/rtt_log.h"
+#include "ddr_calibration.hpp"
+#include "hal/INTC.hpp"
+#include "hal/sysTimer.hpp"
+#include "hal/boards/beaglebone_black.hpp"
 
-extern "C" void Entry(void);
-extern "C" void UndefInstHandler(void);
-extern "C" void SVC_Handler(void);
-extern "C" void AbortHandler(void);
-extern "C" void IRQHandler(void);
-extern "C" void FIQHandler(void);
 
-// precision 1ms system timer for system time
-sys_timer<SYST_t> sys_time(SYST_TIMER_ptr);
-am335x_gpio gpio0(REGS::GPIO::AM335x_GPIO_0);
-am335x_gpio gpio1(REGS::GPIO::AM335x_GPIO_1);
-am335x_gpio gpio2(REGS::GPIO::AM335x_GPIO_2);
-//am335x_gpio gpio3(REGS::GPIO::AM335x_GPIO_3);
+#define DDR_TEST_SIZE            (32 * 1024 * 1024)
+#define TAG "brd_ini"
 
-serial<REGS::UART::UART_0> serial_uart_0;
-AM335x_EDMA eDMA;
+#define DLY_100US    (10160)  //11830
 
-static uint32_t const vec_tbl[14]=
+extern "C"
+{
+    void Entry(void);
+    void UndefInstHandler(void);
+    void SVC_Handler(void);
+    void AbortHandler(void);
+    void IRQHandler(void);
+    void FIQHandler(void);
+}
+
+static uint32_t const vec_tbl[14] =
 {
     0xE59FF018,    /* Opcode for loading PC with the contents of [PC + 0x18] */
     0xE59FF018,    /* Opcode for loading PC with the contents of [PC + 0x18] */
@@ -53,358 +44,362 @@ static uint32_t const vec_tbl[14]=
     (uint32_t)FIQHandler
 };
 
-static void copy_vector_table(void)
-{
-    uint32_t *dest = (uint32_t *)AM335X_VECTOR_BASE;
-    uint32_t *src  = (uint32_t *)vec_tbl;
-    uint32_t count;
-  
-    CP15VectorBaseAddrSet(AM335X_VECTOR_BASE);
+static void mpu_pll_init();
+static void core_pll_init();
+static void per_pll_init();
+static void ddr_pll_init();
+static void interface_clocks_init();
+static void ddr_init();
+static bool ddr_check();
 
-    for(count = 0; count < sizeof(vec_tbl)/sizeof(vec_tbl[0]); count++)
+extern HAL::TIMERS::sysTimer<SYST_t> sys_time;
+
+static void copy_vector_table()
+{
+    auto *dest = reinterpret_cast<uint32_t*>(AM335X_VECTOR_BASE);
+    auto *src  = const_cast<uint32_t*>(vec_tbl);
+
+    cp15_vector_base_addr_set(AM335X_VECTOR_BASE);
+
+    for(uint32_t count = 0; count < sizeof(vec_tbl)/sizeof(vec_tbl[0]); count++)
     {
         dest[count] = src[count];
     }
 }
 
-void input_callback(char c) 
+static void rtt_cache_clean()
 {
-    // echo input back out
-    serial_uart_0.putc(c);
+    // Очищаем и инвалидируем кэш для RTT области
+    // RTT область: 0x40300000 - 0x40310000 (64KB)
+    cp15_D_cache_clean_flush_buff(0x40300000, 0x10000);
+    cp15_I_cache_flush_buff(0x40300000, 0x10000);
+    cp15_DSB_ISB_sync_barrier();
 }
 
-void init_board(void)
-{ 
-    size_t cc_size = sizeof(REGS::EDMA::AM335x_EDMA3CC_Type);
-    size_t tc_size = sizeof(REGS::EDMA::AM335x_EDMA3TC_Type);
-    
-    if(cc_size != 0x1094 + 4)
-        return;
-    
-     if(tc_size != 0x3D4 + 4)
-        return;   
-     
+static void input_callback(char c);
+
+bool init_board()
+{
     copy_vector_table();
-    
+
+    rtt_log_init();
+    RTT_LOG_I(TAG, "=== AM335x Boot Loader Starting ===");
+    cp15_MMU_disable();
+    cp15_D_cache_disable();
+    cp15_I_cache_disable();
+
+    cp15_DSB_ISB_sync_barrier();
+
+    rtt_cache_clean();
+
     mpu_pll_init();
     core_pll_init();
     per_pll_init();
     ddr_pll_init();
     interface_clocks_init();
-           
-    intc.init();                       //Initializing the ARM Interrupt Controller.
-        
-    // setup system timer for 1ms interrupt 
-    sys_time.init();
-    
-    gpio1.init();     
-    USR_LED_0.sel_pinmode(PINS::e_GPMC_A5::gpio1_21);
-    USR_LED_0.dir_set(REGS::GPIO::GPIO_OUTPUT);    
-    USR_LED_1.sel_pinmode(PINS::e_GPMC_A6::gpio1_22);
-    USR_LED_1.dir_set(REGS::GPIO::GPIO_OUTPUT);    
-    USR_LED_2.sel_pinmode(PINS::e_GPMC_A7::gpio1_23);
-    USR_LED_2.dir_set(REGS::GPIO::GPIO_OUTPUT);    
-    USR_LED_3.sel_pinmode(PINS::e_GPMC_A8::gpio1_24);
-    USR_LED_3.dir_set(REGS::GPIO::GPIO_OUTPUT);    
 
-    serial_uart_0.init(input_callback);
-    
-    intc.master_IRQ_enable();
-    
-    USR_LED_0.set();    
+    RTT_CHECK_MODULE_SIZE(REGS::INTC::AM335x_INTC_Type,0x2FC);
+    RTT_CHECK_MODULE_SIZE(REGS::DMTIMER::AM335x_DMTIMER_Type,0x58);
+    RTT_CHECK_MODULE_SIZE(REGS::DMTIMER1MS::AM335x_DMTIMER1MS_Type,0x58);
+    RTT_CHECK_MODULE_SIZE(REGS::RTC::AM335x_RTC_Type,0x9C);
 
-    serial_uart_0.puts((char *)"\r\nbootloader started... \r\n");
-    serial_uart_0.puts((char *)"UART initialized... \r\n"); 
-    
-    serial_uart_0.hexdump(0x01234567);
-    serial_uart_0.puts((char *)"\n\r");
-    serial_uart_0.hexdump(0x89ABCDEF);
-    serial_uart_0.puts((char *)"\n\r");
-    
-     // initialize DDR3L, values hardcoded for D2516EC4BXGGB 
+    HAL::INTC::init();              //Initializing the ARM Interrupt Controller.
+    HAL::TIMERS::sys_time.init();   // setup system timer for 1ms interrupt
+
+    Board::init_user_leds();
+
+    RTT_CHECK_MODULE_SIZE(REGS::UART::AM335x_UART_Type,0x84);
+    Board::get_uart0().init(input_callback);
+
+    HAL::INTC::master_IRQ_enable();
+
+    Board::get_uart0().put_string((char *)"\r\nbootloader started... \r\n");
+    Board::get_uart0().put_string((char *)"UART0 initialized... \r\n");
+
     ddr_init();
-  
-    if (REG(EMIF0_STATUS) & 0x4) 
+
+    using namespace REGS::EMIF;
+    const auto& emif = *AM335x_EMIF0;
+
+    if(!emif.is_phy_ready())
     {
-        serial_uart_0.puts((char *)"DDR3L initialized\n\r");
-    } 
-    else 
-    {
-        serial_uart_0.puts((char *)"DDR3L initialization failed...\n\r");
-        return;
+        RTT_LOG_E(TAG,"EMIF PHY initialization failed!");
+        return false;
     }
-    
-    // check reading and writing to external DRAM before continuing */
-    if (!ddr_check()) 
+
+    if (!ddr_check())
     {
-        serial_uart_0.puts((char *)"DDR3L read/write check passed\n\r");
-    } 
-    else 
+        RTT_LOG_E(TAG,"DDR check failed!");
+        return false;
+    }
+
+    Board::get_uart0().put_string((char *)"DDR initialization successful! \r\n");
+    RTT_LOG_I(TAG, "DDR initialization successful!");
+
+    return true;
+}
+
+void input_callback(char c)
+{
+    Board::get_uart0().put_char(c);
+}
+
+static void mpu_pll_init()
+{
+    using namespace REGS::PRCM;
+    auto& wkup = *AM335x_CM_WKUP;
+
+    // Switch dpll mpu to bypass mode and  wait for bypass status
+    wkup.CLKMODE_DPLL_MPU.reg = DPLL_MNBYPASS;
+    while (wkup.IDLEST_DPLL_MPU.b.ST_MN_BYPASS == 0){}
+
+    // configure divider and multipler
+    // DPLL_MULT = 1000, DPLL_DIV = 23 (actual division factor is N+1)
+    // 24MHz*1000/24 = 1GHz
+    wkup.CLKSEL_DPLL_MPU.reg = (1000 << 8) | (23);
+
+    wkup.DIV_M2_DPLL_MPU.b.DPLL_CLKOUT_DIV = 0x0;
+    wkup.DIV_M2_DPLL_MPU.b.DPLL_CLKOUT_DIV |= 0x1;
+
+    // Lock dpll mpu and  wait locking status
+    wkup.CLKMODE_DPLL_MPU.reg = DPLL_LOCKMODE;
+    while (wkup.IDLEST_DPLL_MPU.b.DPLL == 0){}
+}
+
+// Core PLL Configuration based on AM335x TRM 8.1.6.7.1
+// All values based on AM335x TRM Table 8-22 Core PLL Typical Frequencies OPP100
+// clock source is 24MHz crystal on OSC0-IN (BBB schematic page 3)
+static void core_pll_init()
+{
+    using namespace REGS::PRCM;
+    auto& wkup = *AM335x_CM_WKUP;
+
+    // Switch dpll core to bypass mode and wait to baypass status
+    wkup.CLKMODE_DPLL_CORE.b.DPLL_EN = DPLL_MNBYPASS;
+    while (wkup.IDLEST_DPLL_CORE.b.ST_MN_BYPASS == 0){}
+
+    // configure divider and multiplier
+    // DPLL_MULT = 500, DPLL_DIV = 23 (actual division factor is N+1)
+    // 24MHz*500/24 = 500 MHz
+    wkup.CLKSEL_DPLL_CORE.reg = (500 << 8) | (23);
+
+    // Set M4,M5,M6 dividers
+    // Set M4,M5,M6 diveders
+    wkup.DIV_M4_DPLL_CORE.b.HSDIVIDER_CLKOUT1_DIV = 0x0;
+    wkup.DIV_M4_DPLL_CORE.b.HSDIVIDER_CLKOUT1_DIV |= 0x10;
+    wkup.DIV_M5_DPLL_CORE.b.HSDIVIDER_CLKOUT2_DIV = 0x0;
+    wkup.DIV_M5_DPLL_CORE.b.HSDIVIDER_CLKOUT2_DIV |= 0x8;
+    wkup.DIV_M6_DPLL_CORE.b.HSDIVIDER_CLKOUT3_DIV = 0x0;
+    wkup.DIV_M6_DPLL_CORE.b.HSDIVIDER_CLKOUT3_DIV |= 0x4;
+
+
+    // Lock dpll core and wait locking status
+    wkup.CLKMODE_DPLL_CORE.b.DPLL_EN = DPLL_LOCKMODE;
+    while (wkup.IDLEST_DPLL_CORE.b.ST_DPLL_CLK == 0){}
+}
+
+// PER PLL Configuration based on AM335x TRM 8.1.6.8.1
+// All values based on AM335x TRM Table 8-24 PER PLL Typical Frequencies OPP100
+// clock source is 24MHz crystal on OSC0-IN (BBB schematic page 3)
+static void per_pll_init()
+{
+    using namespace REGS::PRCM;
+    auto& wkup = *AM335x_CM_WKUP;
+
+    // Switch dpll per to bypas mode and wait bypass status
+    wkup.CLKMODE_DPLL_PER.b.DPLL_EN = PER_MNBYPASS;
+    while (wkup.IDLEST_DPLL_PER.b.ST_MN_BYPASS == 0){}
+
+    // configure divider and multipler
+    // DPLL_MULT = 960, DPLL_DIV = 23 (actual division factor is N+1)
+    // 24MHz*960/24 = 960MHz
+    wkup.CLKSEL_DPLL_PERIPH.reg = (960 << 8) | (23);
+
+    wkup.DIV_M2_DPLL_PER.b.DPLL_CLKOUT_DIV = 0x0;
+    wkup.DIV_M2_DPLL_PER.b.DPLL_CLKOUT_DIV |= 0x5;
+
+    // Lock dpll per and wait locking status
+    wkup.CLKMODE_DPLL_PER.b.DPLL_EN = PER_LOCKMODE;
+    while (wkup.IDLEST_DPLL_PER.b.ST_DPLL_CLK == 0){}
+}
+
+// DDR PLL Configuration based on AM335x TRM 8.1.6.11.1
+// 400MHz based on Table 5-5 of AM335x datasheet DDR3L max frequency
+// clock source is 24MHz crystal on OSC0-IN (BBB schematic page 3)
+static void ddr_pll_init()
+{
+    using namespace REGS::PRCM;
+    auto& wkup = *AM335x_CM_WKUP;
+
+    // Switch dpll ddr to bypas mode and wait bypass status
+    wkup.CLKMODE_DPLL_DDR.b.DPLL_EN = DPLL_MNBYPASS;
+    while (wkup.IDLEST_DPLL_DDR.b.ST_MN_BYPASS == 0){}
+
+    // configure divider and multipler
+    // DPLL_MULT = 400, DPLL_DIV = 23 (actual division factor is N+1)
+    // 24MHz*400/24 = 400MHz
+    wkup.CLKSEL_DPLL_DDR.reg = (400 << 8) | (23);
+
+    wkup.DIV_M2_DPLL_DDR.b.DPLL_CLKOUT_DIV = 0x0;
+    wkup.DIV_M2_DPLL_DDR.b.DPLL_CLKOUT_DIV |= 0x1;
+
+    // Lock dpll ddr and wait locking status
+    wkup.CLKMODE_DPLL_DDR.b.DPLL_EN = DPLL_LOCKMODE;
+    while (wkup.IDLEST_DPLL_DDR.b.ST_DPLL_CLK == 0){}
+}
+
+static void interface_clocks_init()
+{
+    using namespace REGS::PRCM;
+    auto& per = *AM335x_CM_PER;
+    auto& wkup = *AM335x_CM_WKUP;
+
+    RTT_CHECK_MODULE_SIZE(AM335x_CM_PER_Type,0x150);
+    RTT_CHECK_MODULE_SIZE(AM335x_CM_WKUP_Type,0xD8);
+
+    wkup.CONTROL_CLKCTRL.b.MODULEMODE = MODULEMODE_ENABLE;
+    per.L4LS_CLKCTRL.b.MODULEMODE = MODULEMODE_ENABLE;
+    per.L3_CLKCTRL.b.MODULEMODE = MODULEMODE_ENABLE;
+    wkup.CLKSTCTRL.b.CLKTRCTRL = SW_WKUP;
+    per.L4LS_CLKSTCTRL.b.CLKTRCTRL = SW_WKUP;
+    per.L3S_CLKSTCTRL.b.CLKTRCTRL = SW_WKUP;
+}
+
+static void ddr_init()
+{
+    using namespace REGS::CONTROL_MODULE;
+    using namespace REGS::EMIF;
+    using namespace REGS::PRCM;
+    auto& per = *AM335x_CM_PER;
+    auto& cm = *AM335x_CONTROL_MODULE;
+    auto& emif = *AM335x_EMIF0;
+    auto& phy = *AM335x_DDR23mPHY;
+
+    RTT_CHECK_MODULE_SIZE(AM335x_CTRL_MODULE_Type, 0x1444);
+
+    per.EMIF_CLKCTRL.reg = MODULEMODE_ENABLE;
+    per.EMIF_FW_CLKCTRL.reg = MODULEMODE_ENABLE;
+
+    while (!(per.L3_CLKSTCTRL.b.CLKACTIVITY_EMIF_GCLK == CLK_ACT &&
+             per.L3_CLKSTCTRL.b.CLKACTIVITY_MMC_FCLK == CLK_ACT)) {}
+
+    // Note beaglebone black does not have VTT termination
+    // initialize virtual temperature process compensation
+    cm.vtp_ctrl.reg |= 0x40;
+    cm.vtp_ctrl.reg &= ~0x1;
+    cm.vtp_ctrl.reg |= 0x1;
+
+    while (cm.vtp_ctrl.b.ready != 0x1) {}
+
+    phy.CMD0_CTRL_SLAVE_RATIO_0.reg = DDR3_CMD_SLAVE_RATIO;
+    phy.CMD0_INVERT_CLKOUT_0.reg = DDR3_CMD_INVERT_CLKOUT; // Core clock not inverted
+    phy.CMD1_CTRL_SLAVE_RATIO_0.reg = DDR3_CMD_SLAVE_RATIO;
+    phy.CMD1_INVERT_CLKOUT_0.reg = DDR3_CMD_INVERT_CLKOUT; // Core clock not inverted
+    phy.CMD2_CTRL_SLAVE_RATIO_0.reg = DDR3_CMD_SLAVE_RATIO;
+    phy.CMD2_INVERT_CLKOUT_0.reg = DDR3_CMD_INVERT_CLKOUT; // Core clock not inverted
+
+    phy.DATA0_RD_DQS_SLAVE_RATIO_0.reg   = DDR3_DATA0_RD_DQS_SLAVE_RATIO;
+    phy.DATA0_WR_DQS_SLAVE_RATIO_0.reg   = DDR3_DATA0_WR_DQS_SLAVE_RATIO;
+    phy.DATA0_FIFO_WE_SLAVE_RATIO_0.reg = DDR3_DATA0_FIFO_WE_SLAVE_RATIO;
+    phy.DATA0_WR_DATA_SLAVE_RATIO_0.reg = DDR3_DATA0_WR_DATA_SLAVE_RATIO;
+    phy.DATA1_RD_DQS_SLAVE_RATIO_0.reg  = DDR3_DATA0_RD_DQS_SLAVE_RATIO;
+    phy.DATA1_WR_DQS_SLAVE_RATIO_0.reg   = DDR3_DATA0_WR_DQS_SLAVE_RATIO;
+    phy.DATA1_FIFO_WE_SLAVE_RATIO_0.reg = DDR3_DATA0_FIFO_WE_SLAVE_RATIO;
+    phy.DATA1_WR_DATA_SLAVE_RATIO_0.reg = DDR3_DATA0_WR_DATA_SLAVE_RATIO;
+
+    cm.ddr_cmd0_ioctrl.reg = DDR3_IOCTRL_VALUE;
+    cm.ddr_cmd1_ioctrl.reg = DDR3_IOCTRL_VALUE;
+    cm.ddr_cmd2_ioctrl.reg = DDR3_IOCTRL_VALUE;
+    cm.ddr_data0_ioctrl.reg = DDR3_IOCTRL_VALUE;
+    cm.ddr_data1_ioctrl.reg = DDR3_IOCTRL_VALUE;
+
+    cm.ddr_io_ctrl.reg &= ~0x10000000;;
+    cm.ddr_cke_ctrl.reg |= 0x1;
+
+    emif.DDR_PHY_CTRL_1.reg = DDR3_READ_LATENCY;
+    emif.DDR_PHY_CTRL_1_SHDW.reg = DDR3_READ_LATENCY;
+    emif.DDR_PHY_CTRL_2.reg = DDR3_READ_LATENCY;
+    emif.SDRAM_TIM_1.reg = DDR3_SDRAM_TIMING1;
+    emif.SDRAM_TIM_1_SHDW.reg = DDR3_SDRAM_TIMING1;
+    emif.SDRAM_TIM_2.reg = DDR3_SDRAM_TIMING2;
+    emif.SDRAM_TIM_2_SHDW.reg = DDR3_SDRAM_TIMING2;
+    emif.SDRAM_TIM_3.reg = DDR3_SDRAM_TIMING3;
+    emif.SDRAM_TIM_3_SHDW.reg = DDR3_SDRAM_TIMING3;
+    emif.SDRAM_REF_CTRL.reg = DDR3_REF_CTRL;
+    emif.SDRAM_REF_CTRL_SHDW.reg = DDR3_REF_CTRL;
+    emif.ZQ_CONFIG.reg = DDR3_ZQ_CONFIG;
+    emif.SDRAM_CONFIG.reg = DDR3_SDRAM_CONFIG;
+}
+
+
+// read and write to some addresses in DDR, returns 0 on sucess
+static bool ddr_check()
+{
+    using namespace REGS::EMIF;
+
+    cp15_D_cache_disable();
+    cp15_I_cache_disable();
+    cp15_TLB_invalidate();
+
+    cp15_DSB_ISB_sync_barrier();
+/*
+    ddr_calib_values_t calib_values;
+
+    if (ddr_calibrate(&calib_values))
     {
-        serial_uart_0.puts((char *)"DDR3L read/write check failed...\n\r");
-        return;
-    } 
-    
-    //eDMA.init(REGS::EDMA::EVENT_Q0);
-}
+        RTT_LOG_I(TAG, "Calibration successful!");
 
-
-// MPU PLL Configuration based on AM335x TRM 8.1.6.9.1 
-// 1GHz clock based on AM335x datasheet table 3.1 AM3358BZCZ100 
-void mpu_pll_init(void) 
-{
-  uint32_t x;
-  
-  // Switch PLL to bypass mode
-  x = REG(CM_CLKMODE_DPLL_MPU);
-  x &= ~0x7;
-  x |= 0x4;
-  REG(CM_CLKMODE_DPLL_MPU) = x;
-  
-  // wait for bypass status 
-  while (!(REG(CM_IDLEST_DPLL_MPU) & 0x100)) {}
-
-  // configure divider and multipler 
-  // DPLL_MULT = 1000, DPLL_DIV = 23 (actual division factor is N+1) 
-  // 24MHz*1000/24 = 1GHz 
-  REG(CM_CLKSEL_DPLL_MPU) = (1000 << 8) | (23);
-
-  // Set M2 Divider 
-  REG(CM_DIV_M2_DPLL_MPU) &= ~0x1F;
-  REG(CM_DIV_M2_DPLL_MPU) |= 1;
-
-  // Enable, locking PLL 
-  x = REG(CM_CLKMODE_DPLL_MPU);
-  x |= 0x7;
-  REG(CM_CLKMODE_DPLL_MPU) = x;
-  
-  // wait for locking to finish 
-  while (!(REG(CM_IDLEST_DPLL_MPU) & 0x1)) {}
-}
-
-// Core PLL Configuration based on AM335x TRM 8.1.6.7.1 
-// All values based on AM335x TRM Table 8-22 Core PLL Typical Frequencies OPP100 
-// clock source is 24MHz crystal on OSC0-IN (BBB schematic page 3) 
-void core_pll_init(void) 
-{
-  uint32_t x;
-  
-  // Switch PLL to bypass mode 
-  x = REG(CM_CLKMODE_DPLL_CORE);
-  x &= ~0x7;
-  x |= 0x4;
-  REG(CM_CLKMODE_DPLL_CORE) = x;
-  
-  // wait for bypass status 
-  while (!(REG(CM_IDLEST_DPLL_CORE) & 0x100)) {}
-
-  // configure divider and multipler 
-  // DPLL_MULT = 1000, DPLL_DIV = 23 (actual division factor is N+1) 
-  // 24MHz*1000/24 = 1GHz 
-  REG(CM_CLKSEL_DPLL_CORE) = (500 << 8) | (23);
-
-  // Set M4 Divider 
-  REG(CM_DIV_M4_DPLL_CORE) &= ~0x1F;
-  REG(CM_DIV_M4_DPLL_CORE) |= 10;
-
-  // Set the M5 Divider 
-  REG(CM_DIV_M5_DPLL_CORE) &= ~0x1F;
-  REG(CM_DIV_M5_DPLL_CORE) |= 8;
-
-  // Set the M6 Divider 
-  REG(CM_DIV_M6_DPLL_CORE) &= ~0x1F;
-  REG(CM_DIV_M6_DPLL_CORE) |= 4;
-
-  // Enable, locking PLL 
-  x = REG(CM_CLKMODE_DPLL_CORE);
-  x |= 0x7;
-  REG(CM_CLKMODE_DPLL_CORE) = x;
-  
-  // wait for locking to finish 
-  while (!(REG(CM_IDLEST_DPLL_CORE) & 0x1)) {}
-}
-
-// PER PLL Configuration based on AM335x TRM 8.1.6.8.1 
-// All values based on AM335x TRM Table 8-24 PER PLL Typical Frequencies OPP100 
-// clock source is 24MHz crystal on OSC0-IN (BBB schematic page 3) 
-void per_pll_init(void) 
-{
-  uint32_t x;
-  
-  // Switch PLL to bypass mode 
-  x = REG(CM_CLKMODE_DPLL_PER);
-  x &= ~0x7;
-  x |= 0x4;
-  REG(CM_CLKMODE_DPLL_PER) = x;
-  
-  // wait for bypass status 
-  while (!(REG(CM_IDLEST_DPLL_PER) & 0x100)) {}
-
-  // configure divider and multipler 
-  // DPLL_MULT = 960, DPLL_DIV = 23 (actual division factor is N+1) 
-  // 24MHz*960/24 = 960MHz 
-  REG(CM_CLKSEL_DPLL_PER) = (960 << 8) | (23);
-
-  // Set M2 Divider 
-  REG(CM_DIV_M2_DPLL_PER) &= ~0x7F;
-  REG(CM_DIV_M2_DPLL_PER) |= 5;
-
-  // Enable, locking PLL 
-  x = REG(CM_CLKMODE_DPLL_PER);
-  x |= 0x7;
-  REG(CM_CLKMODE_DPLL_PER) = x;
-  
-  // wait for locking to finish 
-  while (!(REG(CM_IDLEST_DPLL_PER) & 0x1)) {}
-}
-
-// DDR PLL Configuration based on AM335x TRM 8.1.6.11.1 
-// 400MHz based on Table 5-5 of AM335x datasheet DDR3L max frequency 
-// clock source is 24MHz crystal on OSC0-IN (BBB schematic page 3) 
-void ddr_pll_init(void) 
-{
-  uint32_t x;
-  
-  // Switch PLL to bypass mode 
-  x = REG(CM_CLKMODE_DPLL_DDR);
-  x &= ~0x7;
-  x |= 0x4;
-  REG(CM_CLKMODE_DPLL_DDR) = x;
-  
-  // wait for bypass status 
-  while (!(REG(CM_IDLEST_DPLL_DDR) & 0x100)) {}
-
-  // configure divider and multipler 
-  // DPLL_MULT = 400, DPLL_DIV = 23 (actual division factor is N+1) 
-  // 24MHz*400/24 = 400MHz 
-  REG(CM_CLKSEL_DPLL_DDR) = (400 << 8) | (23);
-
-  // Set M2 Divider 
-  REG(CM_DIV_M2_DPLL_DDR) &= ~0x1F;
-  REG(CM_DIV_M2_DPLL_DDR) |= 1;
-
-  // Enable, locking PLL 
-  x = REG(CM_CLKMODE_DPLL_DDR);
-  x |= 0x7;
-  REG(CM_CLKMODE_DPLL_DDR) = x;
-  
-  // wait for locking to finish 
-  while (!(REG(CM_IDLEST_DPLL_DDR) & 0x1)) {}
-}
-
-// initialize all the interface clocks and prcm domains we will be using 
-void interface_clocks_init(void) 
-{
-  // WKUP domain enable 
-  REG(CM_WKUP_CONTROL_CLKCTRL) = 0x2;
-  
-  // PER domain enable 
-  REG(CM_PER_L4LS_CLKCTRL) = 0x2;
-  
-  // L3 interconnect clocks enable 
-  REG(CM_PER_L3_CLKCTRL) = 0x2;
-
-  // WKUP domain force wakeup 
-  REG(CM_WKUP_CLKSTCTRL) = 0x2;
-  
-  // PER domain force wakeup 
-  REG(CM_PER_L4LS_CLKSTCTRL) = 0x2;
-  
-  // L3 interconnect force wakeup 
-  REG(CM_PER_L3_CLKSTCTRL) = 0x2;
-}
-
-void ddr_init(void) 
-{
-  // enable functional clock PD_PER_EMIF_GCLK 
-  REG(CM_PER_EMIF_CLKCTRL) = 0x2;
-  REG(CM_PER_EMIF_FW_CLKCTRL) = 0x2;
-
-  // wait for clocks to be enabled 
-  while (!((REG(CM_PER_L3_CLKSTCTRL) & 0x4) && (REG(CM_PER_L3_CLKSTCTRL) & 0x8))) {}
-
-  // Note beaglebone black does not have VTT termination 
-  // initialize virtual temperature process compensation 
-  REG(CONTROL_MODULE_VTP_CTRL) |= 0x40;
-  REG(CONTROL_MODULE_VTP_CTRL) &= ~0x1;
-  REG(CONTROL_MODULE_VTP_CTRL) |= 0x1;
-
-  while (!(REG(CONTROL_MODULE_VTP_CTRL) & 0x20)) {}
-
-  // PHY CONFIG CMD 
-  REG(CMD0_REG_PHY_CTRL_SLAVE_RATIO_0) = DDR3_CMD_SLAVE_RATIO;
-  REG(CMD0_REG_PHY_INVERT_CLKOUT_0) = DDR3_CMD_INVERT_CLKOUT;
-
-  REG(CMD1_REG_PHY_CTRL_SLAVE_RATIO_0) = DDR3_CMD_SLAVE_RATIO;
-  REG(CMD1_REG_PHY_INVERT_CLKOUT_0) = DDR3_CMD_INVERT_CLKOUT;
-
-  REG(CMD2_REG_PHY_CTRL_SLAVE_RATIO_0) = DDR3_CMD_SLAVE_RATIO;
-  REG(CMD2_REG_PHY_INVERT_CLKOUT_0) = DDR3_CMD_INVERT_CLKOUT;
-  
-  // PHY CONFIG DATA 
-  REG(DATA0_REG_PHY_RD_DQS_SLAVE_RATIO_0) = DDR3_DATA0_RD_DQS_SLAVE_RATIO;
-  REG(DATA0_REG_PHY_WR_DQS_SLAVE_RATIO_0) = DDR3_DATA0_WR_DQS_SLAVE_RATIO;
-  REG(DATA0_REG_PHY_FIFO_WE_SLAVE_RATIO_0) = DDR3_DATA0_FIFO_WE_SLAVE_RATIO;
-  REG(DATA0_REG_PHY_WR_DATA_SLAVE_RATIO_0) = DDR3_DATA0_WR_DATA_SLAVE_RATIO;
-
-  REG(DATA1_REG_PHY_RD_DQS_SLAVE_RATIO_0) = DDR3_DATA0_RD_DQS_SLAVE_RATIO;
-  REG(DATA1_REG_PHY_WR_DQS_SLAVE_RATIO_0) = DDR3_DATA0_WR_DQS_SLAVE_RATIO;
-  REG(DATA1_REG_PHY_FIFO_WE_SLAVE_RATIO_0) = DDR3_DATA0_FIFO_WE_SLAVE_RATIO;
-  REG(DATA1_REG_PHY_WR_DATA_SLAVE_RATIO_0) = DDR3_DATA0_WR_DATA_SLAVE_RATIO;
-
-  // IO CONTROL REGISTERS 
-  REG(CONTROL_MODULE_DDR_CMD0_IOCTRL) = DDR3_IOCTRL_VALUE;
-  REG(CONTROL_MODULE_DDR_CMD1_IOCTRL) = DDR3_IOCTRL_VALUE;
-  REG(CONTROL_MODULE_DDR_CMD2_IOCTRL) = DDR3_IOCTRL_VALUE;
-  REG(CONTROL_MODULE_DDR_DATA0_IOCTRL) = DDR3_IOCTRL_VALUE;
-  REG(CONTROL_MODULE_DDR_DATA1_IOCTRL) = DDR3_IOCTRL_VALUE;
-
-  // IO to work for DDR3 
-  REG(CONTROL_MODULE_DDR_IO_CTRL) &= ~0x10000000;
-  REG(CONTROL_MODULE_DDR_CKE_CTRL) |= 0x1;
-
-  // EMIF TIMING CONFIG 
-  REG(EMIF0_DDR_PHY_CTRL_1) = DDR3_READ_LATENCY;
-  REG(EMIF0_DDR_PHY_CTRL_1_SHDW) = DDR3_READ_LATENCY;
-  REG(EMIF0_DDR_PHY_CTRL_2) = DDR3_READ_LATENCY;
-
-  REG(EMIF0_SDRAM_TIM_1) = DDR3_SDRAM_TIMING1;
-  REG(EMIF0_SDRAM_TIM_1_SHDW) = DDR3_SDRAM_TIMING1;
-
-  REG(EMIF0_SDRAM_TIM_2) = DDR3_SDRAM_TIMING2;
-  REG(EMIF0_SDRAM_TIM_2_SHDW) = DDR3_SDRAM_TIMING2;
-
-  REG(EMIF0_SDRAM_TIM_3) = DDR3_SDRAM_TIMING3;
-  REG(EMIF0_SDRAM_TIM_3_SHDW) = DDR3_SDRAM_TIMING3;
-
-  REG(EMIF0_SDRAM_REF_CTRL) = DDR3_REF_CTRL;
-  REG(EMIF0_SDRAM_REF_CTRL_SHDW) = DDR3_REF_CTRL;
-  REG(EMIF0_ZQ_CONFIG) = DDR3_ZQ_CONFIG;
-  REG(EMIF0_SDRAM_CONFIG) = DDR3_SDRAM_CONFIG;
-}
-
-// read and write to some addresses in DDR, returns 0 on sucess 
-uint8_t ddr_check(void) 
-{
+        if (ddr_stress_test(100))
+            RTT_LOG_I(TAG, "DDR fully initialized and stable!");
+        else
+        {
+            RTT_LOG_W(TAG, "Stress test failed, but calibration values may still work");
+            ddr_init();
+        }
+    }
+    else
+    {
+        RTT_LOG_E(TAG, "Calibration failed! Using default values.");
+        ddr_init();
+    }
+*/
     uint32_t i;
-    
-    // write to a bunch of addresses 
-    for (i = 0; i < 0x20000000; i += 0x2000) 
+    volatile uint32_t* ddr = (uint32_t*)DDR_START;
+
+    for (i = 0; i < DDR_TEST_SIZE / 4; i += 1024)
     {
-        REG(DDR_START + i) = i;
+        ddr[i] = 0x55555555;
     }
-    
-    // read from the same addresses and compare with expected value
-    for (i = 0; i < 0x20000000; i += 0x2000) 
+
+    cp15_DSB_barrier();
+    for (i = 0; i < DDR_TEST_SIZE / 4; i += 1024)
     {
-      if (REG(DDR_START + i) != i) 
-      {
-        return 1;
-      }
+        if (ddr[i] != 0x55555555) return false;
     }
-    
-    return 0;
+
+
+    for (i = 0; i < DDR_TEST_SIZE / 4; i += 1024)
+    {
+        ddr[i] = 0xAAAAAAAA;
+    }
+
+    cp15_DSB_barrier();
+    for (i = 0; i < DDR_TEST_SIZE / 4; i += 1024)
+    {
+        if (ddr[i] != 0xAAAAAAAA) return false;
+    }
+
+    // Адресный тест
+    for (i = 0; i < DDR_TEST_SIZE / 4; i += 1024)
+    {
+        ddr[i] = i;
+    }
+
+    cp15_DSB_barrier();
+    for (i = 0; i < DDR_TEST_SIZE / 4; i += 1024)
+    {
+        if (ddr[i] != i) return false;
+    }
+
+    return true;
 }
-
-
-
